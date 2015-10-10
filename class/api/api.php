@@ -13,9 +13,11 @@ require_once __DIR__.'/module/email.php';
  * @author Andreas Doebeling <ad@1601.com>
  * @copyright 1601.production siegler&thuemmler ohg
  * @link https://github.com/ADoebeling/df_rp2
- * @link http://github.com/ADoebeling
- * @link http://xing-ad.1601.com
+ * @link https://github.com/ADoebeling
+ * @link https://xing-ad.1601.com
  * @package www1601com\df_rp
+ *
+ * @version 0.1.151002_dev_1ad
  */
 class api {
 
@@ -27,12 +29,12 @@ class api {
     /**
      * @var object module\customer
      */
-    public $customer;
+    public $customers;
 
     /**
      * @var object module/order
      */
-    public $order;
+    public $orders;
 
     /**
      * @var object module\email
@@ -46,9 +48,9 @@ class api {
     public function __construct()
     {
         $this->rpc = new \bbRpc();
-        $this->customer = new module\customer($this);
-        $this->order = new module\order($this);
-        $this->email = new module\email($this);
+        $this->customers = new module\customer($this);
+        $this->orders = new module\order($this);
+        $this->emails = new module\email($this);
     }
 
     /**
@@ -77,7 +79,12 @@ class api {
      */
     public function call($sMethod,$hArgs=array(),$hPlaceholders=null)
     {
-        return $this->rpc->call($sMethod,$hArgs,$hPlaceholders);
+        $startTime = microtime(1);
+        //echo " ######## RPC-Call: $sMethod: ";
+        $result = $this->rpc->call($sMethod,$hArgs,$hPlaceholders);
+        $duration = round(microtime(1)-$startTime, 3);
+        //echo "$duration Sek. ########\n\n";
+        return $result;
     }
 
 }

@@ -18,12 +18,17 @@ class apiModule {
     /**
      * @var array $order['oeid'][$key] = [$value]
      */
-    protected $order;
+    protected $orders;
 
     /**
      * @var array various imported data
      */
     protected $data;
+
+    /**
+     * @var array Stores all already executed methods
+     */
+    protected $runOnce = [];
 
     /**
      * Build the class-structure
@@ -40,9 +45,9 @@ class apiModule {
      *
      * @return array $order['oeid'][$key] = [$value]
      */
-    public function getOrder()
+    public function getOrders()
     {
-        return $this->order;
+        return $this->orders;
     }
 
     /**
@@ -53,5 +58,19 @@ class apiModule {
     public function getData()
     {
         return $this->data;
+    }
+
+    public function runOnce($method)
+    {
+        if (!isset($this->runOnce[$method]))
+        {
+            $this->runOnce[$method] = 1;
+            return true;
+        }
+        else
+        {
+            $this->runOnce[$method]++;
+            return false;
+        }
     }
 }

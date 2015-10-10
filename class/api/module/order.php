@@ -15,11 +15,27 @@ class order extends apiModule
         return $this;
     }*/
 
-    public function loadAll()
+    /**
+     * @param (array) $param['accounting']
+     * @param bool $runOnce
+     * @return $this
+     */
+    public function loadAll($param = array(), $runOnce = true)
     {
-        $this->order = $this->system->call('bbOrder::readEntry', ['return_array' => 1]); //, 'return_adress' => 1
+        if ($runOnce && !$this->runOnce(__METHOD__)) return $this;
+
+        if (empty($param)) {
+            $this->data = $this->system->call('bbOrder::readEntry', ['return_array' => 1]); //, 'return_adress' => 1
+        }
+
+        else if (isset($param['accounting']))
+        {
+            $this->data = $this->system->call('bbOrder::readEntry', ['return_active' => 1, 'return_dispositions' => 1, 'return_account_entrys' => 1, 'return_array' => 1]); //, 'return_adress' => 1
+        }
         return $this;
     }
+
+
 
 
 

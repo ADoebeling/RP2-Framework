@@ -10,17 +10,6 @@ require_once __DIR__.'/../apiModule.php';
 class email extends apiModule
 {
     /**
-     * Loads all email-accounts into $this->data
-     *
-     * @return $this
-     */
-    public function loadAll()
-    {
-        $this->data = $this->system->call('bbEmail::readAccount', ['return_array' => 1]);
-        return $this;
-    }
-
-    /**
      * Loads all email-accounts from a given order-id (oeid)
      *
      * @param (int|array) $oeids
@@ -45,8 +34,24 @@ class email extends apiModule
             {
                 throw new \Exception(__CLASS__.'::'.__METHOD__.' expects an int-array, '.gettype($oeid).' in array given.');
             }
-            $this->data[$oeid] = $this->system->call('bbEmail::readAccount', ['oeid' => $oeid, 'return_array' => 1]);
+            $this->orders[$oeid] = $this->system->call('bbEmail::readAccount', ['oeid' => $oeid, 'return_array' => 1]);
         }
+        return $this;
+    }
+
+    public function loadAll($param = false, $runOnce = true)
+    {
+        if ($runOnce && !$this->runOnce(__METHOD__)) return $this;
+
+        if ($oeid == false && $param == false)
+        {
+            $this->data = $this->system->call('bbEmail::readAccount', ['return_array' => 1]);
+        }
+        else
+        {
+            throw new \Exception(__METHOD__."($oeid, $param, $runOnce) is not implemented yet", 501);
+        }
+
         return $this;
     }
 
@@ -54,11 +59,14 @@ class email extends apiModule
      * Counts all set  email-addresses per order
      *
      * @param (int|array|bool) $oeid
+     * @param bool $runOnce
      * @return $this
      * @throws \Exception
      */
-    public function loadOrderMailCount($oeid = false)
+    public function loadOrderMailCount($oeid = false, $runOnce = true)
     {
+        if ($runOnce && !$this->runOnce(__METHOD__)) return $this;
+
         if ($oeid !== false)
         {
             // TODO: implement int+array
@@ -69,17 +77,60 @@ class email extends apiModule
 
         foreach ($result as &$row)
         {
-            if (!isset($this->order[$row['oeid']]['mail_addresses']))
+            if (!isset($this->orders[$row['oeid']]['mail_addresses']))
             {
-                $this->order[$row['oeid']]['mail_addresses'] = 1;
+                $this->orders[$row['oeid']]['mail_addresses'] = 1;
             }
             else
             {
-                $this->order[$row['oeid']]['mail_addresses']++;
+                $this->orders[$row['oeid']]['mail_addresses']++;
             }
         }
         return $this;
     }
+
+    /**
+     * Return all loaded e-mail-addresses indexed by order-id
+     *
+     * @return array[123] = array (...)
+     */
+    public function getIndexedByOrderId()
+    {
+        if (!is_array($this->data) || empty($this->data))
+        {
+            return array();
+        }
+        else
+        {
+            foreach ($this->data as &$row) {
+                $return[$row['oeid']] = &$row;
+            }
+            return $return;
+        }
+    }
+
+    /**
+     * Return all loaded e-mail-addresses indexed by e-mail-address
+     *
+     * @return array['some@mail.com'] = array(...)
+     */
+    public function getIndexedByEmail()
+    {
+        if (!is_array($this->data) || empty($this->data))
+        {
+            return array();
+        }
+        else
+        {
+            foreach ($this->data as &$row) {
+                // TODO Implement
+                $return[$row['xxxx']] = &$row;
+            }
+            return $return;
+        }
+    }
+
+
 
 
 }
