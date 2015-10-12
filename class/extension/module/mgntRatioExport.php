@@ -4,7 +4,6 @@ require_once __DIR__.'/../extensionModule.php';
 class mgntRatioExport extends extensionModule
 {
     private $purchasePrices = array();
-
     protected $data;
 
     /**
@@ -61,9 +60,6 @@ class mgntRatioExport extends extensionModule
                      */
                     $tmp['orders'][$order['ordnr']] = 1;
 
-                    //print_r($order);
-                    //die();
-
                     /*
                      * Counts (All, Inclusive (without default-costs), Regular)
                      */
@@ -74,20 +70,27 @@ class mgntRatioExport extends extensionModule
                     /*
                      * Turnovers
                      */
-                    $tmp['sumRealTurnover'] += round($disposition['price']['unit_net'] * $disposition['amount'],2);
+                    $tmp['sumRealTurnover'] += $disposition['price']['unit_net'] * $disposition['amount'];
                     $tmp['realTurnover'] = $tmp['sumRealTurnover'] / $tmp['count'];
 
                     $tmp['sumRegularTurnover'] += $disposition['price']['default_net'] * $disposition['amount'];
                     if ($tmp['countRegular'] > 0)
                     {
-                        $tmp['realTurnover'] = round($tmp['sumRealTurnover'] / $tmp['countRegular'],2);
+                        $tmp['realTurnover'] = $tmp['sumRealTurnover'] / $tmp['countRegular'];
                     }
 
 
                     /*
                      * External costs
                      */
-                    $tmp['costsExternal'] = round($this->purchasePrices[$disposition['product']['norm']][$disposition['product']['pronr']]['externalCosts'], 2);
+                    if (isset($this->purchasePrices[$disposition['product']['norm']][$disposition['product']['pronr']]['externalCosts']))
+                    {
+                        $tmp['costsExternal'] = $this->purchasePrices[$disposition['product']['norm']][$disposition['product']['pronr']]['externalCosts'];
+                    }
+                    else if (isset($this->purchasePrices[$disposition['product']['norm']]['externalCosts']))
+                    {
+                        $tmp['costsExternal'] = $this->purchasePrices[$disposition['product']['norm']]['externalCosts'];
+                    }
                     $tmp['sumCostsExternal'] = $tmp['costsExternal'] * $tmp['count'];
 
                     /*
@@ -95,7 +98,7 @@ class mgntRatioExport extends extensionModule
                      */
                     if (isset($this->purchasePrices[$disposition['product']['norm']][$disposition['product']['pronr']]['workingTime']))
                     {
-                        $tmp['workingTime'] = round($this->purchasePrices[$disposition['product']['norm']][$disposition['product']['pronr']]['workingTime']*60,1);
+                        $tmp['workingTime'] = $this->purchasePrices[$disposition['product']['norm']][$disposition['product']['pronr']]['workingTime'] * 60;
                         $tmp['costsWorkingTime'] = round($this->purchasePrices[$disposition['product']['norm']][$disposition['product']['pronr']]['workingTime'] * $this->purchasePrices['workingTimeCosts'],2);
                     }
                     elseif (isset($this->purchasePrices[$disposition['product']['norm']]['workingTime']))
@@ -138,17 +141,25 @@ class mgntRatioExport extends extensionModule
                         $product['ordersString'] .= "$key ";
                     }
 
-                    $product['costsExternal'] += round($this->purchasePrices['overheadCosts'] / $systemPointsSum * $product['systemPoints'],2);
+                    //$product['costsExternal'] += round($this->purchasePrices['overheadCosts'] / $systemPointsSum * $product['systemPoints'],2);
                     $product['overheadRatio'] = round(100 / $systemPointsSum * $product['systemPoints'],2);
+                    $product['overhead'] = round($this->purchasePrices['overheadCosts'] * $product['overheadRatio'] / 100, 2);
 
                     $product['sumCosts'] = $product['costsExternal']+$product['costsWorkingTime'];
 
-                    $product['regularTurnover'] = round($product['sumRegularTurnover'] / $product['countRegular'],2);
+                    $product['regularTurnover'] = $product['countRegular'] < 1 ?: $product['sumRegularTurnover'] / $product['countRegular'];
 
                     $product['regularGain'] = $product['regularTurnover'] - $product['sumCosts'];
                     $product['realGain'] = $product['realTurnover'] - $product['sumCosts'];
 
+                    //Contributionmargin=Deckungsbeitrag
+                    $product['db1']=$product['regularTurnover']-$product['costsExternal'];
+                    $product['db2']=$product['db1']-$product['costsWorkingTime'];
+                    $product['db3']=$product['db2']-$product['overhead'];
+                    $product['DB3'] = $product['sumRealTurnover'] - ($product['costsExternal']+$product['costsWorkingTime']+$product['overhead'])*$product['count'];
 
+                    // KnowdownPrice: +15%
+                    $product['knockdownPrice'] = ($product['costsExternal'] + $product['costsWorkingTime'] + $product['overhead'])*1.15;
                 }
             }
         }
@@ -157,98 +168,6 @@ class mgntRatioExport extends extensionModule
         return $this;
     }
 
-    /**
-     * @return array[customer] = array(company => X, firstName => X, lastName => X, orders => X, regularTurnover => X, currentTurnover => X, costs = x]
-     */
-    public function getCustomers()
-    {
-        $name = "{$row['lastName']}, {$row['firstName']}";
-        $name = empty($row['customer']) ? $name : "{$row['company']} ($name)";
-    }
-
-    /**
-     * @return array[tariff] = array(countRegular => X, regularTurnover => X, realTurnover => X, costs = x)
-     */
-    public function getTariffs()
-    {
-        $data = $this->data['tariff'];
-    }
-
-    /**
-     * @return float $sum (sum of all tariff and addon-turnovers)
-     */
-    /*
-    protected function getTariffAddOnTurnover()
-    {
-        $data = $this->getData()['tariff'];
-        foreach ($data as $id => $row)
-        {
-            $sum += $row['sumRealTurnover'];
-        }
-        // TODO
-
-        $data = $this->getData()['add-on'];
-        foreach ($data as $id => $row)
-        {
-            $sum += $row['sumRealTurnover'];
-        }
-        return $sum;
-    }
-    */
-
-
-    public function loadSystemPoints()
-    {
-        $systemPointsSum = 0;
-
-        // Calc the sum
-        foreach ($this->data as $id => &$row)
-        {
-            $systemPointsSum += $row['systemPoints'];
-        }
-
-
-        return $this;
-    }
-
-    /**
-     * @return array[addOn] = array(count => X, regularTurnover => X, realTurnover => X, costs = x)
-     */
-    public function getAddOns()
-    {
-        foreach ($this->data['add-on'] as $id => &$row)
-        {
-            /*$overhead = round($this->purchasePrices['overheadCosts'] / $this->getTariffAddOnTurnover() * $row['sumRealTurnover'],2);
-            $row['costsExternal'] += round($overhead / $row['count'],2);
-            $row['sumCostsExternal'] += $overhead;
-            $row['sumCosts']+= $overhead;
-            $row['sumGain'] -= $overhead;*/
-        }
-        return $data;
-    }
-
-    /**
-     * @return array[ssl] = array(count => X, regularTurnover => X, realTurnover => X, costs = x)
-     */
-    public function getSsl()
-    {
-
-    }
-
-    /**
-     * @return array[exchange] = array(count => X, regularTurnover => X, realTurnover => X, costs = x)
-     */
-    public function getExchange()
-    {
-
-    }
-
-    /**
-     * @return array[tld] = array(count => X, regularTurnover => X, realTurnover => X, costs = x)
-     */
-    public function getTlds()
-    {
-    }
 
 
 
@@ -257,31 +176,9 @@ class mgntRatioExport extends extensionModule
      *
      * @return string
      */
-    public function getCsv()
+    public function getCsvGe()
     {
-        $csv = "Type;\tName;\tCount Regular;\tCount Inclusive;\tRegular Turnover (€/Mon);\tReal Turnover (€/Mon);\tCosts External (€/Mon);\tWorking Time (Min/Mon);\tSum Costs (€/Mon);\tRegular Gain (€/Mon); Real Gain (€/Mon); Orders\n";
-
-        /*foreach ($this->getCustomers() as $name => &$row) {
-            $csv .= "Customer; $name; {$row['count']}; {$row['regularTurnover']}; {$row['currentTurnover']}; {$row['costs']}\n";
-        }
-
-        $csv .= "\n\n";
-
-        foreach ($this->getTariffs() as $name => &$row) {
-            $csv .= "Tariff; $name; {$row['count']}; {$row['regularTurnover']}; {$row['currentTurnover']}; {$row['costs']}\n";
-        }
-
-        $csv .= "\n\n";
-
-        foreach ($this->getTlds() as $name => &$row) {
-            $csv .= "TLD; $name; {$row['count']}; {$row['regularTurnover']}; {$row['currentTurnover']}; ; {$row['costs']}\n";
-        }
-
-        $csv .= "\n\n";
-
-        foreach ($this->getAddOns() as $name => &$row) {
-            $csv .= "AddOn; $name; {$row['count']}; {$row['regularTurnover']}; {$row['currentTurnover']}; {$row['costs']}\n";
-        }*/
+        $csv = "Typ;Kurzbez.;Anzahl;Anzahl inkl.;VK-Listenpreis (€/Mon);Ø-VK (€/Mon);EK (€/Mon);db1 (-Fremdkosten);db2 (-Personal); db3 (-Infrastruktur); DB3; Niedrigst-VK; Orders\n";
 
         foreach ($this->data as $type => &$products)
         {
@@ -292,20 +189,19 @@ class mgntRatioExport extends extensionModule
                 $csv .= "$name;";
                 $csv .= "{$product['countRegular']};";
                 $csv .= "{$product['countInclusive']};";
-                $csv .= number_format($product['regularTurnover'], 2, ',', '.').'€ ;';
-                $csv .= number_format($product['realTurnover'], 2, ',', '.').'€ ;';
-                $csv .= number_format($product['costsExternal'], 2, ',', '.').'€ ;';
-                $csv .= number_format($product['workingTime'], 2, ',', '.').';';
-                $csv .= number_format($product['sumCosts'], 2, ',', '.').'€ ;';
-                $csv .= number_format($product['regularGain'], 2, ',', '.').'€ ;';
-                $csv .= number_format($product['realGain'], 2, ',', '.').'€ ;';
+                $csv .= number_format($product['regularTurnover'], 2, ',', '.').'€;';
+                $csv .= number_format($product['realTurnover'], 2, ',', '.').'€;';
+                $csv .= number_format($product['costsExternal'], 2, ',', '.').'€;';
+                $csv .= number_format($product['db1'], 2, ',', '.').'€;';
+                $csv .= number_format($product['db2'], 2, ',', '.').'€;';
+                $csv .= number_format($product['db3'], 2, ',', '.').'€;';
+                $csv .= number_format($product['DB3'], 2, ',', '.').'€;';
+                $csv .= number_format($product['knockdownPrice'], 2, ',', '.').'€;';
                 $csv .= '"'.$product['ordersString'].'"';
                 $csv .= "\n";
             }
-            $csv .= " ; ; ; ; ; ; ; ; ; ; ;\n";
-
+            $csv .= " ; ; ; ; ; ; ; ; ; ; \n";
         }
-        //$csv = str_replace('.', ',', $csv);
         return $csv;
     }
 
@@ -325,7 +221,4 @@ class mgntRatioExport extends extensionModule
         echo $this->getCsv();
         return $this;
     }
-
-
-
 }
