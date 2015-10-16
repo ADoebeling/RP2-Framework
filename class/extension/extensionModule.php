@@ -9,10 +9,16 @@ namespace www1601com\df_rp\extension;
  */
 class extensionModule {
 
+
     /**
-     * @var object extension
+     * @var extension $system
      */
-    protected $system;
+    protected $system = extension;
+
+    /**
+     * @var array module-data
+     */
+    protected $data = array();
 
     /**
      * Builds the class-structure
@@ -22,5 +28,15 @@ class extensionModule {
     public function __construct(extension &$system)
     {
         $this->system = &$system;
+    }
+
+    /**
+     * Returns a array with the previous load data
+     *
+     * @return array
+     */
+    public function getData()
+    {
+        return $this->data;
     }
 }
