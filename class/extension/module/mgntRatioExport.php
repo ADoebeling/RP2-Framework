@@ -12,8 +12,8 @@ class mgntRatioExport extends extensionModule
     /** @var array all products */
     protected $product = array();
 
-    /** @var array all totals */
-    protected $totals = array();
+    /** @var array all total */
+    protected $total = array();
 
     public function __construct(extension &$system)
     {
@@ -35,26 +35,6 @@ class mgntRatioExport extends extensionModule
         $this->costs = $prices;
         return $this;
     }
-
-    /**
-     * Helper-function: getTypes
-     *
-     * @return array
-     */
-    public function getTypes()
-    {
-        $types = array();
-        foreach ($data = $this->getData() as $id => $row)
-        {
-            $types[$id] = array();
-            foreach ($row as $id2 => $row2)
-            {
-                array_push($types[$id], $id2);
-            }
-        }
-        return $types;
-    }
-
 
     /**
      * calcSums
@@ -151,11 +131,11 @@ class mgntRatioExport extends extensionModule
                 // Working Time can be stored at the product or at the product-group
                 if (isset($this->costs[$dispo['product']['norm']][$dispo['product']['pronr']]['workingTime']))
                 {
-                    $workingTime = $this->costs[$dispo['product']['norm']][$dispo['product']['pronr']]['workingTime'] * $dispo['count'];
+                    $workingTime = $this->costs[$dispo['product']['norm']][$dispo['product']['pronr']]['workingTime'] * $dispo['amount'];
                 }
                 else if (isset($this->costs[$dispo['product']['norm']]['workingTime']))
                 {
-                    $workingTime = $this->costs[$dispo['product']['norm']]['workingTime'] * $dispo['count'];
+                    $workingTime = $this->costs[$dispo['product']['norm']]['workingTime'] * $dispo['amount'];
                 }
                 else
                 {
@@ -329,6 +309,8 @@ class mgntRatioExport extends extensionModule
         }
     }
 
+    
+
 
 
 
@@ -341,7 +323,7 @@ class mgntRatioExport extends extensionModule
             {
                 foreach ($product as $key => &$val)
                 {
-                    $this->totals[$key] += $val;
+                    $this->total[$key] += $val;
                 }
             }
         }
