@@ -64,8 +64,8 @@ class mgntRatioExport extends extensionModule
                 /** @var float $sum['turnoverRegular'] Sum of all turnovers by default-price that could be billed directly*/
                 $sum['turnoverRegular'];
 
-                /** @var float $sum['turnoverReal'] Sum of all turnovers by real-price that can be billed directly */
-                $sum['turnoverReal'];
+                /** @var float $sum['turnoverBilled'] Sum of all turnovers by real-price that can be billed directly */
+                $sum['turnoverBilled'];
 
                 /** @var int $sum['systemPoints'] Sum of all taken system-points */
                 $sum['systemPoints'];
@@ -112,16 +112,21 @@ class mgntRatioExport extends extensionModule
                 /** @var float $sum['overheadCostsUnbilled'] Sum of all overhead-costs that can't be billed directly */
                 //$sum['overheadCostsUnbilled'] = 0;
 
+                /** @var array all orders */
+
+                //print_r($order['ordnr']); die();
+
+                $sum['orders'][$order['ordnr']] += 1;
 
 
                 // External Costs can be stored at the product or at the product-group
                 if (isset($this->costs[$dispo['product']['norm']][$dispo['product']['pronr']]['externalCosts']))
                 {
-                    $externalCosts = $this->costs[$dispo['product']['norm']][$dispo['product']['pronr']]['externalCosts'] * $dispo['count'];
+                    $externalCosts = $this->costs[$dispo['product']['norm']][$dispo['product']['pronr']]['externalCosts'] * $dispo['amount'];
                 }
                 else if (isset($this->costs[$dispo['product']['norm']]['externalCosts']))
                 {
-                    $externalCosts = $this->costs[$dispo['product']['norm']]['externalCosts'] * $dispo['count'];
+                    $externalCosts = $this->costs[$dispo['product']['norm']]['externalCosts'] * $dispo['amount'];
                 }
                 else
                 {
@@ -145,8 +150,7 @@ class mgntRatioExport extends extensionModule
                 /** @var array $purchasePrice TMP alias for $this->costs[$dispo['product']['norm']][$dispo['product']['pronr']] */
                 $purchasePrice = !isset($this->costs[$dispo['product']['norm']][$dispo['product']['pronr']]) ?: $this->costs[$dispo['product']['norm']][$dispo['product']['pronr']];
 
-                $systemPoints = isset($purchasePrice['systemPoints']) ?: $purchasePrice['systemPoints'] * $dispo['amount'];
-                $externalCosts = !isset($purchasePrice['externalCosts']) ?: $purchasePrice['externalCosts'] * $dispo['amount'];
+                $systemPoints = !isset($purchasePrice['systemPoints']) ?: $purchasePrice['systemPoints'] * $dispo['amount'];
                 $workingTimeCosts = !isset($this->costs['workingTimeCosts']) ?: $this->costs['workingTimeCosts'] * $workingTime;
 
 
@@ -157,7 +161,7 @@ class mgntRatioExport extends extensionModule
                 if ($dispo['price']['default_net'] + $dispo['price']['unit_net'] != 0)
                 {
                     $sum['turnoverRegular'] += $dispo['price']['default_net'] * $dispo['amount'];
-                    $sum['turnoverReal'] += $dispo['price']['unit_net'] * $dispo['amount'];
+                    $sum['turnoverBilled'] += $dispo['price']['unit_net'] * $dispo['amount'];
 
                     $sum['countBilled'] += $dispo['amount'];
                     $sum['systemPointsBilled'] += $systemPoints;
@@ -213,8 +217,10 @@ class mgntRatioExport extends extensionModule
                 if ($this->total['systemPoints'] > 0)
                 {
                     $sum['overheadCosts'] = $this->costs['overheadCosts'] / $this->total['systemPoints'] * $sum['systemPoints'];
-                    $sum['overheadCostsBilled'] = $this->costs['overheadCosts'] / $this->total['systemPoints'] * $sum['systemPointsBilled'];
-                    $sum['overheadCostsUnbilled'] = $this->costs['overheadCosts'] / $this->total['systemPoints'] * $sum['systemPointsUnbilled'];
+                    $sum['overheadCostsBilled'] = $this->costs['overheadCosts'] / $this->total['systemPointsBilled'] * $sum['systemPointsBilled'];
+                    $sum['overheadCostsUnbilled'] = $this->costs['overheadCosts'] / $this->total['systemPointsUnbilled'] * $sum['systemPointsUnbilled'];
+
+                    $sum['unbilledCosts'] = $sum['externalCostsUnbilled']+$sum['workingTimeCostsUnbilled']+$sum['overheadCostsUnbilled'];
                 }
             }
         }
@@ -230,13 +236,18 @@ class mgntRatioExport extends extensionModule
         {
             foreach ($products as $id => &$sum)
             {
-                $sum['unbilledCosts'] = $sum['externalCostsUnbilled']+$sum['workingTimeCostsUnbilled']+$sum['overheadCostsUnbilled'];
+                $sum['unbilledCostsShare'] = $this->total['unbilledCosts'] / $this->total['systemPointsBilled'] * $sum['systemPointsBilled'];
 
                 $sum['cm1'] = $sum['turnoverRegular'] - $sum['externalCosts'];
                 $sum['cm2'] = $sum['cm1'] - $sum['workingTimeCosts'];
-                $sum['cm3'] = $sum['cm2'] - $sum['overheadCosts'];
-                $sum['cm4'] = $sum['cm3'] - $sum['unbilledCosts'] * $sum['systemPoints'] / $this->total['systemPoints'];
-                $sum['cm4Ratio'] = 100/$sum['turnoverRegular']*$sum['cm4'];
+                $sum['cm3'] = $sum['cm2'] - $sum['overheadCostsBilled'];
+                $sum['cm4'] = $sum['cm3'] - ($sum['unbilledCostsShare'] * $sum['systemPointsBilled'] / $this->total['systemPointsBilled']);
+
+                $sum['cm4Ratio'] = 0;
+                if ($sum['turnoverRegular'] > 0)
+                {
+                    $sum['cm4Ratio'] = 100/$sum['turnoverRegular']*$sum['cm4'];
+                }
             }
         }
     }
@@ -250,80 +261,121 @@ class mgntRatioExport extends extensionModule
         {
             foreach ($products as $id => &$sum)
             {
-                //Should always be true
-                if ($sum['count'] > 0)
-                {
-                    /** @var string $p ['type'] type of the product */
-                    $p['type'] = $type;
+                $p =& $this->product[$type][$id];
 
-                    /** @var string (!) $p ['id'] id of the product */
-                    $p['id'] = $id;
+                /** @var string $p ['type'] type of the product */
+                $p['type'] = $type;
 
-                    /** @var float $p ['costsExternal'] external product-costs */
-                    $p['costsExternal'] = $sum['costsExternal'] / $sum['count'];
+                /** @var string (!) $p ['id'] id of the product */
+                $p['id'] = $id;
 
-                    /** @var float $p ['costsWorkingTime'] working-time-costs per product */
-                    $p['workingTimeCosts'] = $sum['workingTimeCosts'] / $sum['count'];
+                /** @var float $p ['externalCosts'] external product-costs */
+                $p['externalCosts'] = 0;
 
+                /** @var float $p ['costsWorkingTime'] working-time-costs per product */
+                $p['workingTimeCosts'] = 0;
 
-                }
+                /** @var int */
+                $p['countBilled'] = 0;
+
+                /** @var int */
+                $p['countUnbilled'] = 0;
+
+                /** @var float $p ['turnoverRegular'] regular product-turnover */
+                $p['turnoverRegular'] = 0;
+
+                /** @var float $p ['turnoverBilledAverage'] average product-turnover */
+                $p['turnoverBilled'] = 0;
+
+                /** @var float $p ['externalCostsBilled'] billed external product-costs */
+                $p['externalCosts'] = 0;
+
+                /** @var float $p ['workingTimeCostsBilled'] billed working-time-costs per product */
+                $p['workingTimeCosts'] = 0;
+
+                /** @var float $p ['workingTime'] billed working-time per product */
+                $p['workingTime'] = 0;
+
+                /** @var float $p ['costsOverheadBilled'] billed overhead-costs per product */
+                $p['overheadCosts'] = 0;
+
+                $p['cm1'] = 0;
+                $p['cm2'] = 0;
+                $p['cm3'] = 0;
+                $p['cm4'] = 0;
+                $p['cm4Ratio'] = 0;
+
+                $p['bestPrice'] = 0;
 
                 if ($sum['countBilled'] > 0)
                 {
-                    /** @var float $p ['turnoverRegular'] regular product-turnover */
+                    $p['countBilled'] = $sum['countBilled'];
                     $p['turnoverRegular'] = $sum['turnoverRegular'] / $sum['countBilled'];
+                    $p['turnoverBilled'] = $sum['turnoverBilled'] / $sum['countBilled'];
+                    $p['externalCosts'] = $sum['externalCostsBilled'] / $sum['countBilled'];
+                    $p['workingTime'] = $sum['workingTime'] / $sum['count'];
+                    $p['workingTimeCosts'] = $sum['workingTimeCosts'] / $sum['countBilled'];
+                    $p['overheadCosts'] = $sum['overheadCosts'] / $sum['countBilled'];
 
-                    /** @var float $p ['turnoverBilledAverage'] average product-turnover */
-                    $p['turnoverBilledAverage'] = $sum['turnoverReal'] / $sum['countBilled'];
-
-                    /** @var float $p ['externalCostsBilled'] billed external product-costs */
-                    $p['externalCostsBilled'] = $sum['externalCostsBilled'] / $sum['countBilled'];
-
-                    /** @var float $p ['workingTimeCostsBilled'] billed working-time-costs per product */
-                    $p['workingTimeCostsBilled'] = $sum['workingTimeCosts'] / $sum['countBilled'];
-
-                    /** @var float $p ['costsOverheadBilled'] billed overhead-costs per product */
-                    $p['costsOverheadBilled'] = $sum['costOverhead'];
+                    //$p['unbilledCosts'] = $this->total['unbilledCosts'] / $sum['countBilled'];
 
                     $p['cm1'] = $sum['cm1'] / $sum['countBilled'];
                     $p['cm2'] = $sum['cm2'] / $sum['countBilled'];
                     $p['cm3'] = $sum['cm3'] / $sum['countBilled'];
                     $p['cm4'] = $sum['cm4'] / $sum['countBilled'];
                     $p['cm4Ratio'] = $sum['cm4Ratio'];
+
+                    $p['bestPrice'] = ($p['externalCosts']+$p['workingTimeCosts']+$p['overheadCosts']+$p['unbilledCosts'])*1.15;
+                }
+                else
+                {
+                    $p['turnoverRegular'] = $sum['turnoverRegular'] / $sum['countUnbilled'];
+                    $p['turnoverBilled'] = $sum['turnoverUnbilled'] / $sum['countUnbilled'];
+                    $p['externalCosts'] = $sum['externalCostsUnbilled'] / $sum['countUnbilled'];
+                    $p['workingTime'] = $sum['workingTime'] / $sum['count'];
+                    $p['workingTimeCosts'] = $sum['workingTimeCosts'] / $sum['countUnbilled'];
+                    $p['overheadCosts'] = $sum['overheadCosts'] / $sum['countUnbilled'];
+                    $p['unbilledCosts'] = $sum['unbilledCosts'] / $sum['countUnbilled'];
+                    $p['cm1'] = $sum['cm1'] / $sum['countUnbilled'];
+                    $p['cm2'] = $sum['cm2'] / $sum['countUnbilled'];
+                    $p['cm3'] = $sum['cm3'] / $sum['countUnbilled'];
+                    $p['cm4'] = $sum['cm4'] / $sum['countUnbilled'];
+                    $p['cm4Ratio'] = $sum['cm4Ratio'];
                 }
 
                 if ($sum['countUnbilled'] > 0)
                 {
-                    /** @var float $p ['costsExternalBilled'] unbilled external product-costs */
-                    $p['externalCostsUnbilled'] = $sum['externalCostsUnbilled'] / $sum['countUnbilled'];
+                    $p['countUnbilled'] = $sum['countUnbilled'];
+
                 }
 
-
-                /** @var float $p ['costsOverheadBilled'] billed overhead-costs per product */
-                //$p['costsOverheadBilled'] = 0;
-
-                /** @var float $p ['costsForUnbilled'] cleared costs for unbilled products per product */
-                //$p['costsForUnbilled'] = 0;
+                foreach ($sum['orders'] as $ordnr => $count) {
+                    $p['orders'] .= "$ordnr, ";
+                }
             }
-            return $this;
         }
+        return $this;
     }
 
-    
-
-
-
-
-
+    /**
+     * Calc all total-sums for each category (systemPoints, turnovers, ...)
+     *
+     * @return $this
+     */
     protected function calcTotal()
     {
+        $this->total = array(); // Never delete that line. I've searched this bug for hours
+
         foreach ($this->sum as $type => &$products)
         {
             foreach ($products as $name => &$product)
             {
                 foreach ($product as $key => &$val)
                 {
-                    $this->total[$key] += $val;
+                    if (is_int($val) OR is_float($val))
+                    {
+                        $this->total[$key] += $val;
+                    }
                 }
             }
         }
@@ -364,32 +416,75 @@ class mgntRatioExport extends extensionModule
      */
     public function getCsvGe()
     {
-        $csv = "Typ;Kurzbez.;Anzahl;Anzahl inkl.;VK-Listenpreis (€/Mon);Ø-VK (€/Mon);EK (€/Mon);db1 (-Fremdkosten);db2 (-Personal); db3 (-Infrastruktur); DB3; DB4 (Verrechnete Inklusivleistungen); Niedrigst-VK; Orders\n";
+        $csv =
+            'Produkttyp; '.
+            'Produktname; '.
+            'Anzahl; '.
+            'Anzahl (>0 €); '.
 
-        foreach ($this->data as $type => &$products)
+            'Ø-Listenpreis (Stk./Mon.); '.
+            'Ø-Verkaufspreis (Stk./Mon.); '.
+
+            'Fremdkosten (Stk./Mon.); '.
+            'Personalaufwand (Stunden/Jhr.); '.
+
+            'db1 (Listenpreis-Fremdk. / Stk./Mon.); '.
+            'db2 (-Personalk. / Stk./Mon.); '.
+            'db3 (-kalk. Infrastr. / Stk./Mon.); '.
+            'db4 (-ver. Inklusivleistungen / Stk./Mon.); '.
+
+            'Niedrigstpreis (Kosten+15% / Stk./Mon.); '.
+            'Marge; '.
+
+            'Umsatz (Gesamt/Mon.); '.
+            'DB4 (=Gesamtertrag/Mon.); '.
+
+            'RP2-Auftäge'.
+            "\n\n";
+
+        foreach ($this->data['product'] as $type => &$products)
         {
             ksort($products);
             foreach ($products as $name => &$product)
             {
                 $csv .= "$type;";
                 $csv .= "$name;";
-                $csv .= "{$product['countBilled']};";
-                $csv .= "{$product['countUnbilled']};";
-                $csv .= number_format($product['regularTurnover'], 2, ',', '.').'€;';
-                $csv .= number_format($product['realTurnover'], 2, ',', '.').'€;';
-                $csv .= number_format($product['costsExternal'], 2, ',', '.').'€;';
-                $csv .= number_format($product['db1'], 2, ',', '.').'€;';
-                $csv .= number_format($product['db2'], 2, ',', '.').'€;';
-                $csv .= number_format($product['db3'], 2, ',', '.').'€;';
-                $csv .= number_format($product['DB3'], 2, ',', '.').'€;';
-                $csv .= number_format($product['DB4'], 2, ',', '.').'€;';
-                $csv .= number_format($product['knockdownPrice'], 2, ',', '.').'€;';
-                $csv .= '"'.$product['ordersString'].'"';
+
+                $csv .= $product['countBilled'].'; ';
+                $csv .= $product['countUnbilled'].'; ';
+
+                $csv .= self::getEuroFormattedCsvColumn($product['turnoverRegular']);
+                $csv .= self::getEuroFormattedCsvColumn($product['turnoverBilled']);
+
+                $csv .= self::getEuroFormattedCsvColumn($product['externalCosts']);
+
+                // mktime looks stupid here, but I needed hour 0
+                $csv .= date("H:i", mktime(0,0,0)+$product['workingTime']*60*60*12) .'; ';
+
+                $csv .= self::getEuroFormattedCsvColumn($product['cm1']);
+                $csv .= self::getEuroFormattedCsvColumn($product['cm2']);
+                $csv .= self::getEuroFormattedCsvColumn($product['cm3']);
+                $csv .= self::getEuroFormattedCsvColumn($product['cm4']);
+
+                $csv .= self::getEuroFormattedCsvColumn($product['bestPrice']);
+                $csv .= number_format($product['cm4Ratio'], 2, ',', '.').' %; ';
+
+                $csv .= self::getEuroFormattedCsvColumn($this->sum[$type][$name]['turnoverReal']);
+                $csv .= self::getEuroFormattedCsvColumn($this->sum[$type][$name]['cm4']);
+
+                $csv .= $product['orders'];
                 $csv .= "\n";
             }
-            $csv .= " ; ; ; ; ; ; ; ; ; ; ; \n";
+            $csv .= "\n";
         }
+
+        //throw new \Exception("bis hier und nicht weiter");
         return $csv;
+    }
+
+    public static function getEuroFormattedCsvColumn($float)
+    {
+        return number_format($float, 2, ',', '.').' €; ';
     }
 
     /**
@@ -406,7 +501,7 @@ class mgntRatioExport extends extensionModule
     public function getCsvFull()
     {
         $csv = "";
-        foreach ($this->data as $type => &$products)
+        foreach ($this->data['sum'] as $type => &$products)
         {
             ksort($products);
             foreach ($products as $name => &$product)
@@ -424,6 +519,10 @@ class mgntRatioExport extends extensionModule
 
                 foreach ($product as $name => $val)
                 {
+                    if (is_float($val))
+                    {
+                        $val = number_format($val, 2, ',', '.').' €';
+                    }
                     $csv .= "$val; ";
                 }
                 $csv .= "\n";
@@ -442,17 +541,19 @@ class mgntRatioExport extends extensionModule
     public function sendDownloadCsv($filename = false, $source = 'ge')
     {
         $filename = $filename !== false ? $filename : 'Hosting_MgntRatioExport_'.date('ymd').'_1SRV';
-        header('Content-Type: application/csv');
-        header("Content-Disposition: attachment; filename=\"$filename\";");
 
         if ($source == 'ge')
         {
-            echo $this->getCsvGe();
+            $csv = $this->getCsvGe();
         }
         else if ($source == 'full')
         {
-            echo $this->getCsvFull();
+            $csv = $this->getCsvFull();
         }
+
+        header('Content-Type: application/csv');
+        header("Content-Disposition: attachment; filename=\"$filename\";");
+        echo $csv;
         return $this;
     }
 
