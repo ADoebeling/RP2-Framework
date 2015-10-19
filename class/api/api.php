@@ -2,7 +2,9 @@
 
 use www1601com\df_rp\module;
 
-require_once('http://share.bfdev.at/5.3/bb.rpc.class.php');
+//require_once('http://share.bfdev.at/5.3/bb.rpc.class.php');
+
+require_once __DIR__.'/bb.rpc.php';
 require_once __DIR__.'/module/customer.php';
 require_once __DIR__.'/module/order.php';
 require_once __DIR__.'/module/email.php';
@@ -67,6 +69,34 @@ class api {
         $this->rpc->setUrl($rp2InstanceUrl);
         $this->rpc->auth($rp2ApiUser, $rp2ApiPwd);
         return $this;
+    }
+
+    public function httpAuth()
+    {
+        // Get the correct path on http AND ssh/bash
+        $path = isset($_SERVER['DOCUMENT_ROOT']) ? $_SERVER['DOCUMENT_ROOT'] : $_SERVER['PWD'];
+        preg_match("/\\/.*\\/(\\d*)_\\d*\\/.*/", $path, $matches);
+        $dfOrderNr = $matches[1];
+
+        $rp2InstanceUrl = "http://$dfOrderNr.premium-admin.eu/";
+
+
+
+        if (!isset($_SERVER['PHP_AUTH_USER'])) {
+            static::sendHttpAuth($dfOrderNr);
+        }
+
+        $this->auth($rp2InstanceUrl, $_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW']);
+
+        return $this;
+    }
+
+    protected static function sendHttpAuth($dfOrderNr)
+    {
+        header("WWW-Authenticate: Basic realm=\"Please enter your RP2-User and Password for A$dfOrderNr\"");
+        header('HTTP/1.0 401 Unauthorized');
+        echo "Please authenticate with your RP2-Username and -Password.\n".$_SERVER['PHP_AUTH_USER'];
+            exit;
     }
 
     /**
