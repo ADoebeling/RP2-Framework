@@ -1,6 +1,28 @@
 <?php namespace www1601com\df_rp\extension;
 
 require_once __DIR__.'/../extensionModule.php';
+
+
+/**
+ * Class mgntRatioExport
+ *
+ * Die BERECHNUNG erfolgt wie nachfolgend gegliedert:
+ *
+ * Listenpreis (Billed: Mittelwert / Unbilled: 0)
+ * - Fremdkosten (Billed: Fremdkosten /
+ * = db1
+ * - Personalkosten
+ *
+ * @author Andreas Doebeling <ad@1601.com>
+ * @copyright 1601.production siegler&thuemmler ohg
+ * @license cc-by-sa - http://creativecommons.org/licenses/by-sa/4.0/
+ * @link https://www.xing.com/profile/Andreas_Doebeling/
+ * @link https://github.com/ADoebeling
+ *
+ * @package www1601com\df_rp\extension
+ *
+ * @version 0.1.15XXXX_dev_1ad
+ */
 class mgntRatioExport extends extensionModule
 {
     /** @var array $purchasePrices all costs */
@@ -148,17 +170,16 @@ class mgntRatioExport extends extensionModule
                 }
 
                 /** @var array $purchasePrice TMP alias for $this->costs[$dispo['product']['norm']][$dispo['product']['pronr']] */
-                $purchasePrice = !isset($this->costs[$dispo['product']['norm']][$dispo['product']['pronr']]) ?: $this->costs[$dispo['product']['norm']][$dispo['product']['pronr']];
+                $purchasePrice = isset($this->costs[$dispo['product']['norm']][$dispo['product']['pronr']]) ? $this->costs[$dispo['product']['norm']][$dispo['product']['pronr']] : 0;
 
-                $systemPoints = !isset($purchasePrice['systemPoints']) ?: $purchasePrice['systemPoints'] * $dispo['amount'];
-                $workingTimeCosts = !isset($this->costs['workingTimeCosts']) ?: $this->costs['workingTimeCosts'] * $workingTime;
-
+                $systemPoints = isset($purchasePrice['systemPoints']) ? $purchasePrice['systemPoints'] * $dispo['amount'] : 0;
+                $workingTimeCosts = isset($this->costs['workingTimeCosts']) ? $this->costs['workingTimeCosts'] * $workingTime : 0;
 
 
                 /*
                  * Billed
                  */
-                if ($dispo['price']['default_net'] + $dispo['price']['unit_net'] != 0)
+                if ($dispo['price']['default_net'] != 0) // + $dispo['price']['unit_net']
                 {
                     $sum['turnoverRegular'] += $dispo['price']['default_net'] * $dispo['amount'];
                     $sum['turnoverBilled'] += $dispo['price']['unit_net'] * $dispo['amount'];
@@ -205,6 +226,9 @@ class mgntRatioExport extends extensionModule
         {
             foreach ($products as $id => &$sum)
             {
+                /** @var float $sum[discount] */
+                $sum['discount'] = $sum['turnoverRegular']-$sum['turnoverBilled'];
+
                 /** @var float $sum ['overhead'] Sum of all taken overhead-costs */
                 $sum['overheadCosts'] = 0;
 
@@ -219,9 +243,12 @@ class mgntRatioExport extends extensionModule
                     $sum['overheadCosts'] = $this->costs['overheadCosts'] / $this->total['systemPoints'] * $sum['systemPoints'];
                     $sum['overheadCostsBilled'] = $this->costs['overheadCosts'] / $this->total['systemPointsBilled'] * $sum['systemPointsBilled'];
                     $sum['overheadCostsUnbilled'] = $this->costs['overheadCosts'] / $this->total['systemPointsUnbilled'] * $sum['systemPointsUnbilled'];
-
-                    $sum['unbilledCosts'] = $sum['externalCostsUnbilled']+$sum['workingTimeCostsUnbilled']+$sum['overheadCostsUnbilled'];
                 }
+
+                /** @var float $sum[unbilledCosts] */
+                $sum['unbilledCosts'] = $sum['externalCostsUnbilled']+$sum['workingTimeCostsUnbilled']+$sum['overheadCostsUnbilled'];
+                // DEBUG
+                //$sum['unbilledCosts'] = $sum['overheadCostsUnbilled'];
             }
         }
         return $this;
@@ -236,18 +263,29 @@ class mgntRatioExport extends extensionModule
         {
             foreach ($products as $id => &$sum)
             {
-                $sum['unbilledCostsShare'] = $this->total['unbilledCosts'] / $this->total['systemPointsBilled'] * $sum['systemPointsBilled'];
-
-                $sum['cm1'] = $sum['turnoverRegular'] - $sum['externalCosts'];
-                $sum['cm2'] = $sum['cm1'] - $sum['workingTimeCosts'];
-                $sum['cm3'] = $sum['cm2'] - $sum['overheadCostsBilled'];
-                $sum['cm4'] = $sum['cm3'] - ($sum['unbilledCostsShare'] * $sum['systemPointsBilled'] / $this->total['systemPointsBilled']);
-
-                $sum['cm4Ratio'] = 0;
                 if ($sum['turnoverRegular'] > 0)
                 {
-                    $sum['cm4Ratio'] = 100/$sum['turnoverRegular']*$sum['cm4'];
+                    $sum['unbilledCostsShare'] = $this->total['unbilledCosts'] / $this->total['systemPointsBilled'] * $sum['systemPointsBilled'];
+
+                    $sum['cm1'] = $sum['turnoverRegular'] - $sum['externalCostsBilled'];
+                    $sum['cm2'] = $sum['cm1'] - $sum['workingTimeCostsBilled'];
+                    $sum['cm3'] = $sum['cm2'] - $sum['overheadCostsBilled'] - $sum['unbilledCostsShare'];
+                    $sum['cm4'] = $sum['cm3'] - $sum['discount'];
+                    $sum['cm5'] = $sum['cm4'];
+                    $sum['displayUnbilledCosts'] = $sum['unbilledCosts'];
+                    $sum['margin'] = 100/$sum['turnoverRegular']*$sum['cm3'];
                 }
+                else
+                {
+                    $sum['cm1'] = $sum['turnoverRegular'] - $sum['externalCostsUnbilled'];
+                    $sum['cm2'] = $sum['cm1'] - $sum['workingTimeCostsUnbilled'];
+                    $sum['cm3'] = $sum['cm2'] - $sum['overheadCostsUnbilled'];
+                    $sum['cm4'] = $sum['cm3'] - $sum['discount'];
+                    $sum['cm5'] = $sum['cm4'] + $sum['unbilledCosts'];
+                    $sum['displayUnbilledCosts'] = 0;
+                    $sum['margin'] = 0;
+                }
+                $sum['displayUnbilledCredit'] = $sum['unbilledCosts'];
             }
         }
     }
@@ -276,6 +314,9 @@ class mgntRatioExport extends extensionModule
                 $p['workingTimeCosts'] = 0;
 
                 /** @var int */
+                $p['count'] = 0;
+
+                /** @var int */
                 $p['countBilled'] = 0;
 
                 /** @var int */
@@ -302,55 +343,42 @@ class mgntRatioExport extends extensionModule
                 $p['cm1'] = 0;
                 $p['cm2'] = 0;
                 $p['cm3'] = 0;
-                $p['cm4'] = 0;
-                $p['cm4Ratio'] = 0;
-
                 $p['bestPrice'] = 0;
 
                 if ($sum['countBilled'] > 0)
                 {
-                    $p['countBilled'] = $sum['countBilled'];
-                    $p['turnoverRegular'] = $sum['turnoverRegular'] / $sum['countBilled'];
-                    $p['turnoverBilled'] = $sum['turnoverBilled'] / $sum['countBilled'];
-                    $p['externalCosts'] = $sum['externalCostsBilled'] / $sum['countBilled'];
-                    $p['workingTime'] = $sum['workingTime'] / $sum['count'];
-                    $p['workingTimeCosts'] = $sum['workingTimeCosts'] / $sum['countBilled'];
-                    $p['overheadCosts'] = $sum['overheadCosts'] / $sum['countBilled'];
+                    $p['turnoverRegular'] =         $sum['turnoverRegular']          / $sum['countBilled'];
+                    $p['turnoverBilled'] =          $sum['turnoverBilled']           / $sum['countBilled'];
+                    $p['externalCosts'] =           $sum['externalCostsBilled']      / $sum['countBilled'];
+                    $p['workingTime'] =             $sum['workingTimeBilled']        / $sum['countBilled'];
+                    $p['workingTimeCosts'] =        $sum['workingTimeCostsBilled']   / $sum['countBilled'];
+                    $p['overheadCosts'] =           $sum['overheadCostsBilled']      / $sum['countBilled'];
+                    $p['unbilledCostsShare'] =      $sum['unbilledCostsShare']       / $sum['countBilled'];
 
-                    //$p['unbilledCosts'] = $this->total['unbilledCosts'] / $sum['countBilled'];
-
-                    $p['cm1'] = $sum['cm1'] / $sum['countBilled'];
-                    $p['cm2'] = $sum['cm2'] / $sum['countBilled'];
-                    $p['cm3'] = $sum['cm3'] / $sum['countBilled'];
-                    $p['cm4'] = $sum['cm4'] / $sum['countBilled'];
-                    $p['cm4Ratio'] = $sum['cm4Ratio'];
-
-                    $p['bestPrice'] = ($p['externalCosts']+$p['workingTimeCosts']+$p['overheadCosts']+$p['unbilledCosts'])*1.15;
+                    $p['cm1'] =                     $sum['cm1']                      / $sum['countBilled'];
+                    $p['cm2'] =                     $sum['cm2']                      / $sum['countBilled'];
+                    $p['cm3'] =                     $sum['cm3']                      / $sum['countBilled'];
+                    
+                    $p['bestPrice'] = ($sum['externalCostsBilled']+$sum['workingTimeCostsBilled']+$sum['overheadCostsBilled']+$sum['unbilledCostsShare'])/$sum['countBilled']*1.15; // Every programmer loves magic numbers
                 }
                 else
                 {
-                    $p['turnoverRegular'] = $sum['turnoverRegular'] / $sum['countUnbilled'];
-                    $p['turnoverBilled'] = $sum['turnoverUnbilled'] / $sum['countUnbilled'];
-                    $p['externalCosts'] = $sum['externalCostsUnbilled'] / $sum['countUnbilled'];
-                    $p['workingTime'] = $sum['workingTime'] / $sum['count'];
-                    $p['workingTimeCosts'] = $sum['workingTimeCosts'] / $sum['countUnbilled'];
-                    $p['overheadCosts'] = $sum['overheadCosts'] / $sum['countUnbilled'];
-                    $p['unbilledCosts'] = $sum['unbilledCosts'] / $sum['countUnbilled'];
-                    $p['cm1'] = $sum['cm1'] / $sum['countUnbilled'];
-                    $p['cm2'] = $sum['cm2'] / $sum['countUnbilled'];
-                    $p['cm3'] = $sum['cm3'] / $sum['countUnbilled'];
-                    $p['cm4'] = $sum['cm4'] / $sum['countUnbilled'];
-                    $p['cm4Ratio'] = $sum['cm4Ratio'];
+                    $p['externalCosts'] =           $sum['externalCostsUnbilled']    / $sum['countUnbilled'];
+                    $p['workingTime'] =             $sum['workingTimeUnbilled']      / $sum['countUnbilled'];
+                    $p['workingTimeCosts']=         $sum['workingTimeCostsUnbilled'] / $sum['countUnbilled'];
+                    $p['overheadCosts'] =           $sum['overheadCostsUnbilled']    / $sum['countUnbilled'];
+                    $p['unbilledCosts'] =           $sum['unbilledCosts']            / $sum['countUnbilled'];
+
+                    $p['cm1'] =                     $sum['cm1']                      / $sum['countUnbilled'];
+                    $p['cm2'] =                     $sum['cm2']                      / $sum['countUnbilled'];
+                    $p['cm3'] =                     $sum['cm3']                      / $sum['countUnbilled'];
+                    
+                    $p['bestPrice'] = ($sum['externalCostsUnbilled']+$sum['workingTimeCostsUnbilled']+$sum['overheadCostsUnbilled'])/$sum['countUnbilled']*1.15;
                 }
 
-                if ($sum['countUnbilled'] > 0)
+                foreach ($sum['orders'] as $ordnr => $count)
                 {
-                    $p['countUnbilled'] = $sum['countUnbilled'];
-
-                }
-
-                foreach ($sum['orders'] as $ordnr => $count) {
-                    $p['orders'] .= "$ordnr, ";
+                    $p['orders'] .= "$ordnr({$count}x), ";
                 }
             }
         }
@@ -379,6 +407,9 @@ class mgntRatioExport extends extensionModule
                 }
             }
         }
+        // Adding percent-values isn't so smart
+        $this->total['margin'] = $sum['margin'] = 100/$this->total['turnoverRegular']*$this->total['cm3'];
+
         return $this;
     }
 
@@ -417,29 +448,43 @@ class mgntRatioExport extends extensionModule
     public function getCsvGe()
     {
         $csv =
-            'Produkttyp; '.
-            'Produktname; '.
-            'Anzahl; '.
-            'Anzahl (>0 €); '.
+            'Produkttyp;'.
+            'Produktname;'.
+            'Anzahl;'.
+            ';'.
 
-            'Ø-Listenpreis (Stk./Mon.); '.
-            'Ø-Verkaufspreis (Stk./Mon.); '.
+            'Ø-Listenpreis (Stk./Mon.);'.
+            ' - Fremdkosten;'.
+            'db1;'.
+            ';'.
 
-            'Fremdkosten (Stk./Mon.); '.
-            'Personalaufwand (Stunden/Jhr.); '.
+            ' - Personalkosten (Mon.);'.
+            '(Personalaufwand/Jahr);'.
+            'db2;'.
+            ';'.
 
-            'db1 (Listenpreis-Fremdk. / Stk./Mon.); '.
-            'db2 (-Personalk. / Stk./Mon.); '.
-            'db3 (-kalk. Infrastr. / Stk./Mon.); '.
-            'db4 (-ver. Inklusivleistungen / Stk./Mon.); '.
+            ' - Gemeinkosten (Srv.-Infrastruktur, ...);'.
+            ' - Verrechnugsgemeinkosten (Inkl.-Domain, ...);'.
+            'db3;'.
+            'Marge (Listenpreis/db3);'.
+            ';'.
+
+            'x verkaufter Anzahl;'.
+            ' - Rabatt;'.
+            'DB4;'.
+            ';'.
+
+            ' - Verrechnungseinzelkosten;'.
+            ' + Verrechnungseinzelgutschrift;'.
+            'DB5;'.
+            ';'.
 
             'Niedrigstpreis (Kosten+15% / Stk./Mon.); '.
-            'Marge; '.
-
+            'Ø-Verkaufspreis (Stk./Mon.);'.
             'Umsatz (Gesamt/Mon.); '.
-            'DB4 (=Gesamtertrag/Mon.); '.
+            ';'.
 
-            'RP2-Auftäge'.
+            'RP2-Auftäge;'.
             "\n\n";
 
         foreach ($this->data['product'] as $type => &$products)
@@ -447,41 +492,100 @@ class mgntRatioExport extends extensionModule
             ksort($products);
             foreach ($products as $name => &$product)
             {
+                // Lil alias
+                $sum =& $this->sum[$type][$name];
+                $total =& $this->total;
+
                 $csv .= "$type;";
                 $csv .= "$name;";
-
-                $csv .= $product['countBilled'].'; ';
-                $csv .= $product['countUnbilled'].'; ';
+                $csv .= number_format($sum['count'], 0, ',', '.').';';
+                $csv .= ';';
 
                 $csv .= self::getEuroFormattedCsvColumn($product['turnoverRegular']);
-                $csv .= self::getEuroFormattedCsvColumn($product['turnoverBilled']);
-
-                $csv .= self::getEuroFormattedCsvColumn($product['externalCosts']);
-
-                // mktime looks stupid here, but I needed hour 0
-                $csv .= date("H:i", mktime(0,0,0)+$product['workingTime']*60*60*12) .'; ';
-
+                $csv .= self::getEuroFormattedCsvColumn(-$product['externalCosts']);
                 $csv .= self::getEuroFormattedCsvColumn($product['cm1']);
+                $csv .= ';';
+
+                $csv .= self::getEuroFormattedCsvColumn(-$product['workingTimeCosts']);
+                $csv .= date("H:i", mktime(0,0,0)+$product['workingTime']*60*60*12) .'; '; // mktime looks stupid here, but I needed hour 0
                 $csv .= self::getEuroFormattedCsvColumn($product['cm2']);
+                $csv .= ';';
+
+                $csv .= self::getEuroFormattedCsvColumn(-$product['overheadCosts']);
+                $csv .= self::getEuroFormattedCsvColumn(-$product['unbilledCostsShare']);
                 $csv .= self::getEuroFormattedCsvColumn($product['cm3']);
-                $csv .= self::getEuroFormattedCsvColumn($product['cm4']);
+                $csv .= number_format($sum['margin'], 0, ',', '.').' %;';
+                $csv .= ';';
+
+                $csv .= $sum['countBilled'].';';
+                $csv .= self::getEuroFormattedCsvColumn(-$sum['discount']);
+                $csv .= self::getEuroFormattedCsvColumn($sum['cm4']);
+                $csv .= ';';
+
+                $csv .= self::getEuroFormattedCsvColumn(-$sum['displayUnbilledCosts']);
+                $csv .= self::getEuroFormattedCsvColumn($sum['displayUnbilledCredit']);
+                $csv .= self::getEuroFormattedCsvColumn($sum['cm5']);
+                $csv .= ';';
+
 
                 $csv .= self::getEuroFormattedCsvColumn($product['bestPrice']);
-                $csv .= number_format($product['cm4Ratio'], 2, ',', '.').' %; ';
-
-                $csv .= self::getEuroFormattedCsvColumn($this->sum[$type][$name]['turnoverReal']);
-                $csv .= self::getEuroFormattedCsvColumn($this->sum[$type][$name]['cm4']);
+                $csv .= self::getEuroFormattedCsvColumn($product['turnoverBilled']);
+                $csv .= self::getEuroFormattedCsvColumn($sum['turnoverRegular']);
+                $csv .= ';';
 
                 $csv .= $product['orders'];
                 $csv .= "\n";
             }
             $csv .= "\n";
         }
+        
+        $csv .=
+            '**SUMME**;'.
+            ';'.
+            ';'.
+            ';'.
 
-        //throw new \Exception("bis hier und nicht weiter");
+            self::getEuroFormattedCsvColumn($total['turnoverRegular']).
+            self::getEuroFormattedCsvColumn(-$total['externalCosts']).
+            self::getEuroFormattedCsvColumn($total['cm1']).
+            ';'.
+
+            self::getEuroFormattedCsvColumn($total['workingTimeCosts']).
+            //date("d \M\T, H \h / \M\o\\\\n.", mktime(0,0,0)+$total['workingTime']*60*60).';'.
+            round($total['workingTime'],0).'h / Mon;'.
+            self::getEuroFormattedCsvColumn($total['cm2']).
+            ';'.
+
+            self::getEuroFormattedCsvColumn(-$total['overheadCosts']).
+            self::getEuroFormattedCsvColumn(-$total['unbilledCostsShare']).
+            self::getEuroFormattedCsvColumn($total['cm3']).
+            number_format($total['margin'], 0, ',', '.').' %;'.
+            ';'.
+
+            ';'.
+            self::getEuroFormattedCsvColumn(-$total['discount']).
+            self::getEuroFormattedCsvColumn($total['cm4']).
+            ';'.
+
+            ';'.
+            ';'.
+            self::getEuroFormattedCsvColumn($total['cm5']).
+            ';'.
+
+
+            ';'.
+            self::getEuroFormattedCsvColumn($total['turnoverBilled']).
+            self::getEuroFormattedCsvColumn($total['turnoverRegular']);
+
         return $csv;
     }
 
+    /**
+     * Returns given $float as "1.234,56 €;"
+     *
+     * @param $float
+     * @return string
+     */
     public static function getEuroFormattedCsvColumn($float)
     {
         return number_format($float, 2, ',', '.').' €; ';
