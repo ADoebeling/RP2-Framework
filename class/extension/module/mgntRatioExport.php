@@ -2,16 +2,34 @@
 
 require_once __DIR__.'/../extensionModule.php';
 
-
 /**
- * Class mgntRatioExport
+ * class mgntRatioExport
  *
- * Die BERECHNUNG erfolgt wie nachfolgend gegliedert:
+ * Calculates the contribution margin 1 - 5 of all products managed in the rp2.
+ * Supports CSV-Export and in future mysql-storage
  *
- * Listenpreis (Billed: Mittelwert / Unbilled: 0)
- * - Fremdkosten (Billed: Fremdkosten /
- * = db1
- * - Personalkosten
+ * --------------------------------------------------------------------------------------------------------------------
+ *
+ * selling price
+ * -  external costs
+ * = cm1
+ *
+ * - personal costs
+ * = cm2
+ *
+ * - overheads direct (server infrastructure, ...)
+ * - overheads indirect (costs for other free-of-charge products)
+ * = cm3
+ *
+ * x sales volume
+ * - discounts
+ * = CM4 (overall)
+ *
+ * - costs for unbilled products of this type
+ * + indirect overhead-credit for unbilled products of this type
+ * = CM5
+ *
+ * --------------------------------------------------------------------------------------------------------------------
  *
  * @author Andreas Doebeling <ad@1601.com>
  * @copyright 1601.production siegler&thuemmler ohg
@@ -21,7 +39,7 @@ require_once __DIR__.'/../extensionModule.php';
  *
  * @package www1601com\df_rp\extension
  *
- * @version 0.1.15XXXX_dev_1ad
+ * @version 0.1.151021_dev_1ad
  */
 class mgntRatioExport extends extensionModule
 {
@@ -37,6 +55,11 @@ class mgntRatioExport extends extensionModule
     /** @var array all total */
     protected $total = array();
 
+    /**
+     * Build the $data-array
+     *
+     * @param extension $system
+     */
     public function __construct(extension &$system)
     {
         parent::__construct($system);
@@ -49,7 +72,7 @@ class mgntRatioExport extends extensionModule
     /**
      * Set purchase-prices
      *
-     * @param array $costs [Customer|Tariff|Tld|AddOn][name][externalCosts|workingTime] = X
+     * @param array $costs [tariff|domain|add-on|ext][pronr][externalCosts|workingTime|systemPoints] = X
      * @return $this
      */
     public function setPurchasePrices(array $prices)
@@ -58,8 +81,12 @@ class mgntRatioExport extends extensionModule
         return $this;
     }
 
+
     /**
-     * calcSums
+     * Adds the sum of count, turnover, systemPoints, ... and stores them to
+     * $this->sum[$type][$name][turnoverRegular] = X
+     *
+     * @return $this
      */
     protected function calcOverall()
     {
@@ -125,19 +152,7 @@ class mgntRatioExport extends extensionModule
                 /** @var float $sum['workingTimeUnbilled'] Sum of all taken working-time-costs that can be billed directly */
                 $sum['workingTimeCostsUnbilled'];
 
-                /** @var float $sum['overheadCosts'] Sum of all overhead-costs */
-                //$sum['overheadCosts'] = 0;
-
-                /** @var float $sum['overheadCostsBilled'] Sum of all overhead-costs that can be billed directly */
-                //$sum['overheadCostsBilled'] = 0;
-
-                /** @var float $sum['overheadCostsUnbilled'] Sum of all overhead-costs that can't be billed directly */
-                //$sum['overheadCostsUnbilled'] = 0;
-
                 /** @var array all orders */
-
-                //print_r($order['ordnr']); die();
-
                 $sum['orders'][$order['ordnr']] += 1;
 
 
@@ -213,12 +228,17 @@ class mgntRatioExport extends extensionModule
                 $sum['workingTimeCosts'] = $sum['workingTimeCostsBilled'] + $sum['workingTimeCostsUnbilled'];
             }
         }
-
         return $this;
     }
 
-
-    public function calcOverallOverhead()
+    /**
+     * Shares the overhead-costs to each product by systemPoints and stores them to
+     * $this->sum[$type][$name][overheadCosts|overheadCostsBilled|...] = X
+     *
+     * @return $this
+     * @throws \Exception
+     */
+    protected function calcOverallOverhead()
     {
         if (empty($this->sum)) throw new \Exception('$this->sum[] is empty. You have to run ::calcOverall first AND should have some active dispositions', 424);
 
@@ -247,15 +267,19 @@ class mgntRatioExport extends extensionModule
 
                 /** @var float $sum[unbilledCosts] */
                 $sum['unbilledCosts'] = $sum['externalCostsUnbilled']+$sum['workingTimeCostsUnbilled']+$sum['overheadCostsUnbilled'];
-                // DEBUG
-                //$sum['unbilledCosts'] = $sum['overheadCostsUnbilled'];
             }
         }
         return $this;
     }
 
-
-    public function calcOverallContributionMargin()
+    /**
+     * Calculates the contribution-margin for all products and stores them to
+     * $this->sum[$type][$name][cmX] = Y
+     *
+     * @throws \Exception
+     * @return $this
+     */
+    protected function calcOverallContributionMargin()
     {
         if (empty($this->data['sum'])) throw new \Exception('$this->sum[] is empty. You have to run ::calcOverall first AND should have some active dispositions', 424);
 
@@ -288,9 +312,16 @@ class mgntRatioExport extends extensionModule
                 $sum['displayUnbilledCredit'] = $sum['unbilledCosts'];
             }
         }
+        return $this;
     }
 
-
+    /**
+     * Calculates the benefits and costs for every single product based on $this->sum and stores them to
+     * $this->product[$type][$name][externalCosts|...] = X
+     *
+     * @return $this
+     * @throws \Exception
+     */
     protected function calcProducts()
     {
         if (empty($this->sum)) throw new \Exception('$this->sum[] is empty. You have to run ::calcOverall first AND should have some active dispositions', 424);
@@ -386,7 +417,7 @@ class mgntRatioExport extends extensionModule
     }
 
     /**
-     * Calc all total-sums for each category (systemPoints, turnovers, ...)
+     * Calc all total-sums for each category
      *
      * @return $this
      */
@@ -409,15 +440,26 @@ class mgntRatioExport extends extensionModule
         }
         // Adding percent-values isn't so smart
         $this->total['margin'] = $sum['margin'] = 100/$this->total['turnoverRegular']*$this->total['cm3'];
-
         return $this;
     }
 
 
-
-
-
-
+    /**
+     * Run all calculations in the right order:
+     * - calcOverall()
+     * - calcTotal()
+     * - calcOverallOverhead()
+     * - calcTotal()
+     * - calcOverallContributionMargin()
+     * - calcTotal()
+     * - calcProducts()
+     * - calcTotal
+     *
+     * Well, maybe you could optimize that, but I'm afraid u wouldn't get a relevant performance-enhancement
+     *
+     * @return $this
+     * @throws \Exception
+     */
     public function calc()
     {
         $this->calcOverall();
@@ -436,14 +478,10 @@ class mgntRatioExport extends extensionModule
     }
 
 
-
-
-
-
     /**
-     * Returns Export-CSV
+     * Returns a german export-csv
      *
-     * @return string
+     * @return string $csv
      */
     public function getCsvGe()
     {
@@ -577,6 +615,8 @@ class mgntRatioExport extends extensionModule
             self::getEuroFormattedCsvColumn($total['turnoverBilled']).
             self::getEuroFormattedCsvColumn($total['turnoverRegular']);
 
+        $csv .= "\n\n\n\nGenerated with mgntRatioExport: https://github.com/ADoebeling/RP2-Toolbox \nCopyright (C) 2015 by Andreas Döbeling <ad@1601.com> - 1601.production, Siegler&Thümmler ohg, Erlangen";
+
         return $csv;
     }
 
@@ -595,64 +635,35 @@ class mgntRatioExport extends extensionModule
      * Stores the calculated values to mysql
      *
      * @return $this
+     * @throws \Exception
+     * @todo Implement
      */
     public function store()
     {
+        throw new \Exception("Sorry, not implemented yet", 501);
         return $this;
     }
 
 
-    public function getCsvFull()
-    {
-        $csv = "";
-        foreach ($this->data['sum'] as $type => &$products)
-        {
-            ksort($products);
-            foreach ($products as $name => &$product)
-            {
-                //ksort($product);
-                if (empty($csv))
-                {
-                    foreach ($product as $name => $val)
-                    {
-                        unset($val);
-                        $csv .= "$name; ";
-                    }
-                    $csv .= "\n";
-                }
-
-                foreach ($product as $name => $val)
-                {
-                    if (is_float($val))
-                    {
-                        $val = number_format($val, 2, ',', '.').' €';
-                    }
-                    $csv .= "$val; ";
-                }
-                $csv .= "\n";
-            }
-        }
-        return $csv;
-    }
-
-
     /**
-     * Send application/csv-header and download csv
+     * Send application/csv-header and starts downloading the csv
      *
-     * @param bool $filename
+     * @param string $filename
+     * @param string $source
      * @return $this
+     * @throws \Exception
      */
-    public function sendDownloadCsv($filename = false, $source = 'ge')
+    public function sendDownloadCsv($filename = NULL, $source = 'ge')
     {
-        $filename = $filename !== false ? $filename : 'Hosting_MgntRatioExport_'.date('ymd').'_1SRV';
+        $filename = $filename !== NULL ? $filename : 'Hosting_MgntRatioExport_'.date('ymd').'_1SRV.csv';
 
         if ($source == 'ge')
         {
             $csv = $this->getCsvGe();
         }
-        else if ($source == 'full')
+        else
         {
-            $csv = $this->getCsvFull();
+            throw new \Exception("Sorry, not implemented yet", 501);
         }
 
         header('Content-Type: application/csv');
@@ -660,6 +671,4 @@ class mgntRatioExport extends extensionModule
         echo $csv;
         return $this;
     }
-
-
 }
