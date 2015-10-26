@@ -61,16 +61,33 @@ class api {
      * @param $rp2InstanceUrl
      * @param $rp2ApiUser
      * @param $rp2ApiPwd
-     * @return $this
+     * @return $this|bool
+     * @throws \Exception
      */
     public function auth($rp2InstanceUrl, $rp2ApiUser, $rp2ApiPwd)
     {
         // TODO: Error handler
         $this->rpc->setUrl($rp2InstanceUrl);
-        $this->rpc->auth($rp2ApiUser, $rp2ApiPwd);
+        $userId = $this->rpc->auth($rp2ApiUser, $rp2ApiPwd);
+
+        if ($userId == 0)
+        {
+            throw new \Exception("User '$rp2ApiUser' and Password are not valid in  rp2-instance '$rp2InstanceUrl'", 401);
+            return false;
+        }
+
         return $this;
     }
 
+    /**
+     * httpAuth
+     *
+     * @todo: Catch invalid logins
+     * @return $this
+     * @throws \Exception
+     *
+     * @version 0.1.15XXXX_dev_1ad
+     */
     public function httpAuth()
     {
         // Get the correct path on http AND ssh/bash
@@ -79,7 +96,6 @@ class api {
         $dfOrderNr = $matches[1];
 
         $rp2InstanceUrl = "http://$dfOrderNr.premium-admin.eu/";
-
 
 
         if (!isset($_SERVER['PHP_AUTH_USER'])) {
