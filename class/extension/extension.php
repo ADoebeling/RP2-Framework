@@ -6,6 +6,7 @@ use www1601com\df_rp\api;
 require_once __DIR__ . '/../api/api.php';
 require_once __DIR__.'/module/mailExport.php';
 require_once __DIR__.'/module/mgntRatioExport.php';
+require_once __DIR__.'/module/invoiceTextExport.php';
 
 
 
@@ -31,6 +32,11 @@ class extension extends api {
      */
     public $mgntRatioExport;
 
+    /**
+     * @var object invoiceTextExport
+     */
+    public $invoiceTextExport;
+
 
     /**
      * Builds the class-structure
@@ -40,6 +46,7 @@ class extension extends api {
         parent::__construct();
         $this->mailExport = new mailExport($this);
         $this->mgntRatioExport = new mgntRatioExport($this);
+        $this->invoiceTextExport = new invoiceTextExport($this);
     }
 
 

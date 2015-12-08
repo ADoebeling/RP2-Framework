@@ -21,19 +21,37 @@ require_once __DIR__.'/../extensionModule.php';
  */
 class invoiceTextExport extends extensionModule
 {
+    /**
+     * @var array format-pattern
+     */
+    private static $format = ['zeroString' => 'Inklusive', 'discountPattern' => '$priceDefault // Abzgl. $discount Rabatt'];
+
     public function __construct(extension &$system)
     {
         parent::__construct($system);
+    }
+
+    /**
+     * Set format-pattern
+     *
+     * @param string $name
+     * @param string $value
+     */
+    public function setFormat ($name, $value)
+    {
+        $this->format[$name] = $value;
     }
 
 
     /**
      * Returns all orders
      *
-     * @return array $orders[$ordNr] = array ('customerDisplayName', 'turnoverMonth', 'turnoverYear')
+     * @return array [ $ordNr[ customerDisplayName, priceMonth, priceYear)
      */
     public function getAllOrders()
     {
+        $orders = $this->system->orders->loadAll('accounting')->getOrders();
+
 
         return array();
     }
@@ -41,43 +59,46 @@ class invoiceTextExport extends extensionModule
     /**
      * Returns the Invoice-Address as formatted string.
      *
-     * @param $ordNr
-     * @return string
+     * @param string $ordNr
+     * @return array
      */
-    public function getInvoiceAddress($ordNr)
+    public function getAddress($ordNr)
     {
-        $address = '';
-        return (string) $return;
+        $return['invoiceAddressBlock'] = NULL;
+        return $return;
     }
 
     /**
-     * Returns name and description of the ordered tariff as formatted string
+     * Returns the ordered tariff
+     * (Doesn't takes care of validity period)
      *
-     * @param $ordNr
-     * @return string (<b>Tariff XY</b><br>Some lines description)
+     * @param string $ordNr
+     * @return array [name, desc, priceFormatted]
      */
     public function getTariff($ordNr)
     {
-        return (string) $return;
+        return (array) $return;
     }
 
     /**
-     * Returns name and price of the ordered domains as formatted string
+     * Returns the ordered domains
+     * (Doesn't takes care of validity period)
      *
-     * @param $ordNr
-     * @return string (<b>XX Domains</b> (XX,- € // Abzgl. XX,- € Rabatt)</br> - domain.tld (1,00 € // Abzgl. 0,25 € Rabatt)<br>- domain2 ...)
+     * @param string $ordNr
+     * @return array [ amount, priceFormatted, item[ name, priceFormatted ] ]
      */
     public function getDomains($ordNr)
     {
-        return (string) $return;
+        return (array) $return;
     }
 
 
     /**
-     * Returns name and price of the ordered addons as formatted string
+     * Returns the ordered AddOns
+     * (Doesn't takes care of validity period)
      *
-     * @param $ordNr
-     * @return string (<b>XX AddOn</b> (XX,- € // Abzgl. XX,- € Rabatt)</br>Some lines of description<br><br><b>XX AddOn</b>...)
+     * @param string $ordNr
+     * @return array [ item[ name, amount, desc, priceFormatted ] ]
      */
     public function getAddOns($ordNr)
     {
@@ -85,10 +106,11 @@ class invoiceTextExport extends extensionModule
     }
 
     /**
-     * Returns name and price of the ordered ssl-certificates as formatted string
+     * Returns the ordered certificates
+     * (Doesn't takes care of validity period)
      *
-     * @param $ordNr
-     * @return string (<b>XX Zertifikat XY</b> (XX,- € // Abzgl. XX,- € Rabatt)</br> Some lines of description<br>- domain.tld (XX,- € // Abzgl. XX,- € Rabatt)<br> ...)
+     * @param string $ordNr
+     * @return array [ name, amount, desc, priceFormatted, item[ name, priceFormatted ] ]
      */
     public function getCertificates($ordNr)
     {
@@ -97,14 +119,55 @@ class invoiceTextExport extends extensionModule
 
 
     /**
-     * Returns name and price of the ordered exchange-accounts as formatted string
+     * Returns the ordered exchange-accounts
+     * (Doesn't takes care of evaluation period)
      *
-     * @param $ordNr
-     * @return string (<b>XX Exchange-Account XY</b>(XX,- € // Abzgl. XX,- € Rabatt)<br>Some lines of description<br>- account@domain.tld (XX,- € // Abzgl. XX,- € Rabatt)<br> ...)
+     * @param string $ordNr
+     * @return array [ name, amount, desc, priceFormatted, item[ name, priceFormatted ] ]
      */
     public function getExchangeAccounts($ordNr)
     {
         return (string) $return;
+    }
+
+
+    /**
+     * Formats float into 12.345,67 € and a integer into 12.345,- €
+     * Returns $zeroString if price is NULL
+     *
+     * @param float $price
+     * @param string self
+     * @return string (12.345,67 €|12.345,- €|Inklusive)
+     */
+    static function getEuroFormated($price, $zeroString = NULL)
+    {
+        $zeroString = $zeroString != NULL ?: self::$format['zeroString'];
+        return round($price,2) > 0 ? str_replace(',00 ', ',- ', number_format($price, 2, ',', '.')).' €' : $zeroString;
+    }
+
+    /**
+     * Formats $price and $priceDefault as invoice-string
+     *
+     * @param float $price
+     * @param float $priceDefault
+     * @param string $patternZero
+     * @param string $patternDiscount
+     * @return string (12.345,67 €|12.345,- €|12.345,67 € // Abzgl. 1.345,- € Rabatt)
+     */
+    static function getPriceFormatted($price, $priceDefault = NULL, $patternZero = NULL, $patternDiscount = NULL)
+    {
+        $patternDiscount = $patternDiscount != NULL ?: self::$format['discountPattern'];
+        if (round($price,2) >= round($priceDefault,2))
+        {
+            return self::getEuroFormated($price, $patternZero);
+        }
+
+        else
+        {
+            $price = self::getEuroFormated($price, $patternZero);
+            $discount = self::getEuroFormated($priceDefault-$price, $patternZero);
+            return eval($patternDiscount);
+        }
     }
 
 }
