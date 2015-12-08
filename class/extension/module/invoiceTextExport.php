@@ -5,7 +5,7 @@ require_once __DIR__.'/../extensionModule.php';
 /**
  * Class invoiceTextExport
  *
- * This class provides methodes to list all orders, each with customer-name, turnover per month and turnover per year.
+ * This class provides methods to list all orders, each with customer-name, turnover per month and turnover per year.
  * Additionally it's able to show the invoice-address, the tariff and all positions, each with turnover per month.
  *
  * It is build to provide a copy-and-paste interface for all dispositions to bill the rp2-data in an external
@@ -50,10 +50,19 @@ class invoiceTextExport extends extensionModule
      */
     public function getAllOrders()
     {
-        $orders = $this->system->orders->loadAll('accounting')->getOrders();
+        $response = $this->system->orders->loadAll(['accounting' => 1])->getData(); //
+        foreach ($response as $row)
+        {
+            $return[$row['ordnr']]['customerDisplayName'] = isset($row['cus_company']) && !empty($row['cus_company']) ? "{$row['cus_company']} ({$row['cus_last_name']}, {$row['cus_first_name']})" : "{$row['cus_last_name']}, {$row['cus_first_name']}";
 
-
-        return array();
+            $return[$row['ordnr']]['priceMonth'] = 0;
+            foreach ($row['dispositions'] as $dispo)
+            {
+                $return[$row['ordnr']]['priceMonth'] += $dispo['price']['unit_net'] * $dispo['amount'];
+            }
+            $return[$row['ordnr']]['priceYear'] = $return[$row['ordnr']]['priceMonth'] * 12;
+        }
+        return $return;
     }
 
     /**
@@ -74,10 +83,22 @@ class invoiceTextExport extends extensionModule
      *
      * @param string $ordNr
      * @return array [name, desc, priceFormatted]
+     * @throws \Exception
      */
     public function getTariff($ordNr)
     {
-        return (array) $return;
+        $dispos = $this->system->orders->load($ordNr)->getData()[$ordNr]['dispositions'];
+        foreach ($dispos as $row)
+        {
+            if ($row['product']['norm'] == 'tariff')
+            {
+                $return['name'] = $row['product']['name'];
+                $return['desc'] = $row['product']['descr'];
+                $return['priceFormatted'] = self::getPriceFormatted($row['price']['unit_net'], $row['price']['default_net']);
+                return (array) $return;
+            }
+        }
+        throw new \Exception ("OrderNr $ordNr doesn't exists or doesn't has a tariff", 404);
     }
 
     /**
@@ -89,9 +110,30 @@ class invoiceTextExport extends extensionModule
      */
     public function getDomains($ordNr)
     {
-        if ($amount == 0)       $title = "Keine Domains reserviert";
-        else if ($amout == 1)   $title = "Domain";
-        else                    $title = "$amout Domains";
+        $dispos = $this->system->orders->load($ordNr)->getData()[$ordNr]['dispositions'];
+        $sumPrice = 0;
+        $sumPriceDefault = 0;
+        foreach ($dispos as $row)
+        {
+            if ($row['product']['norm'] == 'domain')
+            {
+                // Workaround against RP2-API-Bug #5401975
+                // $row['product']['name'] is empty:
+                // $return['name'] = $row['product']['name'];
+                $item['name'] = $row['descr'];
+                $item['priceFormatted'] = self::getPriceFormatted($row['price']['unit_net'], $row['price']['default_net']);
+                $sumPrice += $row['price']['unit_net'];
+                $sumPriceDefault += $row['price']['default_net'];
+                $return['item'][$row['descr']] = $item;
+            }
+        }
+        asort($return['item']);
+        $return['amount'] = count($return['item']);
+        $return['priceFormatted'] = self::getPriceFormatted($sumPrice, $sumPriceDefault);
+
+        if ($return['amount'] == 0)         $return['title'] = "Keine Domains reserviert";
+        else if ($return['amount'] == 1)    $return['title'] = "Domain";
+        else                                $return['title'] = "{$return['amount']} Domains";
 
         return (array) $return;
     }
@@ -102,11 +144,33 @@ class invoiceTextExport extends extensionModule
      * (Doesn't takes care of validity period)
      *
      * @param string $ordNr
-     * @return array [ item[ title, name, amount, desc, priceFormatted ] ]
+     * @return array [ $pronr[ title, name, amount, desc, priceFormatted ] ]
      */
     public function getAddOns($ordNr)
     {
-        return (string) $return;
+        $dispos = $this->system->orders->load($ordNr)->getData()[$ordNr]['dispositions'];
+        $sumPrice = 0;
+        $sumPriceDefault = 0;
+
+        foreach ($dispos as $row)
+        {
+            if ($row['product']['norm'] == 'add-on')
+            {
+                $item['name'] = !empty($row['descr']) ? $row['descr'] : $row['product']['name'];
+                $item['desc'] = $row['product']['descr'];
+                $item['amount'] = $row['amount'];
+                $item['title'] = $item['amount'] > 1 ? "{$row['amount']}x {$item['name']}" : $item['name'];
+
+                // Workaround against RP2-API-Bug #5402189:
+                // unit_net is is calculated wrong: round($rp2UserInputPrice*1.19, 2)/1.19
+                $item['priceFormatted'] = self::getPriceFormatted($row['price']['unit_net']*$row['amount'], $row['price']['default_net']*$row['amount']);
+                $sumPrice += $row['price']['unit_net']*$row['amount'];
+                $sumPriceDefault += $row['price']['default_net']*$row['amount'];
+                $return['item'][$row['product']['pronr']] = $item;
+            }
+        }
+        asort($return['item']);
+        return (array) $return;
     }
 
     /**
@@ -114,15 +178,77 @@ class invoiceTextExport extends extensionModule
      * (Doesn't takes care of validity period)
      *
      * @param string $ordNr
-     * @return array [ type[ title, amount, desc, priceFormatted, item[ name, priceFormatted ] ] ]
+     * @return array [ $type[ $domain[ title, amount, desc, priceFormatted, item[ name, priceFormatted ] ] ] ]
      */
     public function getCertificates($ordNr)
     {
-        if ($amount == 0)       $title = "Keine SSL-Zertifikate reserviert";
-        else if ($amout == 1)   $title = "SSL-Zertifikat";
-        else                    $title = "$amout SSL-Zertifikate";
+        $dispos = $this->system->orders->load($ordNr)->getData()[$ordNr]['dispositions'];
+        /*
+         * API has some chaos here, see RP2-API-BUG #5402091
+         * [product][name] contains the name of the certificate-type (correct)
+         * [product][descr] contains the certificate-type-desc (correct)
+         * [descr] on top-level contains by default "$name - $descr: $domain"
+         * If someone would edit the default-name in rp2 you don't have any chance to
+         * get the domain of the certificate
+         *
+          Array
+            (
+                [odid] => 123
+                (...)
+                [amount] => 1
+                [descr] => SSL Standard-Zertifikat - Installation und Betrieb eines 256-Bit SSL-Zertifikats / 1 Jahr: www.xxxdomainxxx.com
+                [price_net] =>
+                (...)
+                [product] => Array
+                    (
+                        [peid] => 123
+                        [pos] => 234
+                        (...)
+                        [pronr] => SSL_STANDARD
+                        [name] => SSL Standard-Zertifikat
+                        [descr] => Installation und Betrieb eines 256-Bit SSL-Zertifikats / 1 Jahr
+                        (...)
+                    )
+         */
 
-        return (string) $return;
+
+        $sumPrice = 0;
+        $sumPriceDefault = 0;
+
+        foreach ($dispos as $row)
+        {
+            // Workaround against RP2-API-BUG #5402091:
+            // There is no [product][norm] for ssl-certificates
+            // U need to rename all ssl-certificates to SSL_foobar to get grabbed
+            // here correctly
+            if ($row['product']['norm'] == 'ext' ) //&& strpos($row['product']['pronr'], 'SSL_')
+            {
+                // Workaround against RP2-API-Bug #5402235:
+                // There is no link between a ssl-certificate and the
+                // Domain it is registered for
+                // The only known way is to parse the domain out of the auto-generated desc
+                $regEx = "/(\\S*\\.\\S*\\.\\S*)/"; // quick and dirty, i Know
+                preg_match($regEx, $row['descr'], $domain);
+                $domain = $domain[1];
+
+                $return[$row['product']['pronr']]['item'][$domain]['name'] = $domain;
+
+                // Workaround against RP2-API-Bug #5402189:
+                // unit_net is is calculated wrong: round($rp2UserInputPrice*1.19, 2)/1.19
+                $return[$row['product']['pronr']]['item'][$domain]['priceFormatted'] = self::getPriceFormatted($row['price']['unit_net'], $row['price']['default_net']);
+
+                $return[$row['product']['pronr']]['sumPrice'] += $row['price']['unit_net'];
+                $return[$row['product']['pronr']]['sumPriceDefault'] += $row['price']['default_net'];
+
+                $return[$row['product']['pronr']]['amount'] = count($return[$row['product']['pronr']]['item']);
+
+                $return[$row['product']['pronr']]['title'] = $return[$row['product']['pronr']]['amount'] > 1 ? "{$return[$row['product']['pronr']]['amount']}x {$row['product']['name']}" : $row['product']['name'];
+
+                asort($return[$row['product']['pronr']]['item']);
+            }
+        }
+        asort($return);
+        return (array) $return;
     }
 
 
@@ -147,10 +273,10 @@ class invoiceTextExport extends extensionModule
      * @param string self
      * @return string (12.345,67 €|12.345,- €|Inklusive)
      */
-    static function getEuroFormated($price, $zeroString = NULL)
+    static function getEuroFormated($price, $zeroString = 'Inklusive')
     {
-        $zeroString = $zeroString != NULL ?: self::$format['zeroString'];
-        return round($price,2) > 0 ? str_replace(',00 ', ',- ', number_format($price, 2, ',', '.')).' €' : $zeroString;
+        $price = round($price, 2);
+        return $price > 0 ? str_replace(',00 ', ',- ', number_format($price, 2, ',', '.')).' €' : $zeroString;
     }
 
     /**
@@ -162,19 +288,19 @@ class invoiceTextExport extends extensionModule
      * @param string $patternDiscount
      * @return string (12.345,67 €|12.345,- €|12.345,67 € // Abzgl. 1.345,- € Rabatt)
      */
-    static function getPriceFormatted($price, $priceDefault = NULL, $patternZero = NULL, $patternDiscount = NULL)
+    static function getPriceFormatted($price, $priceDefault = NULL)
     {
-        $patternDiscount = $patternDiscount != NULL ?: self::$format['discountPattern'];
         if (round($price,2) >= round($priceDefault,2))
         {
-            return self::getEuroFormated($price, $patternZero);
+            return self::getEuroFormated($price, 'Inklusive');
         }
 
         else
         {
-            $price = self::getEuroFormated($price, $patternZero);
-            $discount = self::getEuroFormated($priceDefault-$price, $patternZero);
-            return eval($patternDiscount);
+            $priceDefault = self::getEuroFormated($priceDefault, 'Inklusive');
+            $discount = self::getEuroFormated($priceDefault-$price, 'Inklusive');
+            return "$priceDefault // Abzgl. $discount Rabatt";
+
         }
     }
 
