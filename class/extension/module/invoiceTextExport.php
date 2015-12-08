@@ -85,10 +85,14 @@ class invoiceTextExport extends extensionModule
      * (Doesn't takes care of validity period)
      *
      * @param string $ordNr
-     * @return array [ amount, priceFormatted, item[ name, priceFormatted ] ]
+     * @return array [ title, amount, priceFormatted, item[ name, priceFormatted ] ]
      */
     public function getDomains($ordNr)
     {
+        if ($amount == 0)       $title = "Keine Domains reserviert";
+        else if ($amout == 1)   $title = "Domain";
+        else                    $title = "$amout Domains";
+
         return (array) $return;
     }
 
@@ -98,7 +102,7 @@ class invoiceTextExport extends extensionModule
      * (Doesn't takes care of validity period)
      *
      * @param string $ordNr
-     * @return array [ item[ name, amount, desc, priceFormatted ] ]
+     * @return array [ item[ title, name, amount, desc, priceFormatted ] ]
      */
     public function getAddOns($ordNr)
     {
@@ -110,10 +114,14 @@ class invoiceTextExport extends extensionModule
      * (Doesn't takes care of validity period)
      *
      * @param string $ordNr
-     * @return array [ name, amount, desc, priceFormatted, item[ name, priceFormatted ] ]
+     * @return array [ type[ title, amount, desc, priceFormatted, item[ name, priceFormatted ] ] ]
      */
     public function getCertificates($ordNr)
     {
+        if ($amount == 0)       $title = "Keine SSL-Zertifikate reserviert";
+        else if ($amout == 1)   $title = "SSL-Zertifikat";
+        else                    $title = "$amout SSL-Zertifikate";
+
         return (string) $return;
     }
 
@@ -123,7 +131,7 @@ class invoiceTextExport extends extensionModule
      * (Doesn't takes care of evaluation period)
      *
      * @param string $ordNr
-     * @return array [ name, amount, desc, priceFormatted, item[ name, priceFormatted ] ]
+     * @return array [ type[ name, amount, desc, priceFormatted, item[ name, priceFormatted ] ] ]
      */
     public function getExchangeAccounts($ordNr)
     {

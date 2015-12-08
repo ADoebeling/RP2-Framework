@@ -11,14 +11,13 @@
  */
 
 require_once '../class/extension/extension.php';
-use www1601com\df_rp\extension\invoiceTextExport;
 
 $e = new \www1601com\df_rp\extension\extension();
 $e -> httpAuth();
 
-$ajax = isset($_REQUEST['ajax']) ? true : flase;
-$method = isset($_REQUEST['method']) ? (string) $_REQUEST['method'] : flase;
-$ordNr = isset($_REQUEST['ordNr']) ? urldecode($_REQUEST['ordNr']) : flase;
+$ajax = isset($_REQUEST['ajax']) ? true : false;
+$method = isset($_REQUEST['method']) ? (string) $_REQUEST['method'] : false;
+$ordNr = isset($_REQUEST['ordNr']) ? urldecode($_REQUEST['ordNr']) : false;
 
 /*
  * Ajax-Box: View single order / invoice
@@ -30,64 +29,48 @@ if ($ajax && $method == 'getInvoiceBoxHtml' && $ordNr)
     $text .= "<br>\n<br>\n";
 
     // Tariff
-    $row = $e->invoiceTextExport->getTariff($ordNr);
-    $text .= "<b>{$row['name']}</b> ({$row['priceFormatted']})<br>\n{$row['desc']}<br>\n<br>\n";
+    $data = $e->invoiceTextExport->getTariff($ordNr);
+    $text .= "<b>{$data['name']}</b> ({$data['priceFormatted']})<br>\n{$data['desc']}<br>\n<br>\n";
 
     // Domains
-    $priceSum = 0;
-    $priceDefaultSum = 0;
-    foreach ($e->invoiceTextExport->getDomains($ordNr) as $row)
+    $data = $e->invoiceTextExport->getDomains($ordNr);
+    $text .= "{$data['title']} ({$data['priceFormatted']})<br>\n";
+    foreach ($data['item'] as $row)
     {
-        $price = invoiceTextExport::getPriceFormatted($row['price'], $row['priceDefault']);
-        $priceSum += $row['price'];
-        $priceDefaultSum += $row['priceDefault'];
-        $domains .= "- {$row['domain']} ($price)<br>\n";
+        $text .= "- {$row['name']} ({$row['priceFormatted']})<br>\n";
     }
-    $amount = count($e->invoiceTextExport->getDomains($ordNr));
-    $price = invoiceTextExport::getPriceFormatted($priceSum, $priceDefaultSum);
-    $text .= "$amount Domains ($price)<br>\n$domains";
-    $text .= "<br>\n<br>\n";
+    $text .= "<br>\n";
 
     // SSL-Certificates
-    foreach ($e->invoiceTextExport->getCertificates($ordNr) as $type)
+    $data = $e->invoiceTextExport->getCertificates($ordNr);
+    foreach ($data as $type)
     {
-        $priceSum = 0;
-        $priceDefaultSum = 0;
-        foreach ($type['items'] as $title => $row)
+        $text .= "{$type['title']} ({$type['priceFormatted']})<br>\n{$type['desc']}<br>\n<br>\n";
+        foreach ($type['items'] as $row)
         {
-            $price = invoiceTextExport::getPriceFormatted($row['price'], $row['priceDefault']);
-            $priceSum += $row['price'];
-            $priceDefaultSum += $row['priceDefault'];
-            $items .= "- {$row['name']} ($price)<br>\n";
+            $text .= "- {$row['name']} ({$row['priceFormatted']})<br>\n";
         }
-        $amount = count($type['items']);
-        $price = invoiceTextExport::getPriceFormatted($priceSum, $priceDefaultSum);
-        $text .= "<b>{$type['title']}</b> ($price)<br>{$type['desc']}<br>\n<br>\n$items<br>\n";
     }
-
-    // AddOns
-    foreach ($e->invoiceTextExport->getAddOns($ordNr) as $row)
-    {
-        $price = invoiceTextExport::getPriceFormatted($row['price'], $row['priceDefault']);
-        $text .= "<b>{$row['title']}</b> ($price)<br>\n{$row['desc']}<br>\n<br>\n";
-    }
+    $text .= "<br>\n";
 
     // Exchange-Accounts
-    foreach ($e->invoiceTextExport->getExchangeAccounts($ordNr) as $type)
+    $data = $e->invoiceTextExport->getExchangeAccounts($ordNr);
+    foreach ($data as $type)
     {
-        $priceSum = 0;
-        $priceDefaultSum = 0;
-        foreach ($type['items'] as $title => $row)
+        $text .= "{$type['title']} ({$type['priceFormatted']})<br>\n{$type['desc']}<br>\n<br>\n";
+        foreach ($type['items'] as $row)
         {
-            $price = invoiceTextExport::getPriceFormatted($row['price'], $row['priceDefault']);
-            $priceSum += $row['price'];
-            $priceDefaultSum += $row['priceDefault'];
-            $items .= "- {$row['name']} ($price)<br>\n";
+            $text .= "- {$row['name']} ({$row['priceFormatted']})<br>\n";
         }
-        $amount = count($type['items']);
-        $price = invoiceTextExport::getPriceFormatted($priceSum, $priceDefaultSum);
-        $text .= "<b>{$type['title']}</b> ($price)<br>{$type['desc']}<br>\n<br>\n$items<br>\n";
     }
+    $text .= "<br>\n";
+
+    // AddOns
+    foreach ($e->invoiceTextExport->getAddOns($ordNr)['item'] as $row)
+    {
+        $text .= "<b>{$row['title']}</b> ({$row['priceFormatted']})<br>\n{$row['desc']}<br>\n<br>\n";
+    }
+
     echo $text;
 }
 
