@@ -22,6 +22,7 @@ class order extends apiModule
      */
     public function loadAll($param = array(), $runOnce = true)
     {
+
         if ($runOnce && !$this->runOnce(__METHOD__)) return $this;
 
         if (empty($param)) {
@@ -30,12 +31,22 @@ class order extends apiModule
 
         else if (isset($param['accounting']))
         {
+            echo "hier";
             $this->data = $this->system->call('bbOrder::readEntry', ['return_active' => 1, 'return_dispositions' => 1, 'return_account_entrys' => 1, 'return_array' => 1]); //, 'return_adress' => 1
         }
         return $this;
     }
 
+    public function load($ordNr, $param = array(), $runOnce = true)
+    {
+        if ($runOnce && !$this->runOnce(__METHOD__)) return $this;
 
+        if (empty($param)) {
+            $this->data[$ordNr] = $this->system->call('bbOrder::readEntry', ['return_active' => 1, 'return_dispositions' => 1, 'return_domain' => 1, 'return_customer_overview' => 1, 'ordnr' => $ordNr]);
+
+        }
+        return $this;
+    }
 
 
 

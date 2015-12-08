@@ -61,32 +61,24 @@ class api {
      * @param $rp2InstanceUrl
      * @param $rp2ApiUser
      * @param $rp2ApiPwd
-     * @return $this|bool
+     * @return $this
      * @throws \Exception
      */
     public function auth($rp2InstanceUrl, $rp2ApiUser, $rp2ApiPwd)
     {
-        // TODO: Error handler
         $this->rpc->setUrl($rp2InstanceUrl);
         $userId = $this->rpc->auth($rp2ApiUser, $rp2ApiPwd);
-
-        if ($userId == 0)
+        if (!$userId)
         {
-            throw new \Exception("User '$rp2ApiUser' and Password are not valid in  rp2-instance '$rp2InstanceUrl'", 401);
-            return false;
+            throw new \Exception("Login as $rp2ApiUser failed", 401);
         }
-
         return $this;
     }
 
     /**
-     * httpAuth
-     *
-     * @todo: Catch invalid logins
      * @return $this
      * @throws \Exception
-     *
-     * @version 0.1.15XXXX_dev_1ad
+     * @TODO Error Handler
      */
     public function httpAuth()
     {
@@ -96,6 +88,7 @@ class api {
         $dfOrderNr = $matches[1];
 
         $rp2InstanceUrl = "http://$dfOrderNr.premium-admin.eu/";
+
 
 
         if (!isset($_SERVER['PHP_AUTH_USER'])) {
@@ -126,10 +119,10 @@ class api {
     public function call($sMethod,$hArgs=array(),$hPlaceholders=null)
     {
         $startTime = microtime(1);
-        //echo " ######## RPC-Call: $sMethod: ";
+        echo " ######## RPC-Call: $sMethod: ";
         $result = $this->rpc->call($sMethod,$hArgs,$hPlaceholders);
         $duration = round(microtime(1)-$startTime, 3);
-        //echo "$duration Sek. ########\n\n";
+        echo "$duration Sek. ########\n\n";
         return $result;
     }
 
