@@ -347,10 +347,10 @@ class invoiceTextExport extends extensionModule
      * @param string $zeroString = Inklusive
      * @return string (12.345,67 €|12.345,- €|Inklusive)
      */
-    static function getEuroFormated($price, $zeroString = 'Inklusive')
+    static function getEuroFormatted($price, $zeroString = 'Inklusive')
     {
         $price = round($price, 2);
-        return $price > 0 ? str_replace(',00 ', ',- ', number_format($price, 2, ',', '.')).' &euro;' : $zeroString;
+        return $price > 0 ? str_replace(',00', ',- ', number_format($price, 2, ',', '.')).' &euro;' : $zeroString;
     }
 
     /**
@@ -366,21 +366,21 @@ class invoiceTextExport extends extensionModule
     {
         if (round($price,2) >= round($priceDefault,2))
         {
-            return self::getEuroFormated($price, 'Inklusive');
+            return self::getEuroFormatted($price, 'Inklusive');
         }
 
         else
         {
-            $priceDefault = self::getEuroFormated($priceDefault);
+            $priceDefault = self::getEuroFormatted($priceDefault);
             $percent = 100 - 100 / round($priceDefault,2) * round($price,2);
             if ($percent == 100 | $percent == 75 | $percent == 50 | $percent == 25 | $percent == 20 | $percent == 10)
             {
                 $discount = "$percent%";
-                //$discount = self::getEuroFormated($priceDefault-$price);
+                //$discount = self::getEuroFormatted($priceDefault-$price);
             }
             else
             {
-                $discount = self::getEuroFormated($priceDefault-$price);
+                $discount = self::getEuroFormatted($priceDefault-$price);
             }
             return "$priceDefault | Abzgl. $discount Rabatt";
 
