@@ -31,7 +31,6 @@ class order extends apiModule
 
         else if (isset($param['accounting']))
         {
-            echo "hier";
             $this->data = $this->system->call('bbOrder::readEntry', ['return_active' => 1, 'return_dispositions' => 1, 'return_account_entrys' => 1, 'return_array' => 1]); //, 'return_adress' => 1
         }
         return $this;
@@ -42,8 +41,7 @@ class order extends apiModule
         if ($runOnce && !$this->runOnce(__METHOD__)) return $this;
 
         if (empty($param)) {
-            $this->data[$ordNr] = $this->system->call('bbOrder::readEntry', ['return_active' => 1, 'return_dispositions' => 1, 'return_domain' => 1, 'return_customer_overview' => 1, 'ordnr' => $ordNr]);
-
+            $this->data[$ordNr] = $this->system->call('bbOrder::readEntry', ['return_active' => 1, 'return_dispositions' => 1, 'return_customer' => 1, 'return_adress' => 1, 'ordnr' => $ordNr]);
         }
         return $this;
     }

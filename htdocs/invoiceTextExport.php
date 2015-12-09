@@ -25,52 +25,83 @@ $ordNr = isset($_REQUEST['ordNr']) ? urldecode($_REQUEST['ordNr']) : false;
 if ($ajax && $method == 'getInvoiceBoxHtml' && $ordNr)
 {
     // Invoice-Address
+    $text .= "<h3>Offer/Invoice for $ordNr</h3>";
+    $text .= "<textarea readonly>";
     $text .= $e->invoiceTextExport->getAddress($ordNr)['invoiceAddressBlock'];
-    $text .= "<br>\n<br>\n";
+    $text .= "</textarea>\n\n";
+    $text .= "<br>\n";
 
     // Tariff
     $data = $e->invoiceTextExport->getTariff($ordNr);
-    $text .= "<b>{$data['name']}</b> ({$data['priceFormatted']})<br>\n{$data['desc']}<br>\n<br>\n";
+    $text .= "<article class=\"2column\">";
+    $text .= "<h3>{$data['name']} <span class=\"price\">({$data['priceFormatted']})</span></h3>\n";
+    $text .= "<textarea readonly>";
+    $text .= "{$data['desc']}";
+    $text .= "</textarea>\n\n";
+    $text .= "</article>";
+
 
     // Domains
     $data = $e->invoiceTextExport->getDomains($ordNr);
-    $text .= "{$data['title']} ({$data['priceFormatted']})<br>\n";
+    $text .= "<article class=\"2column\">";
+    $text .= "<h3>{$data['title']} <span class=\"price\">({$data['priceFormatted']})</span></h3>\n";
+    $text .= "<textarea readonly>";
     foreach ($data['item'] as $row)
     {
-        $text .= "- {$row['name']} ({$row['priceFormatted']})<br>\n";
+        $text .= "- {$row['name']} ({$row['priceFormatted']})\n";
     }
+    $text .= "</textarea>";
     $text .= "<br>\n";
+    $text .= "</article>";
 
     // SSL-Certificates
     $data = $e->invoiceTextExport->getCertificates($ordNr);
+
     foreach ($data as $type)
     {
-        $text .= "{$type['title']} ({$type['priceFormatted']})<br>\n{$type['desc']}<br>\n<br>\n";
-        foreach ($type['items'] as $row)
+        $text .= "<article class=\"2column\">";
+        $text .= "<h3>{$type['title']} <span class=\"price\">({$type['priceFormatted']})</span></h3>\n";
+        $text .= "<textarea readonly>";
+        $text .= "{$type['desc']}\n\n";
+        foreach ($type['item'] as $row)
         {
-            $text .= "- {$row['name']} ({$row['priceFormatted']})<br>\n";
+            $text .= "- {$row['name']} ({$row['priceFormatted']})\n";
         }
+        $text .= "</textarea>";
+        $text .= "</article>";
     }
     $text .= "<br>\n";
 
+
     // Exchange-Accounts
     $data = $e->invoiceTextExport->getExchangeAccounts($ordNr);
+
     foreach ($data as $type)
     {
-        $text .= "{$type['title']} ({$type['priceFormatted']})<br>\n{$type['desc']}<br>\n<br>\n";
-        foreach ($type['items'] as $row)
+        $text .= "<article class=\"2column\">";
+        $text .= "<h3>{$type['title']} <span class=\"price\">({$type['priceFormatted']})</span></h3>\n";
+        $text .= "<textarea>";
+        $text .= "{$type['desc']}\n\n";
+        foreach ($type['item'] as $row)
         {
-            $text .= "- {$row['name']} ({$row['priceFormatted']})<br>\n";
+            $text .= "- {$row['name']} ({$row['priceFormatted']})\n";
         }
+        $text .= "</textarea>";
+        $text .= "</article>";
     }
     $text .= "<br>\n";
+
 
     // AddOns
     foreach ($e->invoiceTextExport->getAddOns($ordNr)['item'] as $row)
     {
-        $text .= "<b>{$row['title']}</b> ({$row['priceFormatted']})<br>\n{$row['desc']}<br>\n<br>\n";
+        $text .= "<article class=\"2column\">";
+        $text .= "<h3>{$row['title']}<span class=\"price\">({$row['priceFormatted']})</span></h3>\n";
+        $text .= "<textarea readonly>";
+        $text .= "{$row['desc']}";
+        $text .= "</textarea>";
+        $text .= "</article>";
     }
-
     echo $text;
 }
 
@@ -90,6 +121,31 @@ else
         body
         {
             font-family: Arial;
+            font-size: 0.8em;
+        }
+
+        a
+        {
+            color: deeppink;
+            text-decoration: none;
+        }
+
+        a:hover
+        {
+            font-weight: bold;
+        }
+
+        h3
+        {
+        border-bottom: 2px solid grey;
+        margin-bottom: 0;
+        }
+
+        h3 .price
+        {
+            font-weight: normal;
+            display: block;
+            float:right;
         }
 
         li
@@ -103,52 +159,68 @@ else
             background-color: #bfbfbf;
         }
 
+        li a
+        {
+            display: inline-block;
+            height: 100%;
+        }
+
         li span
         {
-            padding: 5px 15px 5px 0;
+            padding: 0.4em;
             vertical-align: middle;
+            display: inline-block;
+            height: 100%;
         }
 
         .customerDisplayName, .ordNr
         {
-            width: 15em;
-            height: 2em;
-            display:inline-block;
+            width: 16em;
             overflow: hidden;
         }
 
         .priceMonth, .priceYear
         {
-            width: 4em;
+            width: 8em;
+        }
+
+        article
+        {
+            /*width: 300px;
+            float: left;
+            padding-right: 20px;
+            display: block;*/
+            width: 100%;
+        }
+
+        textarea
+        {
+            width: 100%;
+            border: 0;
+            height: 6em;
+            font-family: Arial;
+            margin: 0;
+            padding: 0;
+        }
+        textarea:active, textarea:focus
+        {
+            background-color: grey;
+        }
+
+        .featherlight .featherlight-content
+        {
+            max-height: 90% !important;
+            width: 95% !important;
         }
     </style>
-</script>
+    <link href=\"static/js/featherlight-1.3.4/release/featherlight.min.css\" type=\"text/css\" rel=\"stylesheet\">
+
 </head>
 
 <body>
-    <!-- Add jQuery library -->
-    <script type=\"text/javascript\" src=\"static/js/jquery-latest.min.js\"></script>
+    <script src=\"static/js/jquery-latest.min.js\"></script>
+    <script src=\"static/js/featherlight-1.3.4/release/featherlight.min.js\" type=\"text/javascript\" charset=\"utf-8\"></script>
 
-    <!-- Add mousewheel plugin (this is optional) -->
-    <script type=\"text/javascript\" src=\"static/js/fancybox/lib/jquery.mousewheel-3.0.6.pack.js\"></script>
-
-    <!-- Add fancyBox -->
-    <link rel=\"stylesheet\" href=\"static/js/fancybox/source/jquery.fancybox.css?v=2.1.5\" type=\"text/css\" media=\"screen\" />
-    <script type=\"text/javascript\" src=\"static/js/fancybox/source/jquery.fancybox.pack.js?v=2.1.5\"></script>
-
-    <!-- Optionally add helpers - button, thumbnail and/or media -->
-    <link rel=\"stylesheet\" href=\"static/js/fancybox/source/helpers/jquery.fancybox-buttons.css?v=1.0.5\" type=\"text/css\" media=\"screen\" />
-    <script type=\"text/javascript\" src=\"static/js/fancybox/source/helpers/jquery.fancybox-buttons.js?v=1.0.5\"></script>
-    <script type=\"text/javascript\" src=\"static/js/fancybox/source/helpers/jquery.fancybox-media.js?v=1.0.6\"></script>
-
-    <link rel=\"stylesheet\" href=\"static/js/fancybox/source/helpers/jquery.fancybox-thumbs.css?v=1.0.7\" type=\"text/css\" media=\"screen\" />
-    <script type=\"text/javascript\" src=\"static/js/fancybox/source/helpers/jquery.fancybox-thumbs.js?v=1.0.7\"></script>
-
-    <script type=\"text/javascript\">
-        $(document).ready(function() {
-            $(\".fancybox\").fancybox();
-        });
-    </script>
 ";
     $lastCustomer = NULL;
     foreach ($e->invoiceTextExport->getAllOrders() as $ordNr => $row)
@@ -161,9 +233,9 @@ else
         <li class="row">
             <span class="customerDisplayName">$customerDisplayName</span>
             <span class="ordNr">$ordNr</span>
-            <a class="fancybox.ajax" href="invoiceTextExport.php?ajax&method=getInvoiceBoxHtml&ordNr=$ordNrLink">
-                <span class="turnoverMonth">{$row['priceMonth']} / Mon.</span>
-                <span class="turnoverYear">{$row['priceYear']} / Year</span>
+            <a class="fancybox.ajax" href="#invoiceTextExport.php" data-featherlight="?ajax&method=getInvoiceBoxHtml&ordNr=$ordNrLink">
+                <span class="priceMonth">{$row['priceMonth']} / Mon.</span>
+                <span class="priceYear">{$row['priceYear']} / Year</span>
             </a>
         </li>
 END;

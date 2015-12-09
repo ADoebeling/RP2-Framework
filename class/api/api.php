@@ -72,6 +72,8 @@ class api {
         {
             throw new \Exception("Login as $rp2ApiUser failed", 401);
         }
+        // https://doku.premium-admin.eu/doku.php/api/methoden/bbrpc/setutf8native
+        $this->rpc->setUTF8Native(true);
         return $this;
     }
 
@@ -119,10 +121,10 @@ class api {
     public function call($sMethod,$hArgs=array(),$hPlaceholders=null)
     {
         $startTime = microtime(1);
-        echo " ######## RPC-Call: $sMethod: ";
+        #echo " ######## RPC-Call: $sMethod: ";
         $result = $this->rpc->call($sMethod,$hArgs,$hPlaceholders);
         $duration = round(microtime(1)-$startTime, 3);
-        echo "$duration Sek. ########\n\n";
+        #echo "$duration Sek. ########\n\n";
         return $result;
     }
 

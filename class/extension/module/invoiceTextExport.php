@@ -50,17 +50,21 @@ class invoiceTextExport extends extensionModule
      */
     public function getAllOrders()
     {
-        $response = $this->system->orders->loadAll(['accounting' => 1])->getData(); //
-        foreach ($response as $row)
+        $result = $this->system->orders->loadAll(['accounting' => 1])->getData(); //
+        foreach ($result as $row)
         {
-            $return[$row['ordnr']]['customerDisplayName'] = isset($row['cus_company']) && !empty($row['cus_company']) ? "{$row['cus_company']} ({$row['cus_last_name']}, {$row['cus_first_name']})" : "{$row['cus_last_name']}, {$row['cus_first_name']}";
-
-            $return[$row['ordnr']]['priceMonth'] = 0;
+            $priceMonth = 0;
             foreach ($row['dispositions'] as $dispo)
             {
-                $return[$row['ordnr']]['priceMonth'] += $dispo['price']['unit_net'] * $dispo['amount'];
+                $priceMonth += $dispo['price']['unit_net'] * $dispo['amount'];
             }
-            $return[$row['ordnr']]['priceYear'] = $return[$row['ordnr']]['priceMonth'] * 12;
+            if ($priceMonth > 0)
+            {
+
+                $return[$row['ordnr']]['customerDisplayName'] = isset($row['cus_company']) && !empty($row['cus_company']) ? "{$row['cus_company']}<br>({$row['cus_last_name']}, {$row['cus_first_name']})" : "{$row['cus_last_name']}, {$row['cus_first_name']}";
+                $return[$row['ordnr']]['priceYear'] = self::getPriceFormatted($priceMonth * 12);
+                $return[$row['ordnr']]['priceMonth'] = self::getPriceFormatted($priceMonth);
+            }
         }
         return $return;
     }
@@ -73,7 +77,17 @@ class invoiceTextExport extends extensionModule
      */
     public function getAddress($ordNr)
     {
-        $return['invoiceAddressBlock'] = NULL;
+        $address = $this->system->orders->load($ordNr)->getData()[$ordNr]['customer']['adress']['inv'];
+        $return['invoiceAddressBlock'] = !empty($address['company']) ?  $address['company']."\n" : '';
+        $return['invoiceAddressBlock'] .= "{$address['first_name']} {$address['last_name']}\n";
+        $return['invoiceAddressBlock'] .= !empty($address['adress_1']) ?  $address['adress_1']."\n" : '';
+        $return['invoiceAddressBlock'] .= !empty($address['adress_2']) ?  $address['adress_2']."\n" : '';
+        $return['invoiceAddressBlock'] .= !empty($address['zip']) ?  $address['zip']." " : '';
+        $return['invoiceAddressBlock'] .= !empty($address['city']) ?  $address['city']."\n" : '';
+
+        //$return['invoiceAddressBlock'] = "josdf";
+        //echo $return['invoiceAddressBlock'];
+
         return $return;
     }
 
@@ -113,21 +127,42 @@ class invoiceTextExport extends extensionModule
         $dispos = $this->system->orders->load($ordNr)->getData()[$ordNr]['dispositions'];
         $sumPrice = 0;
         $sumPriceDefault = 0;
+        $return['item'] = array();
+
         foreach ($dispos as $row)
         {
             if ($row['product']['norm'] == 'domain')
             {
+
                 // Workaround against RP2-API-Bug #5401975
                 // $row['product']['name'] is empty:
                 // $return['name'] = $row['product']['name'];
                 $item['name'] = $row['descr'];
                 $item['priceFormatted'] = self::getPriceFormatted($row['price']['unit_net'], $row['price']['default_net']);
-                $sumPrice += $row['price']['unit_net'];
-                $sumPriceDefault += $row['price']['default_net'];
-                $return['item'][$row['descr']] = $item;
+                $sumPrice += round($row['price']['unit_net'], 2);
+                $sumPriceDefault += round($row['price']['default_net'],2);
+
+                if ($row['price']['unit_net'] == 0)
+                {
+                    $freeOnTop[$row['descr']] = $item;
+                }
+                else
+                {
+                    $return['item'][$row['descr']] = $item;
+                }
             }
         }
-        asort($return['item']);
+        if (!empty($return['item']))
+        {
+            asort($return['item']);
+        }
+
+        if (!empty($freeOnTop))
+        {
+            asort($freeOnTop);
+            $return['item'] = array_merge($freeOnTop, $return['item']);
+        }
+
         $return['amount'] = count($return['item']);
         $return['priceFormatted'] = self::getPriceFormatted($sumPrice, $sumPriceDefault);
 
@@ -151,11 +186,10 @@ class invoiceTextExport extends extensionModule
         $dispos = $this->system->orders->load($ordNr)->getData()[$ordNr]['dispositions'];
         $sumPrice = 0;
         $sumPriceDefault = 0;
+        $return['item'] = array();
 
-        foreach ($dispos as $row)
-        {
-            if ($row['product']['norm'] == 'add-on')
-            {
+        foreach ($dispos as $row) {
+            if ($row['product']['norm'] == 'add-on') {
                 $item['name'] = !empty($row['descr']) ? $row['descr'] : $row['product']['name'];
                 $item['desc'] = $row['product']['descr'];
                 $item['amount'] = $row['amount'];
@@ -163,13 +197,12 @@ class invoiceTextExport extends extensionModule
 
                 // Workaround against RP2-API-Bug #5402189:
                 // unit_net is is calculated wrong: round($rp2UserInputPrice*1.19, 2)/1.19
-                $item['priceFormatted'] = self::getPriceFormatted($row['price']['unit_net']*$row['amount'], $row['price']['default_net']*$row['amount']);
-                $sumPrice += $row['price']['unit_net']*$row['amount'];
-                $sumPriceDefault += $row['price']['default_net']*$row['amount'];
+                $item['priceFormatted'] = self::getPriceFormatted($row['price']['unit_net'] * $row['amount'], $row['price']['default_net'] * $row['amount']);
+                $sumPrice += $row['price']['unit_net'] * $row['amount'];
+                $sumPriceDefault += $row['price']['default_net'] * $row['amount'];
                 $return['item'][$row['product']['pronr']] = $item;
             }
         }
-        asort($return['item']);
         return (array) $return;
     }
 
@@ -214,6 +247,7 @@ class invoiceTextExport extends extensionModule
 
         $sumPrice = 0;
         $sumPriceDefault = 0;
+        $return = array();
 
         foreach ($dispos as $row)
         {
@@ -221,7 +255,7 @@ class invoiceTextExport extends extensionModule
             // There is no [product][norm] for ssl-certificates
             // U need to rename all ssl-certificates to SSL_foobar to get grabbed
             // here correctly
-            if ($row['product']['norm'] == 'ext' ) //&& strpos($row['product']['pronr'], 'SSL_')
+            if ($row['product']['norm'] == 'ext' && strpos($row['product']['pronr'], 'SSL_') === 0)
             {
                 // Workaround against RP2-API-Bug #5402235:
                 // There is no link between a ssl-certificate and the
@@ -237,12 +271,63 @@ class invoiceTextExport extends extensionModule
                 // unit_net is is calculated wrong: round($rp2UserInputPrice*1.19, 2)/1.19
                 $return[$row['product']['pronr']]['item'][$domain]['priceFormatted'] = self::getPriceFormatted($row['price']['unit_net'], $row['price']['default_net']);
 
-                $return[$row['product']['pronr']]['sumPrice'] += $row['price']['unit_net'];
-                $return[$row['product']['pronr']]['sumPriceDefault'] += $row['price']['default_net'];
+                $tmp[$row['product']['pronr']]['sumPrice'] += $row['price']['unit_net'];
+                $tmp[$row['product']['pronr']]['sumPriceDefault'] += $row['price']['default_net'];
+                $tmp[$row['product']['pronr']]['amount'] = count($return[$row['product']['pronr']]['item']);
 
-                $return[$row['product']['pronr']]['amount'] = count($return[$row['product']['pronr']]['item']);
+                $return[$row['product']['pronr']]['title'] = $tmp[$row['product']['pronr']]['amount'] > 1 ? "{$tmp[$row['product']['pronr']]['amount']}x {$row['product']['name']}" : $row['product']['name'];
+                $return[$row['product']['pronr']]['desc'] = $row['product']['descr'];
+                $return[$row['product']['pronr']]['priceFormatted'] = self::getPriceFormatted($tmp[$row['product']['pronr']]['sumPrice'], $tmp[$row['product']['pronr']]['sumPriceDefault']);
 
-                $return[$row['product']['pronr']]['title'] = $return[$row['product']['pronr']]['amount'] > 1 ? "{$return[$row['product']['pronr']]['amount']}x {$row['product']['name']}" : $row['product']['name'];
+                asort($return[$row['product']['pronr']]['item']);
+            }
+        }
+
+
+        asort($return);
+        return (array) $return;
+    }
+
+
+    /**
+     * Returns the ordered exchange-accounts
+     * (Doesn't takes care of evaluation/validity period)
+     *
+     * @param string $ordNr
+     * @return array [ type[ name, amount, desc, priceFormatted, item[ name, priceFormatted ] ] ]
+     */
+    public function getExchangeAccounts($ordNr)
+    {
+        $dispos = $this->system->orders->load($ordNr)->getData()[$ordNr]['dispositions'];
+
+        $sumPrice = 0;
+        $sumPriceDefault = 0;
+        $return = array();
+
+        foreach ($dispos as $row)
+        {
+
+            // Workaround against RP2-API-BUG #5402091:
+            // There is no [product][norm] for exchange-accounts
+            // U need to rename all exchange-accounts to EXCHANGE_foobar to get grabbed
+            // here correctly
+            if ($row['product']['norm'] == 'ext' && strpos($row['product']['pronr'], 'EXCHANGE_') === 0) //
+            {
+                $pk = $row['descr'];
+
+                $return[$row['product']['pronr']]['item'][$pk]['name'] = $pk;
+
+                // Workaround against RP2-API-Bug #5402189:
+                // unit_net is is calculated wrong: round($rp2UserInputPrice*1.19, 2)/1.19
+                $return[$row['product']['pronr']]['item'][$pk]['priceFormatted'] = self::getPriceFormatted($row['price']['unit_net'], $row['price']['default_net']);
+
+                $tmp[$row['product']['pronr']]['sumPrice'] += $row['price']['unit_net'];
+                $tmp[$row['product']['pronr']]['sumPriceDefault'] += $row['price']['default_net'];
+                $tmp[$row['product']['pronr']]['amount'] = count($return[$row['product']['pronr']]['item']);
+
+                $return[$row['product']['pronr']]['title'] = $tmp[$row['product']['pronr']]['amount'] > 1 ? "{$tmp[$row['product']['pronr']]['amount']}x {$row['product']['name']}" : $row['product']['name'];
+                $return[$row['product']['pronr']]['desc'] = $row['product']['descr'];
+                $return[$row['product']['pronr']]['priceFormatted'] = self::getPriceFormatted($tmp[$row['product']['pronr']]['sumPrice'], $tmp[$row['product']['pronr']]['sumPriceDefault']);
 
                 asort($return[$row['product']['pronr']]['item']);
             }
@@ -253,30 +338,17 @@ class invoiceTextExport extends extensionModule
 
 
     /**
-     * Returns the ordered exchange-accounts
-     * (Doesn't takes care of evaluation period)
-     *
-     * @param string $ordNr
-     * @return array [ type[ name, amount, desc, priceFormatted, item[ name, priceFormatted ] ] ]
-     */
-    public function getExchangeAccounts($ordNr)
-    {
-        return (string) $return;
-    }
-
-
-    /**
-     * Formats float into 12.345,67 € and a integer into 12.345,- €
+     * Formats float into 12.345,67 € and integer into 12.345,- €
      * Returns $zeroString if price is NULL
      *
-     * @param float $price
-     * @param string self
+     * @param float|int $price
+     * @param string $zeroString = Inklusive
      * @return string (12.345,67 €|12.345,- €|Inklusive)
      */
     static function getEuroFormated($price, $zeroString = 'Inklusive')
     {
         $price = round($price, 2);
-        return $price > 0 ? str_replace(',00 ', ',- ', number_format($price, 2, ',', '.')).' €' : $zeroString;
+        return $price > 0 ? str_replace(',00 ', ',- ', number_format($price, 2, ',', '.')).' &euro;' : $zeroString;
     }
 
     /**
@@ -297,9 +369,18 @@ class invoiceTextExport extends extensionModule
 
         else
         {
-            $priceDefault = self::getEuroFormated($priceDefault, 'Inklusive');
-            $discount = self::getEuroFormated($priceDefault-$price, 'Inklusive');
-            return "$priceDefault // Abzgl. $discount Rabatt";
+            $priceDefault = self::getEuroFormated($priceDefault);
+            $percent = 100 - 100 / round($priceDefault,2) * round($price,2);
+            if ($percent == 100 | $percent == 75 | $percent == 50 | $percent == 25 | $percent == 20 | $percent == 10)
+            {
+                $discount = "$percent%";
+                //$discount = self::getEuroFormated($priceDefault-$price);
+            }
+            else
+            {
+                $discount = self::getEuroFormated($priceDefault-$price);
+            }
+            return "$priceDefault | Abzgl. $discount Rabatt";
 
         }
     }
