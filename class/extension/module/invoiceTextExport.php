@@ -350,7 +350,7 @@ class invoiceTextExport extends extensionModule
     static function getEuroFormatted($price, $zeroString = 'Inklusive')
     {
         $price = round($price, 2);
-        return $price > 0 ? str_replace(',00', ',- ', number_format($price, 2, ',', '.')).' &euro;' : $zeroString;
+        return $price > 0 ? str_replace(',00', ',-', number_format($price, 2, ',', '.')).' &euro;' : $zeroString;
     }
 
     /**
