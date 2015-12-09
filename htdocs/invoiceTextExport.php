@@ -79,19 +79,98 @@ if ($ajax && $method == 'getInvoiceBoxHtml' && $ordNr)
  */
 else
 {
+    echo "<!DOCTYPE html>
+<html>
+<head>
+    <meta charset=\"UTF-8\">
+    <title>RP²-Extension: InvoiceTextExport</title>
+    <meta name=\"author\" content=\"Andreas Doebeling\">
+    <!--<link href=\"style.css\" type=\"text/css\" rel=\"stylesheet\">-->
+    <style>
+        body
+        {
+            font-family: Arial;
+        }
 
-    foreach ($e->invoiceTextExport->getAllOrders() as $ordNrLink => $row)
+        li
+        {
+            border-bottom: 1px solid grey;
+            list-style: none;
+        }
+
+        li:hover
+        {
+            background-color: #bfbfbf;
+        }
+
+        li span
+        {
+            padding: 5px 15px 5px 0;
+            vertical-align: middle;
+        }
+
+        .customerDisplayName, .ordNr
+        {
+            width: 15em;
+            height: 2em;
+            display:inline-block;
+            overflow: hidden;
+        }
+
+        .priceMonth, .priceYear
+        {
+            width: 4em;
+        }
+    </style>
+</script>
+</head>
+
+<body>
+    <!-- Add jQuery library -->
+    <script type=\"text/javascript\" src=\"static/js/jquery-latest.min.js\"></script>
+
+    <!-- Add mousewheel plugin (this is optional) -->
+    <script type=\"text/javascript\" src=\"static/js/fancybox/lib/jquery.mousewheel-3.0.6.pack.js\"></script>
+
+    <!-- Add fancyBox -->
+    <link rel=\"stylesheet\" href=\"static/js/fancybox/source/jquery.fancybox.css?v=2.1.5\" type=\"text/css\" media=\"screen\" />
+    <script type=\"text/javascript\" src=\"static/js/fancybox/source/jquery.fancybox.pack.js?v=2.1.5\"></script>
+
+    <!-- Optionally add helpers - button, thumbnail and/or media -->
+    <link rel=\"stylesheet\" href=\"static/js/fancybox/source/helpers/jquery.fancybox-buttons.css?v=1.0.5\" type=\"text/css\" media=\"screen\" />
+    <script type=\"text/javascript\" src=\"static/js/fancybox/source/helpers/jquery.fancybox-buttons.js?v=1.0.5\"></script>
+    <script type=\"text/javascript\" src=\"static/js/fancybox/source/helpers/jquery.fancybox-media.js?v=1.0.6\"></script>
+
+    <link rel=\"stylesheet\" href=\"static/js/fancybox/source/helpers/jquery.fancybox-thumbs.css?v=1.0.7\" type=\"text/css\" media=\"screen\" />
+    <script type=\"text/javascript\" src=\"static/js/fancybox/source/helpers/jquery.fancybox-thumbs.js?v=1.0.7\"></script>
+
+    <script type=\"text/javascript\">
+        $(document).ready(function() {
+            $(\".fancybox\").fancybox();
+        });
+    </script>
+";
+    $lastCustomer = NULL;
+    foreach ($e->invoiceTextExport->getAllOrders() as $ordNr => $row)
     {
+        $customerDisplayName = $row['customerDisplayName'] == $lastCustomer ? '': $row['customerDisplayName'];
+        $lastCustomer = $row['customerDisplayName'];
         $ordNrLink = urlencode($ordNr);
+
         echo <<<END
         <li class="row">
-            <span class="customerDisplayName">{$row['customerDisplayName']}</span>
+            <span class="customerDisplayName">$customerDisplayName</span>
             <span class="ordNr">$ordNr</span>
-            <span class="turnoverMonth">{$row['turnoverMonth']}</span>
-            <span class="turnoverYear">{$row['turnoverMonth']}</span>
-            <a href="?ajax&method=getInvoiceBoxHtml&ordNr=$ordNrLink" class="fancybox.ajax"><span class="menu"></span></a>
+            <a class="fancybox.ajax" href="invoiceTextExport.php?ajax&method=getInvoiceBoxHtml&ordNr=$ordNrLink">
+                <span class="turnoverMonth">{$row['priceMonth']} / Mon.</span>
+                <span class="turnoverYear">{$row['priceYear']} / Year</span>
+            </a>
         </li>
 END;
     }
+    echo <<<END
+</body>
+</html>
+END;
 
 }
