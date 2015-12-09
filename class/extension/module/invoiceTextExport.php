@@ -56,7 +56,9 @@ class invoiceTextExport extends extensionModule
             $priceMonth = 0;
             foreach ($row['dispositions'] as $dispo)
             {
-                $priceMonth += $dispo['price']['unit_net'] * $dispo['amount'];
+                // Workaround against RP2-API-Bug #5402189:
+                // unit_net is is calculated wrong: round($rp2UserInputPrice*1.19, 2)/1.19
+                $priceMonth += round($dispo['price']['unit_net'],2) * $dispo['amount'];
             }
             if ($priceMonth > 0)
             {
