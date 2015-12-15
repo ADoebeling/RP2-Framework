@@ -371,7 +371,6 @@ class invoiceTextExport extends extensionModule
 
         else
         {
-            $priceDefault = self::getEuroFormatted($priceDefault);
             $percent = 100 - 100 / round($priceDefault,2) * round($price,2);
             if ($percent == 100 | $percent == 75 | $percent == 50 | $percent == 25 | $percent == 20 | $percent == 10)
             {
@@ -382,8 +381,8 @@ class invoiceTextExport extends extensionModule
             {
                 $discount = self::getEuroFormatted($priceDefault-$price);
             }
+            $priceDefault = self::getEuroFormatted($priceDefault);
             return "$priceDefault | Abzgl. $discount Rabatt";
-
         }
     }
 
