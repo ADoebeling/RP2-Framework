@@ -199,7 +199,7 @@ class invoiceTextExport extends extensionModule
 
                 // Workaround against RP2-API-Bug #5402189:
                 // unit_net is is calculated wrong: round($rp2UserInputPrice*1.19, 2)/1.19
-                $item['priceFormatted'] = self::getPriceFormatted($row['price']['unit_net'] * $row['amount'], $row['price']['default_net'] * $row['amount']);
+                $item['priceFormatted'] = self::getPriceFormatted($row['price']['unit_net'] * $row['amount'], $row['price']['default_net'] * $row['amount'], $row['can_account']);
                 $sumPrice += $row['price']['unit_net'] * $row['amount'];
                 $sumPriceDefault += $row['price']['default_net'] * $row['amount'];
 
@@ -365,15 +365,17 @@ class invoiceTextExport extends extensionModule
      * @param float $priceDefault
      * @param string $patternZero
      * @param string $patternDiscount
+     * @param bool $activeAccounting
      * @return string (12.345,67 €|12.345,- €|12.345,67 € // Abzgl. 1.345,- € Rabatt)
      */
-    static function getPriceFormatted($price, $priceDefault = NULL)
+    static function getPriceFormatted($price, $priceDefault = NULL, $activeAccounting = 1)
     {
+        $suffix = $activeAccounting == 0 ? ' !!INAKTIV!!' : '';
+
         if (round($price,2) >= round($priceDefault,2))
         {
-            return self::getEuroFormatted($price, 'Inklusive');
+            return self::getEuroFormatted($price, "Inklusive$suffix");
         }
-
         else
         {
             $percent = 100 - 100 / round($priceDefault,2) * round($price,2);
@@ -387,7 +389,7 @@ class invoiceTextExport extends extensionModule
                 $discount = self::getEuroFormatted($priceDefault-$price);
             }
             $priceDefault = self::getEuroFormatted($priceDefault);
-            return "$priceDefault | Abzgl. $discount Rabatt";
+            return "$priceDefault | Abzgl. $discount Rabatt$suffix";
         }
     }
 
