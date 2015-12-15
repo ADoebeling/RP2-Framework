@@ -202,9 +202,14 @@ class invoiceTextExport extends extensionModule
                 $item['priceFormatted'] = self::getPriceFormatted($row['price']['unit_net'] * $row['amount'], $row['price']['default_net'] * $row['amount']);
                 $sumPrice += $row['price']['unit_net'] * $row['amount'];
                 $sumPriceDefault += $row['price']['default_net'] * $row['amount'];
-                $return['item'][$row['product']['pronr']] = $item;
+
+                // We need the desc as key for correct sorting AND
+                // need the disposition-id to prohibit overwritten positions
+                // by multiple added positions.
+                $return['item'][$row['product']['pronr'].$row['odid']] = $item;
             }
         }
+        asort($return['item']);
         return (array) $return;
     }
 
