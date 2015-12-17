@@ -255,6 +255,11 @@ class invoiceTextExport extends extensionModule
 
         foreach ($dispos as $row)
         {
+            // Workaround against RP2-API-BUG #5402091:
+            // There is no [product][norm] for ssl-certificates
+            // U need to rename all ssl-certificates to SSL_foobar to get grabbed
+            // here correctly
+            // => readDispositions()
             if ($row['product']['norm'] == 'ext' && strpos($row['product']['pronr'], 'SSL_') === 0)
             {
                 // Workaround against RP2-API-Bug #5402235:
