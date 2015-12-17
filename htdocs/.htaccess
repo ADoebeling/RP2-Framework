@@ -1,0 +1,20 @@
+RewriteEngine on
+RewriteCond %{HTTP:Authorization} ^(.*)
+RewriteRule ^(.*) - [E=HTTP_AUTHORIZATION:%1]
+
+RewriteBase /
+
+# Rewirte 1601-Extensions
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^([a-zA-Z0-9]*)$ extensions/www1601com_$1/ [L]
+
+# Rewirte 1601-Extensions // Backward compatibility
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^([a-zA-Z0-9]*).php$ $1 [R=301,L]
+
+# Rewirte other Extensions
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(\w*_\w*)$ extensions/$1/ [L]
