@@ -17,6 +17,8 @@ require_once __DIR__.'/../../extensionModule.php';
  * @link http://xing.doebeling.de
  * @link https://www.1601.com
  *
+ * @TODO Use bbOrder::readDisposition instead of readEntry to get so_type and clean prices #5401975
+ *
  * @package www1601com\df_rp\extension
  */
 class invoiceTextExport extends extensionModule
@@ -86,10 +88,6 @@ class invoiceTextExport extends extensionModule
         $return['invoiceAddressBlock'] .= !empty($address['adress_2']) ?  $address['adress_2']."\n" : '';
         $return['invoiceAddressBlock'] .= !empty($address['zip']) ?  $address['zip']." " : '';
         $return['invoiceAddressBlock'] .= !empty($address['city']) ?  $address['city']."\n" : '';
-
-        //$return['invoiceAddressBlock'] = "josdf";
-        //echo $return['invoiceAddressBlock'];
-
         return $return;
     }
 
@@ -135,7 +133,6 @@ class invoiceTextExport extends extensionModule
         {
             if ($row['product']['norm'] == 'domain')
             {
-
                 // Workaround against RP2-API-Bug #5401975
                 // $row['product']['name'] is empty:
                 // $return['name'] = $row['product']['name'];
@@ -258,10 +255,6 @@ class invoiceTextExport extends extensionModule
 
         foreach ($dispos as $row)
         {
-            // Workaround against RP2-API-BUG #5402091:
-            // There is no [product][norm] for ssl-certificates
-            // U need to rename all ssl-certificates to SSL_foobar to get grabbed
-            // here correctly
             if ($row['product']['norm'] == 'ext' && strpos($row['product']['pronr'], 'SSL_') === 0)
             {
                 // Workaround against RP2-API-Bug #5402235:
