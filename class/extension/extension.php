@@ -4,9 +4,9 @@ namespace www1601com\df_rp\extension;
 use www1601com\df_rp\api;
 
 require_once __DIR__ . '/../api/api.php';
-require_once __DIR__.'/module/mailExport.php';
-require_once __DIR__.'/module/mgntRatioExport.php';
-require_once __DIR__.'/module/invoiceTextExport.php';
+require_once __DIR__.'/module/www1601com_mailExport/mailExport.php';
+require_once __DIR__.'/module/www1601com_mgntRatioExport/mgntRatioExport.php';
+require_once __DIR__.'/module/www1601com_invoiceTextExport/invoiceTextExport.php';
 
 
 

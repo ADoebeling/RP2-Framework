@@ -1,6 +1,6 @@
 <?php namespace www1601com\df_rp\extension;
 
-require_once __DIR__.'/../extensionModule.php';
+require_once __DIR__.'/../../extensionModule.php';
 
 /**
  * class mgntRatioExport

@@ -10,7 +10,7 @@
  * @version 0.1.151208_dev_1ad
  */
 
-require_once '../class/extension/extension.php';
+require_once '../../../class/extension/extension.php';
 
 $e = new \www1601com\df_rp\extension\extension();
 $e -> httpAuth();
@@ -116,7 +116,6 @@ else
     <meta charset=\"UTF-8\">
     <title>RP²-Extension: InvoiceTextExport</title>
     <meta name=\"author\" content=\"Andreas Doebeling\">
-    <!--<link href=\"style.css\" type=\"text/css\" rel=\"stylesheet\">-->
     <style>
         body
         {
@@ -213,13 +212,13 @@ else
             width: 95% !important;
         }
     </style>
-    <link href=\"static/js/featherlight-1.3.4/release/featherlight.min.css\" type=\"text/css\" rel=\"stylesheet\">
+    <link href=\"extension/static/js/featherlight-1.3.4/release/featherlight.min.css\" type=\"text/css\" rel=\"stylesheet\">
 
 </head>
 
 <body>
-    <script src=\"static/js/jquery-latest.min.js\"></script>
-    <script src=\"static/js/featherlight-1.3.4/release/featherlight.min.js\" type=\"text/javascript\" charset=\"utf-8\"></script>
+    <script src=\"extension/static/js/jquery-latest.min.js\"></script>
+    <script src=\"extension/static/js/featherlight-1.3.4/release/featherlight.min.js\" type=\"text/javascript\" charset=\"utf-8\"></script>
 
 ";
     $lastCustomer = NULL;
