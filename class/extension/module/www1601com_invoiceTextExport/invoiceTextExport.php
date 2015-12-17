@@ -219,41 +219,14 @@ class invoiceTextExport extends extensionModule
      */
     public function getCertificates($ordNr)
     {
-        $dispos = $this->system->orders->load($ordNr)->getData()[$ordNr]['dispositions'];
-        /*
-         * API has some chaos here, see RP2-API-BUG #5402091
-         * [product][name] contains the name of the certificate-type (correct)
-         * [product][descr] contains the certificate-type-desc (correct)
-         * [descr] on top-level contains by default "$name - $descr: $domain"
-         * If someone would edit the default-name in rp2 you don't have any chance to
-         * get the domain of the certificate
-         *
-          Array
-            (
-                [odid] => 123
-                (...)
-                [amount] => 1
-                [descr] => SSL Standard-Zertifikat - Installation und Betrieb eines 256-Bit SSL-Zertifikats / 1 Jahr: www.xxxdomainxxx.com
-                [price_net] =>
-                (...)
-                [product] => Array
-                    (
-                        [peid] => 123
-                        [pos] => 234
-                        (...)
-                        [pronr] => SSL_STANDARD
-                        [name] => SSL Standard-Zertifikat
-                        [descr] => Installation und Betrieb eines 256-Bit SSL-Zertifikats / 1 Jahr
-                        (...)
-                    )
-         */
+        $disposition = $this->system->orders->loadDisposition($ordNr)->getDisposition($ordNr);
 
 
         $sumPrice = 0;
         $sumPriceDefault = 0;
         $return = array();
 
-        foreach ($dispos as $row)
+        foreach ($disposition as $row)
         {
             // Workaround against RP2-API-BUG #5402091:
             // There is no [product][norm] for ssl-certificates
