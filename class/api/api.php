@@ -5,6 +5,7 @@ use www1601com\df_rp\module;
 //require_once('http://share.bfdev.at/5.3/bb.rpc.class.php');
 
 require_once __DIR__.'/bb.rpc.php';
+require_once __DIR__.'/module/user.php';
 require_once __DIR__.'/module/customer.php';
 require_once __DIR__.'/module/order.php';
 require_once __DIR__.'/module/email.php';
@@ -26,7 +27,12 @@ class api {
     /**
      * @var object bbRpc
      */
-    protected $rpc;
+    public $rpc;
+
+    /**
+     * @var object module\user
+     */
+    public $user;
 
     /**
      * @var object module\customer
@@ -50,65 +56,40 @@ class api {
     public function __construct()
     {
         $this->rpc = new \bbRpc();
+        $this->user = new module\user($this);
         $this->customers = new module\customer($this);
         $this->orders = new module\order($this);
         $this->emails = new module\email($this);
     }
 
+
     /**
-     * Authorizes the given user at the api
+     * DEPRECATED
+     * Alias for user::auth()
      *
      * @param $rp2InstanceUrl
      * @param $rp2ApiUser
      * @param $rp2ApiPwd
      * @return $this
-     * @throws \Exception
      */
     public function auth($rp2InstanceUrl, $rp2ApiUser, $rp2ApiPwd)
     {
-        $this->rpc->setUrl($rp2InstanceUrl);
-        $userId = $this->rpc->auth($rp2ApiUser, $rp2ApiPwd);
-        if (!$userId)
-        {
-            throw new \Exception("Login as $rp2ApiUser failed", 401);
-        }
-        // https://doku.premium-admin.eu/doku.php/api/methoden/bbrpc/setutf8native
-        $this->rpc->setUTF8Native(true);
+        $this->user->auth($rp2InstanceUrl, $rp2ApiUser, $rp2ApiPwd);
         return $this;
     }
 
     /**
+     * DEPRECATED
+     * Alias for user::httpAuth()
+     *
      * @return $this
-     * @throws \Exception
-     * @TODO Error Handler
      */
     public function httpAuth()
     {
-        // Get the correct path on http AND ssh/bash
-        $path = isset($_SERVER['DOCUMENT_ROOT']) ? $_SERVER['DOCUMENT_ROOT'] : $_SERVER['PWD'];
-        preg_match("/\\/.*\\/(\\d*)_\\d*\\/.*/", $path, $matches);
-        $dfOrderNr = $matches[1];
-
-        $rp2InstanceUrl = "http://$dfOrderNr.premium-admin.eu/";
-
-
-
-        if (!isset($_SERVER['PHP_AUTH_USER'])) {
-            static::sendHttpAuth($dfOrderNr);
-        }
-
-        $this->auth($rp2InstanceUrl, $_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW']);
-
+        $this->user->httpAuth();
         return $this;
     }
 
-    protected static function sendHttpAuth($dfOrderNr)
-    {
-        header("WWW-Authenticate: Basic realm=\"Please enter your RP2-User and Password for A$dfOrderNr\"");
-        header('HTTP/1.0 401 Unauthorized');
-        echo "Please authenticate with your RP2-Username and -Password.\n".$_SERVER['PHP_AUTH_USER'];
-            exit;
-    }
 
     /**
      * Wrapper for all api-calls
