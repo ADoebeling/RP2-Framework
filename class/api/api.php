@@ -8,6 +8,7 @@ require_once __DIR__.'/bb.rpc.php';
 require_once __DIR__.'/module/user.php';
 require_once __DIR__.'/module/customer.php';
 require_once __DIR__.'/module/order.php';
+require_once __DIR__ . '/module/bbOrder_readDisposition.php';
 require_once __DIR__.'/module/email.php';
 
 /**
@@ -45,6 +46,11 @@ class api {
     public $orders;
 
     /**
+     * @var object module/bbOrder_readDisposition
+     */
+    public $bbOrder_readDisposition;
+
+    /**
      * @var object module\email
      */
     public $email;
@@ -59,6 +65,7 @@ class api {
         $this->user = new module\user($this);
         $this->customers = new module\customer($this);
         $this->orders = new module\order($this);
+        $this->bbOrder_readDisposition = new module\bbOrder_readDisposition($this);
         $this->emails = new module\email($this);
     }
 

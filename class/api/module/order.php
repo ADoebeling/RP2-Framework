@@ -48,37 +48,7 @@ class order extends apiModule
         return $this;
     }
 
-    public function loadDisposition($orderId, $param = ['view' => 'main', 'return_active' => true, 'return_accountable' => true])
-    {
-        // view => main and [so_type] are not part of the api-documentation
-        if ($runOnce && !$this->runOnce(__METHOD__)) return $this;
-        $param['oeid'] = $orderId;
 
-        $result = $this->system->call('bbOrder::readDisposition', $param);
-
-        /*
-         * Patch for stupid/none implemented exchange // df-ticket #5402091 / #5401975
-         */
-        if (strpos($result['so_type'], 'hosting_zusatz_exchange_') === 0)
-        {
-            $regex = "/^(\\S*@\\S*\\.\\S{2,8})/";
-            preg_match($regex, $result['name'], $matches);
-            $result['_patch_exchange_account'] = $matches[1];
-        }
-
-        /*
-         * Patch against stupid/none implemented ssl-certificate // df-ticket #5401975
-         */
-        else if($result['so_type'] == 'ssl')
-        {
-            $regEx = "/(\\S*\\.\\S*\\.\\S*)/";
-            preg_match($regEx, $row['descr'], $domain);
-            $result['_patch_ssldomain'] = $domain[1];
-        }
-
-        $this->disposition[$orderId] = $result;
-        return $this;
-    }
 
     public function getDisposition($ordNr = false)
     {
