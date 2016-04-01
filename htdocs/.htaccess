@@ -1,8 +1,13 @@
 RewriteEngine on
+RewriteBase /
+
+# Force https
+RewriteCond %{SERVER_PORT} !^443$ [nc]
+RewriteRule (.*) https://%{HTTP_HOST}/$1 [R=permanent,nc,L]
+
+# Support for http-auth at fast-cgi
 RewriteCond %{HTTP:Authorization} ^(.*)
 RewriteRule ^(.*) - [E=HTTP_AUTHORIZATION:%1]
-
-RewriteBase /
 
 # Rewirte 1601-Extensions
 RewriteCond %{REQUEST_FILENAME} !-f
