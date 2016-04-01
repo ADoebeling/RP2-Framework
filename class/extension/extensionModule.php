@@ -1,6 +1,7 @@
 <?php
 
 namespace www1601com\df_rp\extension;
+use www1601com\df_rp\system;
 
 /**
  * Model for all RP2-Extension-Modules
@@ -10,10 +11,8 @@ namespace www1601com\df_rp\extension;
 class extensionModule {
 
 
-    /**
-     * @var extension $system
-     */
-    protected $system = extension;
+    /** @var extension $system */
+    protected $system;
 
     /**
      * @var array module-data

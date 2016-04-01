@@ -1,0 +1,5 @@
+01.04.16 22:12:54|| debug|| call('bbDomain::readEntry', ['oeid' => '12','return_frontpage' => '1','return_phpini' => '1',]);|| Array
+(
+    [executionTime] => 4.476
+)
+
