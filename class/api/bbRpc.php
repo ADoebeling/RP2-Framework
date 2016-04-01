@@ -1,4 +1,5 @@
 <?php
+namespace www1601com\df_rp\api;
 /*
  * bbRpc Class (c) 2015 by domainfactory GmbH - www.df.eu
  *

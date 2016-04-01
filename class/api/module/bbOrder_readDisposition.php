@@ -1,7 +1,7 @@
-<?php namespace www1601com\df_rp\module;
+<?php
 
-
-require_once __DIR__.'/../apiModule.php';
+namespace www1601com\df_rp\api\module;
+use www1601com\df_rp\api\apiModule;
 
 /**
  * Implementation of bbOrder:readDisposition
@@ -18,7 +18,7 @@ class bbOrder_readDisposition extends apiModule
      */
     public function setFilterOrderId($oeid = 0)
     {
-        return $this->setParam('oeid', (int) $oeid);
+        return $this->addParam('oeid', (int) $oeid);
     }
 
     /**
@@ -27,7 +27,7 @@ class bbOrder_readDisposition extends apiModule
      */
     public function setFilterAccountable($accountable = false)
     {
-        return $this->setParam('return_accountable', (bool) $accountable);
+        return $this->addParam('return_accountable', (bool) $accountable);
     }
 
     /**
@@ -36,7 +36,7 @@ class bbOrder_readDisposition extends apiModule
      */
     public function setFilterActive($active = false)
     {
-        return $this->setParam('return_active', (bool) $active);
+        return $this->addParam('return_active', (bool) $active);
     }
 
 

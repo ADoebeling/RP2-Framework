@@ -1,7 +1,9 @@
-<?php namespace www1601com\df_rp\module;
+<?php
 
+namespace www1601com\df_rp\api\module;
+use www1601com\df_rp\api\apiModule;
+use www1601com\df_rp\system\module\log;
 
-require_once __DIR__.'/../apiModule.php';
 class user extends apiModule {
 
     /**
@@ -18,12 +20,14 @@ class user extends apiModule {
         $userId = $this->system->rpc->auth($rp2ApiUser, $rp2ApiPwd);
         if (!$userId)
         {
+            log::warning("Faild to login as '$rp2ApiUser' from ".$_SERVER['REMOTE_ADDR'], $_SERVER);
             return false;
         }
         else
         {
             // https://doku.premium-admin.eu/doku.php/api/methoden/bbrpc/setutf8native
             $this->system->rpc->setUTF8Native(true);
+            log::info("Successful login as '$rp2ApiUser' from ".$_SERVER['REMOTE_ADDR']);
             return true;
         }
     }

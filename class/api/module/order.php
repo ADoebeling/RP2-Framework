@@ -1,7 +1,8 @@
-<?php namespace www1601com\df_rp\module;
+<?php
 
+namespace www1601com\df_rp\api\module;
+use www1601com\df_rp\api\apiModule;
 
-require_once __DIR__.'/../apiModule.php';
 class order extends apiModule
 {
 

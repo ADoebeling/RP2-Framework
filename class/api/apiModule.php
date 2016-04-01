@@ -1,7 +1,6 @@
 <?php
 
-namespace www1601com\df_rp\module;
-use www1601com\df_rp\api;
+namespace www1601com\df_rp\api;
 
 /**
  * Model for all API-Modules
@@ -9,6 +8,18 @@ use www1601com\df_rp\api;
  * @package www1601com\df_rp\module
  */
 class apiModule {
+
+    protected $rpcClass = NULL;
+
+    /**
+     * Build the class-structure
+     *
+     * @param api $system
+     */
+    public function __construct(api &$system)
+    {
+        $this->system = &$system;
+    }
 
     /*******
      * v2
@@ -29,7 +40,7 @@ class apiModule {
      * @param mixed $value
      * @return $this
      */
-    protected function setParam($name, $value)
+    protected function addParam($name, $value)
     {
         $this->params[(string) $name] = $value;
         return $this;
@@ -102,7 +113,7 @@ class apiModule {
         }
         else
         {
-            $result = $this->call(self::rpcClass, $this->params);
+            $result = $this->system->call($this->rpcClass, $this->params);
             $this->cache[$this->getPk($this->params)] = $result;
         }
         return $patchResult ? $this->getPatchedResult($result) : $result;
@@ -146,15 +157,7 @@ class apiModule {
      */
     protected $runOnce = [];
 
-    /**
-     * Build the class-structure
-     *
-     * @param api $system
-     */
-    public function __construct(api &$system)
-    {
-        $this->system = &$system;
-    }
+
 
     /**
      * Returns a array with the previous load data, sorted by oeid
