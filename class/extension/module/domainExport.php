@@ -1,8 +1,9 @@
 <?php
 
-namespace www1601com\df_rp\extension;
-use www1601com\df_rp\api\module\bbDomain_readEntry;
-use www1601com\df_rp\system\module\log;
+namespace rpf\extension\module;
+use rpf\api\module\bbDomain_readEntry;
+use rpf\extension\extensionModule;
+use rpf\system\module\log;
 
 /**
  * Class domainExport
@@ -16,7 +17,7 @@ use www1601com\df_rp\system\module\log;
  * @link https://www.1601.com
  * @version 0.1.160401_1ad
  *
- * @package www1601com\df_rp\extension
+ * @package system\extension
  */
 class domainExport extends extensionModule
 {
@@ -33,25 +34,33 @@ class domainExport extends extensionModule
     public function buildDomainList()
     {
         /** @var bbDomain_readEntry $domains */
-        $domains = $this->system->bbDomain_readEntry;
-
+        $domains = $this->getApi()->getDomainReadEntry();
+        
         $result = $domains
             ->addSettings()
             ->addSubdomain()
             ->get();
-        foreach ($result as $domain)
+
+        if (!is_array($result))
         {
-            $phpVersion = &$domain['settings']['php_version'];
-            if (isset($domain['subdomain']) && is_array($domain['subdomain']))
-            foreach ($domain['subdomain'] as $subdomain)
+            log::warning('There are no domains you could export?!', __METHOD__);
+        }
+        else
+        {
+            foreach ($result as $domain)
             {
-                $this->domainList[$subdomain['name']] =
-                    [
-                        'name' => $subdomain['name'],
-                        'orderNr' => $subdomain['ordnr'],
-                        'phpVersion' => $phpVersion,
-                        'target' => $subdomain['target']
-                    ];
+                $phpVersion = &$domain['settings']['php_version'];
+                if (isset($domain['subdomain']) && is_array($domain['subdomain']))
+                foreach ($domain['subdomain'] as $subdomain)
+                {
+                    $this->domainList[$subdomain['name']] =
+                        [
+                            'name' => $subdomain['name'],
+                            'orderNr' => $subdomain['ordnr'],
+                            'phpVersion' => $phpVersion,
+                            'target' => $subdomain['target']
+                        ];
+                }
             }
         }
         return $this;
@@ -79,7 +88,7 @@ class domainExport extends extensionModule
     public function sendDownloadCsv($filename = NULL)
     {
         $filename = $filename !== NULL ? $filename : 'DomainExport_'.date('ymd').'_1SRV.csv';
-        log::info("Download started: $filename");
+        log::info("Download started: $filename", __METHOD__);
         header('Content-Type: text/html; charset=iso-8859-15');
         header('Content-Type: application/csv');
         header("Content-Disposition: attachment; filename=\"$filename\";");

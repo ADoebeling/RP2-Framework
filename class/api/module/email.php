@@ -1,13 +1,13 @@
-<?php namespace www1601com\df_rp\api\module;
+<?php namespace rpf\api\module;
 
-use www1601com\df_rp\api\apiModule;
+use rpf\api\apiModule;
 
 require_once __DIR__.'/../apiModule.php';
 
 /**
  * RP2-API-Module email
  *
- * @package www1601com\df_rp\module
+ * @package system\module
  */
 class email extends apiModule
 {

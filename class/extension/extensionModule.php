@@ -1,41 +1,14 @@
 <?php
 
-namespace www1601com\df_rp\extension;
-use www1601com\df_rp\system;
+namespace rpf\extension;
+use rpf\system\module;
 
 /**
  * Model for all RP2-Extension-Modules
  *
- * @package www1601com\df_rp\extension
+ * @package system\extension
  */
-class extensionModule {
+class extensionModule extends module
+{
 
-
-    /** @var extension $system */
-    protected $system;
-
-    /**
-     * @var array module-data
-     */
-    protected $data = array();
-
-    /**
-     * Builds the class-structure
-     *
-     * @param extension $system
-     */
-    public function __construct(extension &$system)
-    {
-        $this->system = &$system;
-    }
-
-    /**
-     * Returns a array with the previous load data
-     *
-     * @return array
-     */
-    public function getData()
-    {
-        return $this->data;
-    }
 }

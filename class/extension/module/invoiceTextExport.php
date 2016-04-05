@@ -1,6 +1,6 @@
-<?php namespace www1601com\df_rp\extension;
+<?php namespace rpf\extension;
 
-require_once __DIR__.'/../../extensionModule.php';
+require_once __DIR__ . '/../../extensionModule.php';
 
 /**
  * Class invoiceTextExport
@@ -19,7 +19,7 @@ require_once __DIR__.'/../../extensionModule.php';
  *
  * @TODO Use bbOrder::readDisposition instead of readEntry to get so_type and clean prices #5401975
  *
- * @package www1601com\df_rp\extension
+ * @package system\extension
  */
 class invoiceTextExport extends extensionModule
 {
@@ -316,12 +316,12 @@ class invoiceTextExport extends extensionModule
 
 
     /**
-     * Formats float into 12.345,67 € and integer into 12.345,- €
+     * Formats float into 12.345,67 ï¿½ and integer into 12.345,- ï¿½
      * Returns $zeroString if price is NULL
      *
      * @param float|int $price
      * @param string $zeroString = Inklusive
-     * @return string (12.345,67 €|12.345,- €|Inklusive)
+     * @return string (12.345,67 ï¿½|12.345,- ï¿½|Inklusive)
      */
     static function getEuroFormatted($price, $zeroString = 'Inklusive')
     {
@@ -337,7 +337,7 @@ class invoiceTextExport extends extensionModule
      * @param string $patternZero
      * @param string $patternDiscount
      * @param bool $activeAccounting
-     * @return string (12.345,67 €|12.345,- €|12.345,67 € // Abzgl. 1.345,- € Rabatt)
+     * @return string (12.345,67 ï¿½|12.345,- ï¿½|12.345,67 ï¿½ // Abzgl. 1.345,- ï¿½ Rabatt)
      */
     static function getPriceFormatted($price, $priceDefault = NULL, $activeAccounting = 1)
     {

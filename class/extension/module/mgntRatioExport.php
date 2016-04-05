@@ -1,6 +1,6 @@
-<?php namespace www1601com\df_rp\extension;
+<?php
 
-require_once __DIR__.'/../../extensionModule.php';
+namespace rpf\extension\module;
 
 /**
  * class mgntRatioExport
@@ -37,7 +37,7 @@ require_once __DIR__.'/../../extensionModule.php';
  * @link https://www.xing.com/profile/Andreas_Doebeling/
  * @link https://github.com/ADoebeling
  *
- * @package www1601com\df_rp\extension
+ * @package system\extension
  *
  * @version 0.1.151021_dev_1ad
  */
@@ -491,7 +491,7 @@ class mgntRatioExport extends extensionModule
             'Anzahl;'.
             ';'.
 
-            'Ø-Listenpreis (Stk./Mon.);'.
+            'ï¿½-Listenpreis (Stk./Mon.);'.
             ' - Fremdkosten;'.
             'db1;'.
             ';'.
@@ -518,11 +518,11 @@ class mgntRatioExport extends extensionModule
             ';'.
 
             'Niedrigstpreis (Kosten+15% / Stk./Mon.); '.
-            'Ø-Verkaufspreis (Stk./Mon.);'.
+            'ï¿½-Verkaufspreis (Stk./Mon.);'.
             'Umsatz (Gesamt/Mon.); '.
             ';'.
 
-            'RP2-Auftäge;'.
+            'RP2-Auftï¿½ge;'.
             "\n\n";
 
         foreach ($this->data['product'] as $type => &$products)
@@ -615,20 +615,20 @@ class mgntRatioExport extends extensionModule
             self::getEuroFormattedCsvColumn($total['turnoverBilled']).
             self::getEuroFormattedCsvColumn($total['turnoverRegular']);
 
-        $csv .= "\n\n\n\nGenerated with mgntRatioExport: https://github.com/ADoebeling/RP2-Toolbox \nCopyright (C) 2015 by Andreas Döbeling <ad@1601.com> - 1601.production, Siegler&Thümmler ohg, Erlangen";
+        $csv .= "\n\n\n\nGenerated with mgntRatioExport: https://github.com/ADoebeling/RP2-Toolbox \nCopyright (C) 2015 by Andreas Dï¿½beling <ad@1601.com> - 1601.production, Siegler&Thï¿½mmler ohg, Erlangen";
 
         return $csv;
     }
 
     /**
-     * Returns given $float as "1.234,56 €;"
+     * Returns given $float as "1.234,56 ï¿½;"
      *
      * @param $float
      * @return string
      */
     public static function getEuroFormattedCsvColumn($float)
     {
-        return number_format($float, 2, ',', '.').' €; ';
+        return number_format($float, 2, ',', '.').' ï¿½; ';
     }
 
     /**

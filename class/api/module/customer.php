@@ -1,7 +1,7 @@
 <?php
 
-namespace www1601com\df_rp\api\module;
-use www1601com\df_rp\api\apiModule;
+namespace rpf\api\module;
+use rpf\api\apiModule;
 
 class customer extends apiModule{
 

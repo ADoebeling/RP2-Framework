@@ -1,200 +1,140 @@
 <?php
 
-namespace www1601com\df_rp\api;
+namespace rpf\api;
+use rpf\system\module;
 
 /**
- * Model for all API-Modules
+ * RPF API-Module-Class
  *
- * @package www1601com\df_rp\module
+ * @author Andreas Doebeling <ad@1601.com>
+ * @copyright 1601.production siegler&thuemmler ohg
+ * @link https://github.com/ADoebeling/RP2-Framework
+ * @link https://xing-ad.1601.com
+ * @link https://www.1601.com
  */
-class apiModule {
-
-    protected $rpcClass = NULL;
-
+class apiModule extends module
+{
     /**
-     * Build the class-structure
-     *
-     * @param api $system
+     * Name of the RPC-Methode
+     * @var string
      */
-    public function __construct(api &$system)
-    {
-        $this->system = &$system;
-    }
-
-    /*******
-     * v2
-     ******/
+    protected $rpcMethod = 'UNDEFINED';
 
     /**
      * @var array call-params (filter, return, format, ...)
      */
-    protected $params = array();
+    private $rpcParams = array();
 
     /**
-     * @var array [jscon_encode($param)] = array() unpatched api-response
+     * @var array ['requestString' => $result]
      */
-    protected $runtimeCache = array();
+    private $rpcCache = array();
 
-    /**
+
+      /**
      * @param string $name
      * @param mixed $value
      * @return $this
      */
     protected function addParam($name, $value)
     {
-        $this->params[(string) $name] = $value;
+        $this->rpcParams[(string) $name] = $value;
         return $this;
     }
 
     /**
-     * @param array $result
-     * @return $this
-     */
-    protected function setRuntimeCache($result)
-    {
-        $this->cache[$this->getPk($this->params)] = (array) $result;
-        return $this;
-    }
-
-    /**
+     * Get result of api-request
+     *
+     * @param bool|string $cache (false, true = runtime, memcache)
      * @return array|bool
      */
-    protected function getRuntimeCache()
+    public function get($cache = true)
     {
-        if (isset($this->cache[$this->getPk($this->params)]))
+        return $this->getRpcResponse($this->rpcMethod, $this->rpcParams, null, $cache);
+    }
+
+    /**
+     * Wrapper for all api-calls with build-in caching
+     *
+     * @param $sMethod
+     * @param array $hArgs
+     * @param null $hPlaceholders
+     * @param bool|string $cache
+     * @return null
+     * @throws \Exception
+     */
+    private function getRpcResponse($sMethod, $hArgs=array(), $hPlaceholders=null, $cache = true)
+    {
+        $requestString = '';
+        foreach ($this->rpcParams as $name => $value)
         {
-            return (array) $this->cache[$this->getPk($this->params)];
+            if (!is_string($value) && !is_bool($value))
+            {
+                throw new module\exception("Sorry, Params can't be ".\gettype($value));
+            }
+            $requestString .= empty($requestString) ? $sMethod.'(' : ',';
+            $requestString .= "'$name' => '$value'";
+        }
+        $requestString .= ')';
+
+
+
+        if ($cache === true && isset($this->rpcCache[$requestString]))
+        {
+            module\log::debug('Getting RPC-Response from runtime-cache', __METHOD__ . "($requestString)");
+            return $this->rpcCache[$requestString];
+        }
+        else if ($cache === 'memcache')
+        {
+            throw new module\exception('Sorry, memcach is not implemented yet');
         }
         else
         {
-            return false;
+            $duration = microtime(1);
+            global $_BBRPC_Msgs;
+            $this->rpcCache[$requestString] = bbRpc::call($sMethod,$hArgs,$hPlaceholders);
+            $duration = round(microtime(1)-$duration, 3);
+            $resultCounter = count($this->rpcCache[$requestString]);
+            module\log::debug("Performing RPC-Request within $duration sec.", __METHOD__);
+            module\log::debug("Getting $resultCounter rows ", $requestString);
+            $this->fetchRpcLog();
         }
+        return $this->rpcCache[$requestString];
     }
 
     /**
-     * @param array $result
-     * @return array
+     * @todo fix me, seems like I'm broken
      */
-    protected function getPatchedResult($result = array())
+    protected function fetchRpcLog()
     {
-        return (array) $result;
-    }
+        // I realy don't like the way of fetching RPC-Error-Messages...
+        //$hLoglvl = array("error"=>0, "warn"=>1, "notice"=>2, "ok"=>3, "debug"=>4);
+        global $_BBRPC_Msgs;
 
-    /**
-     * @return $this
-     */
-    protected function setPatchedParams()
-    {
-        $this->params['return_array'] = true;
-
-        // Fix misspelled adress/address
-        foreach ($this->params as $key => $val)
+        if (is_array($_BBRPC_Msgs))
         {
-            if (strpos($key, 'address') !== false)
+            foreach ($_BBRPC_Msgs as $key => &$hMsg)
             {
-                $misspelling = $key;
-                str_replace('address', 'adress', $misspelling);
-                $this->params[$misspelling] = $val;
+                switch ($hMsg["typ"])
+                {
+                    case 0:
+                        module\log::error("RPC-Msg.: $hMsg", __METHOD__);
+                        break;
+                    case 1:
+                        module\log::warning("RPC-Msg.: $hMsg", __METHOD__);
+                        break;
+                    case 2:
+                        module\log::info("RPC-Msg.: $hMsg", __METHOD__);
+                        break;
+                    case 3:
+                        module\log::debug("RPC-Msg.: OK! $hMsg", __METHOD__);
+                        break;
+                    case 4:
+                        module\log::debug("RPC-Msg.: $hMsg", __METHOD__);
+                        break;
+                }
+                unset($_BBRPC_Msgs[$key]);
             }
         }
-        return $this;
-    }
-
-    /**
-     * @param string $cache
-     * @param bool $patchResult
-     * @return array|bool
-     */
-    public function get($cache = 'runtime', $patchResult = true)
-    {
-        if ($cache == 'runtime' && $this->getRuntimeCache() !== false)
-        {
-            $result = $this->getRuntimeCache();
-        }
-        else
-        {
-            $result = $this->system->call($this->rpcClass, $this->params);
-            $this->cache[$this->getPk($this->params)] = $result;
-        }
-        return $patchResult ? $this->getPatchedResult($result) : $result;
-    }
-
-
-
-
-    /*******
-     * v1
-     ******/
-
-
-
-
-
-    /**
-     * @var object api
-     */
-    protected $system;
-
-    /**
-     * DEPRECATED
-     * @var array $order['oeid'][$key] = [$value]
-     */
-    protected $orders;
-
-    /**
-     * DEPRECATED
-     * @var array various imported data
-     */
-    protected $data;
-
-    /**
-     * @var array cache for all requests
-     */
-    protected $cache = array();
-
-    /**
-     * @var array Stores all already executed methods
-     */
-    protected $runOnce = [];
-
-
-
-    /**
-     * Returns a array with the previous load data, sorted by oeid
-     *
-     * @return array $order['oeid'][$key] = [$value]
-     */
-    public function getOrders()
-    {
-        return $this->orders;
-    }
-
-    /**
-     * Returns a array with the previous load data
-     *
-     * @return array
-     */
-    public function getData()
-    {
-        return $this->data;
-    }
-
-    public function runOnce($method)
-    {
-        if (!isset($this->runOnce[$method]))
-        {
-            $this->runOnce[$method] = 1;
-            return true;
-        }
-        else
-        {
-            $this->runOnce[$method]++;
-            return false;
-        }
-    }
-
-    public function getPk(array $parameters)
-    {
-        return json_encode($parameters);
     }
 }
