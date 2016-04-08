@@ -13,7 +13,6 @@ class bbMysql_readEntry extends apiModule
 {
     protected $rpcMethod = 'bbMysql::readEntry';
 
-
     /**
      * Set filter on name
      *
@@ -24,7 +23,6 @@ class bbMysql_readEntry extends apiModule
     {
         return $this->addParam('name', (string) $name);
     }
-
 
     /**
      * Set filter on oeid
@@ -38,14 +36,13 @@ class bbMysql_readEntry extends apiModule
         return $this->addParam('oeid', (integer) $oeid);
     }
 
-
     /**
      * Set filter on seid
      *
-     * @param ???
-     * @return $this
+     * @param $seid
+     * @return ??
      */
-    public function setDomainId($seid)
+    public function setSeid($seid)
     {
         return $this->addParam('seid', (integer) $seid);
     }

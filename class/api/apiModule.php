@@ -68,10 +68,10 @@ class apiModule extends module
         $requestString = '';
         foreach ($this->rpcParams as $name => $value)
         {
-            if (!is_string($value) && !is_bool($value))
+            /*if (!is_string($value) && !is_bool($value))
             {
                 throw new module\exception("Sorry, Params can't be ".\gettype($value));
-            }
+            }*/
             $requestString .= empty($requestString) ? $sMethod.'(' : ',';
             $requestString .= "'$name' => '$value'";
         }

@@ -19,9 +19,8 @@ class bbMysql_inuseEntry extends apiModule
      * @param $seid
      * @return $this
      */
-    public function setName($seid)
+    public function setSeid($seid)
     {
-        return $this->addParam('name', (integer) $seid);
+        return $this->addParam('seid', $seid);
     }
-
 }

@@ -2,6 +2,14 @@
 
 namespace rpf\api;
 use rpf\api\module\bbDomain_readEntry;
+use rpf\api\module\bbCustomer_readEntry;
+use rpf\api\module\bbCustomer_readAddress;
+use rpf\api\module\bbCustomer_readDiscount;
+use rpf\api\module\bbCustomer_readPayment;
+use rpf\api\module\bbCustomer_readTitle;
+use rpf\api\module\bbCustomer_validateAddress;
+use rpf\api\module\bbCustomer_validateEntry;
+use rpf\api\module\bbCustomer_validatePayinfo;
 use rpf\api\module\bbOrder_readDisposition;
 use rpf\api\module\customer;
 use rpf\api\module\email;
@@ -35,6 +43,70 @@ class api extends apiModule
     public function getDomainReadEntry()
     {
         return $this->getModule(bbDomain_readEntry::class);
+    }
+
+    /**
+     * @return bbCustomer_readEntry
+     */
+    public function getCustomerReadEntry()
+    {
+        return $this->getModule(bbCustomer_readEntry::class);
+    }
+
+    /**
+     * @return bbCustomer_readAddress
+     */
+    public function getCustomerReadAddress()
+    {
+        return $this->getModule(bbCustomer_readAddress::class);
+    }
+
+    /**
+     * @return bbCustomer_readDiscount
+     */
+    public function getCustomerReadDiscount()
+    {
+        return $this->getModule(bbCustomer_readDiscount::class);
+    }
+
+    /**
+     * @return bbCustomer_readPayment
+     */
+    public function getCustomerReadPayment()
+    {
+        return $this->getModule(bbCustomer_readPayment::class);
+    }
+
+    /**
+     * @return bbCustomer_readTitle
+     */
+    public function getCustomerReadTitle()
+    {
+        return $this->getModule(bbCustomer_readTitle::class);
+    }
+
+    /**
+     * @return bbCustomer_validateAddress
+     */
+    public function getCustomerValidateAddress()
+    {
+        return $this->getModule(bbCustomer_validateAddress::class);
+    }
+
+    /**
+     * @return bbCustomer_validateEntry
+     */
+    public function getCustomerValidateEntry()
+    {
+        return $this->getModule(bbCustomer_validateEntry::class);
+    }
+
+    /**
+     * @return bbCustomer_validateEntry
+     */
+    public function getCustomerValidatePayinfo()
+    {
+        return $this->getModule(bbCustomer_validatePayinfo::class);
     }
 
     /**
