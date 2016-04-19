@@ -2,6 +2,13 @@
 
 namespace rpf\api;
 use rpf\api\module\bbDomain_readEntry;
+use rpf\api\module\bbDomain_readFrontpage;
+use rpf\api\module\bbDomain_readHandles;
+use rpf\api\module\bbDomain_readPhpini;
+use rpf\api\module\bbDomain_readSettings;
+use rpf\api\module\bbDomain_readSubdomain;
+use rpf\api\module\bbDomain_readWebalizerSettings;
+use rpf\api\module\bbDomain_searchEntry;
 use rpf\api\module\bbCustomer_readEntry;
 use rpf\api\module\bbCustomer_readAddress;
 use rpf\api\module\bbCustomer_readDiscount;
@@ -43,6 +50,62 @@ class api extends apiModule
     public function getDomainReadEntry()
     {
         return $this->getModule(bbDomain_readEntry::class);
+    }
+
+    /**
+     * @return bbDomain_readFrontpage
+     */
+    public function getDomainReadFrontpage()
+    {
+        return $this->getModule(bbDomain_readFrontpage::class);
+    }
+
+    /**
+     * @return bbDomain_readHandles
+     */
+    public function getDomainReadHandles()
+    {
+        return $this->getModule(bbDomain_readHandles::class);
+    }
+
+    /**
+     * @return bbDomain_readPhpini
+     */
+    public function getDomainReadPhpini()
+    {
+        return $this->getModule(bbDomain_readPhpini::class);
+    }
+
+    /**
+     * @return bbDomain_readSettings
+     */
+    public function getDomainReadSettings()
+    {
+        return $this->getModule(bbDomain_readSettings::class);
+    }
+
+    /**
+     * @return bbDomain_readSubdomain
+     */
+    public function getDomainReadSubdomain()
+    {
+        return $this->getModule(bbDomain_readSubdomain::class);
+    }
+
+    /**
+     * @return bbDomain_readWebalizerSettings
+     */
+    public function getDomainReadWebalizerSettings()
+    {
+        return $this->getModule(bbDomain_readWebalizerSettings::class);
+    }
+
+    /**
+     * @return bbDomain_searchEntry
+     */
+    public function getDomainsearchEntry()
+    {
+        return $this->getModule(bbDomain_searchEntry::class);
     }
 
     /**
