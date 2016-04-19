@@ -46,6 +46,28 @@ class bbQuota_readEntry extends apiModule
     }
 
     /**
+     * Set filter on ServiceObject Entry Id
+     *
+     * @param $seid
+     * @return $this
+     */
+    public function setServiceObjectEntryId($seid)
+    {
+        return $this->setSeid($seid);
+    }
+
+    /**
+     * Set filter on order-id
+     *
+     * @param $oeid
+     * @return $this
+     */
+    public function setOrderId($oeid)
+    {
+        return $this->setOeid($oeid);
+    }
+
+    /**
      * Set filter on uid
      *
      * @param $uid
