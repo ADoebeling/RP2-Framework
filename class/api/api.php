@@ -18,6 +18,7 @@ use rpf\api\module\bbCustomer_readTitle;
 use rpf\api\module\bbCustomer_validateAddress;
 use rpf\api\module\bbCustomer_validateEntry;
 use rpf\api\module\bbCustomer_validatePayinfo;
+use rpf\api\module\bbQuota_readEntry;
 use rpf\api\module\bbOrder_readDisposition;
 use rpf\api\module\customer;
 use rpf\api\module\email;
@@ -187,6 +188,14 @@ class api extends apiModule
     public function getOrderReadDisposition()
     {
         return $this->getModule(bbOrder_readDisposition::class);
+    }
+
+    /**
+     * @return bbQuota_readEntry
+     */
+    public function getQuotaReadEntry()
+    {
+        return $this->getModule(bbQuota_readEntry::class);
     }
 
 
