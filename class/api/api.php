@@ -9,6 +9,7 @@ use rpf\api\module\bbDomain_readSettings;
 use rpf\api\module\bbDomain_readSubdomain;
 use rpf\api\module\bbDomain_readWebalizerSettings;
 use rpf\api\module\bbDomain_searchEntry;
+use rpf\api\module\bbEmail_readAccount;
 use rpf\api\module\bbCustomer_readEntry;
 use rpf\api\module\bbCustomer_readAddress;
 use rpf\api\module\bbCustomer_readDiscount;
@@ -106,6 +107,14 @@ class api extends apiModule
     public function getDomainsearchEntry()
     {
         return $this->getModule(bbDomain_searchEntry::class);
+    }
+
+    /**
+    * @return bbEmail_readAccount
+    */
+    public function getEmailReadAccount()
+    {
+        return $this->getModule(bbEmail_readAccount::class);
     }
 
     /**
