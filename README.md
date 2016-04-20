@@ -25,14 +25,14 @@ _Status: Implemented but not published yet_
 Exports the invoice-texts for each order as copy&paste template  
 _Status: Implemented but not published yet_
 
-* **mysqlExport** (WIP)  
-CSV-Export of all mysql-databases.  
-_Status: Not implemented yet_
- 
 * **mysqlBackup** (WIP)  
 Backup & Restore-Manager for mysql-databases  
 _Status: Not implemented yet_
 
+* **mysqlExport** (WIP)  
+CSV-Export of all mysql-databases.  
+_Status: Not implemented yet_
+ 
 * **mgntRatioExport** (WIP)  
 Calculation-sheet with costs and contribution margin for every article  
 _Status: Implemented but not published yet_
@@ -44,8 +44,8 @@ _Status: Implemented but not published yet_
 
 ### Installation of RPF-Extensions
 
-* Download the [latest release](https://github.com/ADoebeling/RP2-Framework/releases)  and unzip it on your server
-(On Bash: `wget https://github.com/ADoebeling/RP2-Framework/archive/XXX.tgz && tar xzf XXX.tgz`
+* Download the [latest release](https://github.com/ADoebeling/RP2-Framework/releases)  and unzip it on your server  
+(On Bash: `wget https://github.com/ADoebeling/RP2-Framework/archive/XXX.tgz && tar xzf XXX.tgz`)  
 * Setup a new subdomain (with ssl-wildcard-cert and php 5.6) and point the target to htdocs
 * Open the subdomain in your browser. You're done.
 * By default no configuration is necessary 
@@ -73,40 +73,14 @@ Me too! The api-user and api-password can requested by http-auth:
 
 ```php
 $rpf
-    ->getApi()                                  // Optional: Load the api
-    ->getUser()                                 // Optional: Load the user-module
-    ->httpAuth();                               // Optional: Send http-auth if you need to authenticate first
+    ->getApi()                                  // Load the api
+    ->getUser()                                 // Load the user-module
+    ->httpAuth();                               // Send http-auth if you need to authenticate first
 ```
 
 The code is 100% ide-compatible, so code-completion works fine. Never again look into the api-manual.
+Every action and every call are getting detailed logged an can be monitored with `tail -f logs/syslog_YYMMDD_1SRV.log` on bash.
 
-Every action and every call are getting logged an can be monitored with `tail -f $logfile` on bash:
-
-```
-[Tue, 05 Apr 2016 23:57:52 +0200] [debug] rpf\classLoader('rpf\system\module\log');                                     // Include /class/system/module/log.php
-[Tue, 05 Apr 2016 23:57:52 +0200] [debug] rpf\classLoader('rpf\system\module');                                         // Include /class/system/module.php
-[Tue, 05 Apr 2016 23:57:52 +0200] [debug] rpf\classLoader('rpf\system\rpf');                                            // Include /class/system/rpf.php
-[Tue, 05 Apr 2016 23:57:52 +0200] [debug] rpf\system\rpf::__construct();                                                // Starting Session
-[Tue, 05 Apr 2016 23:57:52 +0200] [debug] rpf\classLoader('rpf\system\module\moduleManager');                           // Include /class/system/module/moduleManager.php
-[Tue, 05 Apr 2016 23:57:52 +0200] [debug] rpf\system\module\moduleManager::add(\rpf\api\api);                           // Instantiating \rpf\api\api()
-[Tue, 05 Apr 2016 23:57:52 +0200] [debug] rpf\classLoader('rpf\api\apiModule');                                         // Include /class/api/apiModule.php
-[Tue, 05 Apr 2016 23:57:52 +0200] [debug] rpf\classLoader('rpf\api\api');                                               // Include /class/api/api.php
-[Tue, 05 Apr 2016 23:57:52 +0200] [debug] rpf\system\module\moduleManager::add(rpf\api\module\user);                    // Instantiating rpf\api\module\user()
-[Tue, 05 Apr 2016 23:57:52 +0200] [debug] rpf\classLoader('rpf\api\module\user');                                       // Include /class/api/module/user.php
-[Tue, 05 Apr 2016 23:57:52 +0200] [debug] bbRpc::setUrl(http://xxx.premium-admin.eu/);                                  // Setting RPC-URL
-[Tue, 05 Apr 2016 23:57:52 +0200] [debug] rpf\classLoader('rpf\api\bbRpc');                                             // Include /class/api/bbRpc.php
-[Tue, 05 Apr 2016 23:57:52 +0200] [info]  bbRpc::auth(TESTUSER, *****);                                                 // Login successful from 188.194.5.164 within 0.209 sec.
-[Tue, 05 Apr 2016 23:57:52 +0200] [debug] bbRpc::setUTF8Native(true);                                                   // Set UTF-8
-[Tue, 05 Apr 2016 23:57:52 +0200] [debug] rpf\system\module\moduleManager::add(\rpf\extension\extension);               // Instantiating \rpf\extension\extension()
-[Tue, 05 Apr 2016 23:57:52 +0200] [debug] rpf\classLoader('rpf\extension\extension');                                   // Include /class/extension/extension.php
-[Tue, 05 Apr 2016 23:57:52 +0200] [debug] rpf\system\module\moduleManager::add(rpf\extension\module\domainExport);      // Instantiating rpf\extension\module\domainExport()
-[Tue, 05 Apr 2016 23:57:52 +0200] [debug] rpf\classLoader('rpf\extension\extensionModule');                             // Include /class/extension/extensionModule.php
-[Tue, 05 Apr 2016 23:57:52 +0200] [debug] rpf\classLoader('rpf\extension\module\domainExport');                         // Include /class/extension/module/domainExport.php
-[Tue, 05 Apr 2016 23:57:52 +0200] [debug] rpf\system\module\moduleManager::add(rpf\api\module\bbDomain_readEntry);      // Instantiating rpf\api\module\bbDomain_readEntry()
-[Tue, 05 Apr 2016 23:57:52 +0200] [debug] rpf\classLoader('rpf\api\module\bbDomain_readEntry');                         // Include /class/api/module/bbDomain_readEntry.php
-[Tue, 05 Apr 2016 23:57:54 +0200] [debug] rpf\api\apiModule::getRpcResponse();                                          // Performing RPC-Request within 1.47 sec.
-[Tue, 05 Apr 2016 23:57:54 +0200] [debug] bbDomain::readEntry('return_settings' => '1','return_subdomain' => '1');      // Getting 735 rows
-[Tue, 05 Apr 2016 23:57:54 +0200] [debug] rpf\system\rpf::__destruct();                                                 // Ending Session
 
 ```
 
