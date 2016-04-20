@@ -82,7 +82,8 @@ $rpf
 ### Using the RPF-API
 
 * Install the rpf-extensions like described above
-* Have a look to the example-folder
+* Have a look to the [example-folder](https://github.com/ADoebeling/RP2-Framework/tree/master/htdocs/examples) and the [api-documentation](http://adoebeling.github.io/RP2-Framework/)
+* Have a look to the 
 * Create your first extension and start over
 * The code is 100% ide-compatible and well documented, so code-completion works fine. 
 * Every action and every call are getting detailed logged an can be monitored with `tail -f logs/syslog_YYMMDD_1SRV.log` on bash.
