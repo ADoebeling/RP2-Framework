@@ -18,8 +18,12 @@ use rpf\api\module\bbCustomer_readTitle;
 use rpf\api\module\bbCustomer_validateAddress;
 use rpf\api\module\bbCustomer_validateEntry;
 use rpf\api\module\bbCustomer_validatePayinfo;
+use rpf\api\module\bbCustomer_getFreeOrdNr;
 use rpf\api\module\bbQuota_readEntry;
 use rpf\api\module\bbOrder_readDisposition;
+use rpf\api\module\bbOrder_readEntry;
+use rpf\api\module\bbOrder_readAccountAddress;
+use rpf\api\module\bbOrder_readAccountEntry;
 use rpf\api\module\customer;
 use rpf\api\module\email;
 use rpf\api\module\order;
@@ -183,11 +187,43 @@ class api extends apiModule
     }
 
     /**
+     * @return bbCustomer_validateEntry
+     */
+    public function getCustomerGetFreeOrdNr()
+    {
+        return $this->getModule(bbCustomer_getFreeOrdNr::class);
+    }
+
+    /**
      * @return bbOrder_readDisposition
      */
     public function getOrderReadDisposition()
     {
         return $this->getModule(bbOrder_readDisposition::class);
+    }
+
+    /**
+     * @return bbOrder_readEntry
+     */
+    public function getOrderReadEntry()
+    {
+        return $this->getModule(bbOrder_readEntry::class);
+    }
+
+    /**
+     * @return bbOrder_readAccountAddress
+     */
+    public function getOrderReadAccountAddress()
+    {
+        return $this->getModule(bbOrder_readAccountAddress::class);
+    }
+
+    /**
+     * @return bbOrder_readAccountEntry
+     */
+    public function getOrderReadAccountEntry()
+    {
+        return $this->getModule(bbOrder_readAccountEntry::class);
     }
 
     /**
@@ -198,7 +234,6 @@ class api extends apiModule
         return $this->getModule(bbQuota_readEntry::class);
     }
 
-
     /**
      * @return placeholder
      */
@@ -206,7 +241,6 @@ class api extends apiModule
     {
         return $this->getModule(placeholder::class);
     }
-
 
     /**
      * DEPRECATED - Don't use any more
@@ -217,7 +251,6 @@ class api extends apiModule
         log::debug("Usage of deprecated object 'customer'", __METHOD__);
         return $this->getModule(customer::class);
     }
-
 
     /**
      * DEPRECATED - Don't use any more

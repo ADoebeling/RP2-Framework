@@ -81,10 +81,4 @@ class bbOrder_readDisposition extends apiModule
             throw new \Exception('We don\'t have any dispositions', 404);
         }
     }
-
-
-
-
-
-
 }
