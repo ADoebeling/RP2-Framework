@@ -78,15 +78,14 @@ $rpf
     ->httpAuth();                               // Send http-auth if you need to authenticate first
 ```
 
-The code is 100% ide-compatible, so code-completion works fine. Never again look into the api-manual.
-Every action and every call are getting detailed logged an can be monitored with `tail -f logs/syslog_YYMMDD_1SRV.log` on bash.
-
 
 ### Using the RPF-API
 
 * Install the rpf-extensions like described above
 * Have a look to the example-folder
 * Create your first extension and start over
+* The code is 100% ide-compatible and well documented, so code-completion works fine. 
+* Every action and every call are getting detailed logged an can be monitored with `tail -f logs/syslog_YYMMDD_1SRV.log` on bash.
 
 
 ### Class-Structure
@@ -108,16 +107,14 @@ The namespaces represent the file-structure
 * `\class\extension\module\domainExport.php`: The extension domainExport as module of the extension-module
 
 
-### Examples
+# Contact
 
-Lots of examples [can be found here](https://github.com/ADoebeling/RP2-Framework/tree/master/htdocs/examples)
-
-## Support? FR/Bug? Extension-Request?
+### Support? FR/Bug? Extension-Request?
 
 I'ld be happy to hear from you! Please send me your Feature-Request or Bug-Report as GitHub-Issue. If you don't have a GitHub-Account please post into the DF-Forum.
 If you need paid support contact me on support@1601.com or give me a call: `+49 9131 506770` and ask for Andreas Döbeling.
 
-## Credits
+### Credits
 
 Author: [Andreas Döbeling](http://xing.doebeling.de)  
 Copyright: [1601.production siegler&thümmler ohg](http://www.1601.com/hosting/)  
