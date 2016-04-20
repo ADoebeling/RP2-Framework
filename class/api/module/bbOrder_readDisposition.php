@@ -1,16 +1,16 @@
 <?php
 
-namespace www1601com\df_rp\api\module;
-use www1601com\df_rp\api\apiModule;
+namespace rpf\api\module;
+use rpf\api\apiModule;
 
 /**
  * Implementation of bbOrder:readDisposition
  * @see https://doku.premium-admin.eu/doku.php/api/methoden/bborder/readdisposition
- * @package www1601com\df_rp\module
+ * @package system\module
  */
 class bbOrder_readDisposition extends apiModule
 {
-    const rpcClass = 'bbOrder::readDisposition';
+    const rpcMethod = 'bbOrder::readDisposition';
 
     /**
      * @param int $oeid
@@ -81,10 +81,4 @@ class bbOrder_readDisposition extends apiModule
             throw new \Exception('We don\'t have any dispositions', 404);
         }
     }
-
-
-
-
-
-
 }

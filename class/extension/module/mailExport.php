@@ -1,6 +1,6 @@
-<?php namespace www1601com\df_rp\extension;
+<?php namespace rpf\extension;
 
-require_once __DIR__.'/../../extensionModule.php';
+require_once __DIR__ . '/../../extensionModule.php';
 //require_once '../../../../function/array_merge_recursive_distinct.php';
 class mailExport extends extensionModule {
 

@@ -12,7 +12,7 @@
 
 require_once '../../../class/extension/extension.php';
 
-$e = new \www1601com\df_rp\extension\extension();
+$e = new \rpf\extension\extension();
 $e -> httpAuth();
 
 $ajax = isset($_REQUEST['ajax']) ? true : false;

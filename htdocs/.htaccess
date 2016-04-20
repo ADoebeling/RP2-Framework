@@ -9,17 +9,10 @@ RewriteRule (.*) https://%{HTTP_HOST}/$1 [R=permanent,nc,L]
 RewriteCond %{HTTP:Authorization} ^(.*)
 RewriteRule ^(.*) - [E=HTTP_AUTHORIZATION:%1]
 
-# Rewirte 1601-Extensions
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^([a-zA-Z0-9]*)$ extension/www1601com_$1/ [L]
-
-# Rewirte 1601-Extensions // Backward compatibility
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^([a-zA-Z0-9]*).php$ $1 [R=301,L]
+# Redirect to index-page
+RedirectMatch 301 ^/?$ /index
 
 # Rewirte other Extensions
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^(\w*_\w*)$ extension/$1/ [L]
+RewriteRule ^(\w*)$ extension/$1.php [L]

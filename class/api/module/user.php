@@ -1,8 +1,10 @@
 <?php
 
-namespace www1601com\df_rp\api\module;
-use www1601com\df_rp\api\apiModule;
-use www1601com\df_rp\system\module\log;
+namespace rpf\api\module;
+use rpf\api\apiModule;
+use rpf\api\bbRpc;
+use rpf\system\module\exception;
+use rpf\system\module\log;
 
 class user extends apiModule {
 
@@ -16,18 +18,27 @@ class user extends apiModule {
      */
     public function auth($rp2InstanceUrl, $rp2ApiUser, $rp2ApiPwd)
     {
-        $this->system->rpc->setUrl($rp2InstanceUrl);
-        $userId = $this->system->rpc->auth($rp2ApiUser, $rp2ApiPwd);
+        $duration = microtime(1);
+        log::debug('Setting RPC-URL', "bbRpc::setUrl($rp2InstanceUrl)");
+        bbRpc::setUrl($rp2InstanceUrl);
+        $userId = bbRpc::auth($rp2ApiUser, $rp2ApiPwd);
+        $duration = round(microtime(1)-$duration, 3);
+
         if (!$userId)
         {
-            log::warning("Faild to login as '$rp2ApiUser' from ".$_SERVER['REMOTE_ADDR'], $_SERVER);
+            log::warning("Login failed from ".$_SERVER['REMOTE_ADDR']." within $duration sec.", "bbRpc::auth($rp2ApiUser, *****)", $_SERVER);
+            $this->fetchRpcLog();
             return false;
         }
         else
         {
             // https://doku.premium-admin.eu/doku.php/api/methoden/bbrpc/setutf8native
-            $this->system->rpc->setUTF8Native(true);
-            log::info("Successful login as '$rp2ApiUser' from ".$_SERVER['REMOTE_ADDR']);
+            log::info("Login successful from ".$_SERVER['REMOTE_ADDR']." within $duration sec.", "bbRpc::auth($rp2ApiUser, *****)");
+            $this->fetchRpcLog();
+
+            log::debug('Set UTF-8', 'bbRpc::setUTF8Native(true)');
+            bbRpc::setUTF8Native(true);
+            $this->fetchRpcLog();
             return true;
         }
     }
@@ -62,7 +73,7 @@ class user extends apiModule {
     {
         header("WWW-Authenticate: Basic realm=\"Please enter your RP2-User and Password for A$dfOrderNr\"");
         header('HTTP/1.0 401 Unauthorized');
-        echo "Please authenticate with your RP2-Username and -Password.\n".$_SERVER['PHP_AUTH_USER'];
+        \rpf\showError('Login', "Please authenticate with your RP²-Username and Password for A$dfOrderNr");
         exit;
     }
 }

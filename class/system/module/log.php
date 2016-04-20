@@ -1,56 +1,78 @@
 <?php
 
-namespace www1601com\df_rp\system\module;
+namespace rpf\system\module;
 
 class log
 {
-    protected static function add($level, $desc, $param = NULL)
+    protected static function add($level, $desc, $context = NULL, $param = NULL)
     {
         $dir = __DIR__.'/../../../logs/';
         $file = $dir.'syslog_'.date("ymd").'_1SRV.log';
 
-        if (\is_array($param) && count($param) == 1)
+        $text = str_pad('['.date("r",time())."] [$level]", 41);
+        if (RPF_DEBUG == true)
         {
-            foreach ($param as $name => $value) $param = " | $name: $value";
-        }
-        elseif (is_array($param) || is_object($param))
-        {
-            $param = ' | '.json_encode($param);
-        }
-        elseif (!empty($param))
-        {
-            $param = " | $param";
-        }
+            $context = strpos($context, ')') === false ? $context.'()' : $context;
+            $text = str_pad("$text $context;", 120)."// $desc";
 
-        $text = '['.date("r",time())."] [$level] $desc $param\n";
+            if (\is_array($param) && count($param) == 1)
+            {
+                foreach ($param as $name => $value)
+                {
+                    $text .= " | $name: $value";
+                }
+            }
+            elseif (is_array($param) || is_object($param))
+            {
+                //$text .= ' | '.json_encode($param);
+                //$text .= "\n".print_r($param, 1)."\n";
+            }
+            elseif (!empty($param))
+            {
+                $text .= " | $param";
+            }
+        }
+        else
+        {
+            $text .= $desc;
+        }
+        $text .= "\n";
 
         $fp = fopen($file, 'a');
         fwrite($fp, $text);
         fclose($fp);
+        return true;
     }
 
-    public static function debug($desc, $array = NULL)
+    public static function debug($desc, $context, $array = NULL)
     {
-        return self::add(__FUNCTION__, $desc, $array);
+        if (RPF_DEBUG == true)
+        {
+            return self::add(__FUNCTION__, $desc, $context, $array);
+        }
+        else
+        {
+            return true;
+        }
     }
 
-    public static function notice($desc, $array = NULL)
+    public static function notice($desc, $context, $array = NULL)
     {
-        return self::add(__FUNCTION__, $desc, $array);
+        return self::add(__FUNCTION__, $desc, $context, $array);
     }
 
-    public static function info($desc, $array = NULL)
+    public static function info($desc, $context, $array = NULL)
     {
-        return self::add(__FUNCTION__, $desc, $array);
+        return self::add(__FUNCTION__, $desc, $context, $array);
     }
 
-    public static function warning($desc, $array = NULL)
+    public static function warning($desc, $context, $array = NULL)
     {
-        return self::add(__FUNCTION__, $desc, $array);
+        return self::add(__FUNCTION__, $desc, $context, $array);
     }
 
-    public static function error($desc, $array = NULL)
+    public static function error($desc, $context, $array = NULL)
     {
-        return self::add(__FUNCTION__, $desc, $array);
+        return self::add(__FUNCTION__, $desc, $context, $array);
     }
 }

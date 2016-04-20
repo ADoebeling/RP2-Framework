@@ -1,59 +1,59 @@
 <?php
 
-namespace www1601com\df_rp\extension;
-use www1601com\df_rp\api\api;
-
-require_once __DIR__ . '/../api/api.php';
-require_once __DIR__.'/module/www1601com_mailExport/mailExport.php';
-require_once __DIR__.'/module/www1601com_mgntRatioExport/mgntRatioExport.php';
-require_once __DIR__.'/module/www1601com_invoiceTextExport/invoiceTextExport.php';
-require_once __DIR__.'/module/www1601com_domainExport/domainExport.php';
-
-
+namespace rpf\extension;
+use rpf\extension\module\domainExport;
+use rpf\extension\module\index;
+use rpf\extension\module\mgntRatioExport;
+use rpf\system\module;
 
 /**
- * Wrapper-Class for all rp2-extensions
+ * RPF Extension-Class
  *
  * @author Andreas Doebeling <ad@1601.com>
  * @copyright 1601.production siegler&thuemmler ohg
- * @link https://github.com/ADoebeling/df_rp2
- * @link http://github.com/ADoebeling
- * @link http://xing-ad.1601.com
- * @package www1601com\df_rp\extension
+ * @link https://github.com/ADoebeling/RP2-Framework
+ * @link https://xing-ad.1601.com
+ * @link https://www.1601.com
  */
-
-class extension extends api {
-
+class extension extends module
+{
     /**
-     * @var object mailExport
+     * @return domainExport
      */
-    public $mailExport;
-
-    /**
-     * @var object mgntRatioExport
-     */
-    public $mgntRatioExport;
-
-    /**
-     * @var object invoiceTextExport
-     */
-    public $invoiceTextExport;
-
-    /**
-     * @var object domainExport
-     */
-    public $domainExport;
-
-
-    /**
-     * Builds the class-structure
-     */
-    public function __construct()
+    public function getDomainExport()
     {
-        parent::__construct();
-        $this->mailExport = new mailExport($this);
-        $this->mgntRatioExport = new mgntRatioExport($this);
-        $this->invoiceTextExport = new invoiceTextExport($this);
-        $this->domainExport = new domainExport($this);
+        return $this->getModule(domainExport::class);
+    }
+
+    /**
+     * @return index
+     */
+    public function getIndex()
+    {
+        return $this->getModule(index::class);
+    }
+
+    /**
+     * @return invoiceTextExport
+     */
+    public function getInvoiceTextExport()
+    {
+        return $this->getModule(invoiceTextExport::class);
+    }
+
+    /**
+     * @return mailExport
+     */
+    public function getMailExport()
+    {
+        return $this->getModule(mailExport::class);
+    }
+
+    /**
+     * @return mgntRatioExport
+     */
+    public function getMgntRatioExport()
+    {
+        return $this->getModule(mgntRatioExport::class);
     }
 }

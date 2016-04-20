@@ -1,12 +1,33 @@
 <?php
 
-namespace www1601com\df_rp\api\module;
-use www1601com\df_rp\api\apiModule;
+namespace rpf\api\module;
+use rpf\api\apiModule;
 
 class order extends apiModule
 {
 
     protected $disposition = array();
+
+    /**
+     * Returns a array with the previous load data, sorted by oeid
+     *
+     * @return array $order['oeid'][$key] = [$value]
+     */
+    public function getOrders()
+    {
+        return $this->orders;
+    }
+
+    /**
+     * Returns a array with the previous load data
+     *
+     * @return array
+     */
+    public function getData()
+    {
+        return $this->data;
+    }
+
 
     /*public function loadOrdersAdresses()
     {

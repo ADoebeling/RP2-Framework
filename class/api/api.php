@@ -1,139 +1,277 @@
 <?php
 
-namespace www1601com\df_rp\api;
-use www1601com\df_rp\api\module\bbDomain_readEntry;
-use www1601com\df_rp\api\module\bbOrder_readDisposition;
-use www1601com\df_rp\api\module\customer;
-use www1601com\df_rp\api\module\email;
-use www1601com\df_rp\api\module\order;
-use www1601com\df_rp\api\module\user;
-use www1601com\df_rp\module;
-use www1601com\df_rp\system;
-
+namespace rpf\api;
+use rpf\api\module\bbDomain_readEntry;
+use rpf\api\module\bbDomain_readFrontpage;
+use rpf\api\module\bbDomain_readHandles;
+use rpf\api\module\bbDomain_readPhpini;
+use rpf\api\module\bbDomain_readSettings;
+use rpf\api\module\bbDomain_readSubdomain;
+use rpf\api\module\bbDomain_readWebalizerSettings;
+use rpf\api\module\bbDomain_searchEntry;
+use rpf\api\module\bbEmail_readAccount;
+use rpf\api\module\bbCustomer_readEntry;
+use rpf\api\module\bbCustomer_readAddress;
+use rpf\api\module\bbCustomer_readDiscount;
+use rpf\api\module\bbCustomer_readPayment;
+use rpf\api\module\bbCustomer_readTitle;
+use rpf\api\module\bbCustomer_validateAddress;
+use rpf\api\module\bbCustomer_validateEntry;
+use rpf\api\module\bbCustomer_validatePayinfo;
+use rpf\api\module\bbCustomer_getFreeOrdNr;
+use rpf\api\module\bbQuota_readEntry;
+use rpf\api\module\bbOrder_readDisposition;
+use rpf\api\module\bbOrder_readEntry;
+use rpf\api\module\bbOrder_readAccountAddress;
+use rpf\api\module\bbOrder_readAccountEntry;
+use rpf\api\module\customer;
+use rpf\api\module\email;
+use rpf\api\module\order;
+use rpf\api\module\placeholder;
+use rpf\api\module\user;
+use rpf\system\module\log;
 
 /**
- * Wrapper-Class for all interactions with the rp2-api
+ * RPF API-Class
  *
  * @author Andreas Doebeling <ad@1601.com>
  * @copyright 1601.production siegler&thuemmler ohg
- * @link https://github.com/ADoebeling/df_rp2
- * @link https://github.com/ADoebeling
+ * @link https://github.com/ADoebeling/RP2-Framework
  * @link https://xing-ad.1601.com
- * @package www1601com\df_rp
- *
- * @version 0.1.151002_dev_1ad
+ * @link https://www.1601.com
  */
-class api extends system {
-
+class api extends apiModule
+{
     /**
-     * @var object bbRpc
+     * @return user
      */
-    public $rpc;
-
-    /**
-     * @var object module\user
-     */
-    public $user;
-
-    /**
-     * @var object module\customer
-     */
-    public $customers;
-
-    /**
-     * @var object module/order
-     */
-    public $orders;
-
-    /**
-     * @var object module/bbOrder_readDisposition
-     */
-    public $bbOrder_readDisposition;
-
-    /**
-     * @var object module\email
-     */
-    public $email;
-
-
-    /**
-     * Building instances for all sub-objects
-     */
-    public function __construct()
+    public function getUser()
     {
-        parent::__construct();
-
-        // V2-Implementation
-        $this->rpc = new bbRpc();
-        $this->user = new user($this);
-        $this->bbDomain_readEntry = new bbDomain_readEntry($this);
-        $this->bbOrder_readDisposition = new bbOrder_readDisposition($this);
-
-        // Deprecated V1-Implementation
-        $this->customers = new customer($this);
-        $this->orders = new order($this);
-        $this->emails = new email($this);
-    }
-
-
-    /**
-     * DEPRECATED
-     * Alias for user::auth()
-     *
-     * @param $rp2InstanceUrl
-     * @param $rp2ApiUser
-     * @param $rp2ApiPwd
-     * @return $this
-     */
-    public function auth($rp2InstanceUrl, $rp2ApiUser, $rp2ApiPwd)
-    {
-        $this->user->auth($rp2InstanceUrl, $rp2ApiUser, $rp2ApiPwd);
-        return $this;
+        return $this->getModule(user::class);
     }
 
     /**
-     * DEPRECATED
-     * Alias for user::httpAuth()
-     *
-     * @return $this
+     * @return bbDomain_readEntry
      */
-    public function httpAuth()
+    public function getDomainReadEntry()
     {
-        $this->user->httpAuth();
-        return $this;
+        return $this->getModule(bbDomain_readEntry::class);
     }
-
 
     /**
-     * Wrapper for all api-calls
-     *
-     * @param $sMethod
-     * @param array $hArgs
-     * @param null $hPlaceholders
-     * @return null
-     * @throws \Exception
+     * @return bbDomain_readFrontpage
      */
-    public function call($sMethod,$hArgs=array(),$hPlaceholders=null)
+    public function getDomainReadFrontpage()
     {
-        $startTime = microtime(1);
-        $result = $this->rpc->call($sMethod,$hArgs,$hPlaceholders);
-        $duration = round(microtime(1)-$startTime, 3);
-
-        // Parse Args for debugging
-        $log = "API-Call: call('$sMethod', [";
-        foreach ($hArgs as $name => $value)
-        {
-            if (is_array($value))
-            {
-                throw new \Exception("Sorry, Params can't be multidimensional");
-            }
-            $log .= "'$name' => '$value',";
-        }
-        $log .= "]); // Results: ".count($result)." // ExecutionTime: $duration";
-
-        $this->log->debug($log);
-        return $result;
+        return $this->getModule(bbDomain_readFrontpage::class);
     }
+
+    /**
+     * @return bbDomain_readHandles
+     */
+    public function getDomainReadHandles()
+    {
+        return $this->getModule(bbDomain_readHandles::class);
+    }
+
+    /**
+     * @return bbDomain_readPhpini
+     */
+    public function getDomainReadPhpini()
+    {
+        return $this->getModule(bbDomain_readPhpini::class);
+    }
+
+    /**
+     * @return bbDomain_readSettings
+     */
+    public function getDomainReadSettings()
+    {
+        return $this->getModule(bbDomain_readSettings::class);
+    }
+
+    /**
+     * @return bbDomain_readSubdomain
+     */
+    public function getDomainReadSubdomain()
+    {
+        return $this->getModule(bbDomain_readSubdomain::class);
+    }
+
+    /**
+     * @return bbDomain_readWebalizerSettings
+     */
+    public function getDomainReadWebalizerSettings()
+    {
+        return $this->getModule(bbDomain_readWebalizerSettings::class);
+    }
+
+    /**
+     * @return bbDomain_searchEntry
+     */
+    public function getDomainsearchEntry()
+    {
+        return $this->getModule(bbDomain_searchEntry::class);
+    }
+
+    /**
+    * @return bbEmail_readAccount
+    */
+    public function getEmailReadAccount()
+    {
+        return $this->getModule(bbEmail_readAccount::class);
+    }
+
+    /**
+     * @return bbCustomer_readEntry
+     */
+    public function getCustomerReadEntry()
+    {
+        return $this->getModule(bbCustomer_readEntry::class);
+    }
+
+    /**
+     * @return bbCustomer_readAddress
+     */
+    public function getCustomerReadAddress()
+    {
+        return $this->getModule(bbCustomer_readAddress::class);
+    }
+
+    /**
+     * @return bbCustomer_readDiscount
+     */
+    public function getCustomerReadDiscount()
+    {
+        return $this->getModule(bbCustomer_readDiscount::class);
+    }
+
+    /**
+     * @return bbCustomer_readPayment
+     */
+    public function getCustomerReadPayment()
+    {
+        return $this->getModule(bbCustomer_readPayment::class);
+    }
+
+    /**
+     * @return bbCustomer_readTitle
+     */
+    public function getCustomerReadTitle()
+    {
+        return $this->getModule(bbCustomer_readTitle::class);
+    }
+
+    /**
+     * @return bbCustomer_validateAddress
+     */
+    public function getCustomerValidateAddress()
+    {
+        return $this->getModule(bbCustomer_validateAddress::class);
+    }
+
+    /**
+     * @return bbCustomer_validateEntry
+     */
+    public function getCustomerValidateEntry()
+    {
+        return $this->getModule(bbCustomer_validateEntry::class);
+    }
+
+    /**
+     * @return bbCustomer_validateEntry
+     */
+    public function getCustomerValidatePayinfo()
+    {
+        return $this->getModule(bbCustomer_validatePayinfo::class);
+    }
+
+    /**
+     * @return bbCustomer_validateEntry
+     */
+    public function getCustomerGetFreeOrdNr()
+    {
+        return $this->getModule(bbCustomer_getFreeOrdNr::class);
+    }
+
+    /**
+     * @return bbOrder_readDisposition
+     */
+    public function getOrderReadDisposition()
+    {
+        return $this->getModule(bbOrder_readDisposition::class);
+    }
+
+    /**
+     * @return bbOrder_readEntry
+     */
+    public function getOrderReadEntry()
+    {
+        return $this->getModule(bbOrder_readEntry::class);
+    }
+
+    /**
+     * @return bbOrder_readAccountAddress
+     */
+    public function getOrderReadAccountAddress()
+    {
+        return $this->getModule(bbOrder_readAccountAddress::class);
+    }
+
+    /**
+     * @return bbOrder_readAccountEntry
+     */
+    public function getOrderReadAccountEntry()
+    {
+        return $this->getModule(bbOrder_readAccountEntry::class);
+    }
+
+    /**
+     * @return bbQuota_readEntry
+     */
+    public function getQuotaReadEntry()
+    {
+        return $this->getModule(bbQuota_readEntry::class);
+    }
+
+    /**
+     * @return placeholder
+     */
+    public function getPlaceholder()
+    {
+        return $this->getModule(placeholder::class);
+    }
+
+    /**
+     * DEPRECATED - Don't use any more
+     * @return customer
+     */
+    public function getCustomer()
+    {
+        log::debug("Usage of deprecated object 'customer'", __METHOD__);
+        return $this->getModule(customer::class);
+    }
+
+    /**
+     * DEPRECATED - Don't use any more
+     * @return email
+     */
+    public function getEmail()
+    {
+        log::debug("Usage of deprecated object 'email'", __METHOD__);
+        return $this->getModule(email::class);
+    }
+
+    /**
+     * DEPRECATED - Don't use any more
+     * @return order
+     */
+    public function getOrder()
+    {
+        log::debug("Usage of deprecated object 'order'", __METHOD__);
+        return $this->getModule(order::class);
+    }
+
 
 }
 
