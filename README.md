@@ -5,41 +5,41 @@ The RPF provides a nicely ide-compatible php-interface to the DomainFactory [RPÂ
 ## RPF-Extensions
 
 * **DomainExport**  
-CSV-Export of all (sub-)domains with Order-Name, PHP-Version and target.
-Can be used to check for deprecated domain-settings in the seventh server-generation
-Status: Implemented and published
+CSV-Export of all (sub-)domains with Order-Name, PHP-Version and target.  
+Can be used to check for deprecated domain-settings in the seventh server-generation  
+_Status: Implemented and published_
 
 * **contaoLogChecker** (WIP)  
-Exports all contao-logs from all hosted databases
-Status: Implemented but not published yet
+Exports all contao-logs from all hosted databases  
+_Status: Implemented but not published yet_
 
 * **emailExport** (WIP)  
-Exports the complete e-mail-configuration as copy&paste template for customer service
-Status: Implemented but not published yet
+Exports the complete e-mail-configuration as copy&paste template for customer service  
+_Status: Implemented but not published yet_
 
 * **inconsistencyChecker** (WIP)  
-Checks and alerts for some rp2-inconsistency like active unregistered domains
-Status: Implemented but not published yet
+Checks and alerts for some rp2-inconsistency like active unregistered domains  
+_Status: Implemented but not published yet_
 
 * **invoiceTextExport** (WIP)  
-Exports the invoice-texts for each order as copy&paste template
-Status: Implemented but not published yet
+Exports the invoice-texts for each order as copy&paste template  
+_Status: Implemented but not published yet_
 
 * **mysqlExport** (WIP)  
-CSV-Export of all mysql-databases.
-Status: Not implemented yet
+CSV-Export of all mysql-databases.  
+_Status: Not implemented yet_
  
 * **mysqlBackup** (WIP)  
-Backup & Restore-Manager for mysql-databases
-Status: Not implemented yet
+Backup & Restore-Manager for mysql-databases  
+_Status: Not implemented yet_
 
 * **mgntRatioExport** (WIP)  
-Calculation-sheet with costs and contribution margin for every article
-Status: Implemented but not published yet
+Calculation-sheet with costs and contribution margin for every article  
+_Status: Implemented but not published yet_
 
-* **siteMonitoring** (WIP)  
-Monitor all (Sub-)Domains based on a screenshot-diff
-Status: Implemented but not published yet
+* **siteMonitoring** (WIP)   
+Monitor all (Sub-)Domains based on a screenshot-diff  
+_Status: Implemented but not published yet_
 
 
 ### Installation of RPF-Extensions
