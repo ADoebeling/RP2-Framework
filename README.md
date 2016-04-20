@@ -1,43 +1,43 @@
-# RPF - Overview about the DomainFactory RP²-Framework
+# RPF - The DomainFactory RP²-Framework
 
 The RPF provides a nicely ide-compatible php-interface to the DomainFactory [RP²-API](https://doku.premium-admin.eu/doku.php/api/methoden/start)  for developers and collects a bunch of ready-to-use extensions for admins and customers. The system is modular structured and can be extended easily.
 
 ## RPF-Extensions
 
-* DomainExport
+* **DomainExport**  
 CSV-Export of all (sub-)domains with Order-Name, PHP-Version and target.
 Can be used to check for deprecated domain-settings in the seventh server-generation
 Status: Implemented and published
 
-* contaoLogChecker (WIP)
+* **contaoLogChecker** (WIP)  
 Exports all contao-logs from all hosted databases
 Status: Implemented but not published yet
 
-* emailExport (WIP)
+* **emailExport** (WIP)  
 Exports the complete e-mail-configuration as copy&paste template for customer service
 Status: Implemented but not published yet
 
-* inconsistencyChecker (WIP)
+* **inconsistencyChecker** (WIP)  
 Checks and alerts for some rp2-inconsistency like active unregistered domains
 Status: Implemented but not published yet
 
-* invoiceTextExport (WIP)
+* **invoiceTextExport** (WIP)  
 Exports the invoice-texts for each order as copy&paste template
 Status: Implemented but not published yet
 
-* mysqlExport (WIP)
+* **mysqlExport** (WIP)  
 CSV-Export of all mysql-databases.
 Status: Not implemented yet
  
-* mysqlBackup (WIP)
+* **mysqlBackup** (WIP)  
 Backup & Restore-Manager for mysql-databases
 Status: Not implemented yet
 
-* mgntRatioExport (WIP)
+* **mgntRatioExport** (WIP)  
 Calculation-sheet with costs and contribution margin for every article
 Status: Implemented but not published yet
 
-* siteMonitoring (WIP)
+* **siteMonitoring** (WIP)  
 Monitor all (Sub-)Domains based on a screenshot-diff
 Status: Implemented but not published yet
 
@@ -140,14 +140,13 @@ The namespaces represent the file-structure
 
 Lots of examples [can be found here](https://github.com/ADoebeling/RP2-Framework/tree/master/htdocs/examples)
 
-# Support? Feature-Request? Extension-Request? Bug?
+## Support? FR/Bug? Extension-Request?
 
-I'ld be happy to hear from you! Please send me your FR or Bug-Report as GitHub-Issue. If you don't have a GitHub-Account please post into the DF-Forum.
-If you need paid support contact me on support@1601.com or give me a call: +49 9131 506770 and ask for Andreas Döbeling.
+I'ld be happy to hear from you! Please send me your Feature-Request or Bug-Report as GitHub-Issue. If you don't have a GitHub-Account please post into the DF-Forum.
+If you need paid support contact me on support@1601.com or give me a call: `+49 9131 506770` and ask for Andreas Döbeling.
 
-# Credits
+## Credits
 
 Author: [Andreas Döbeling](http://xing.doebeling.de)  
 Copyright: [1601.production siegler&thümmler ohg](http://www.1601.com/hosting/)  
-License: [cc-by-sa](https://creativecommons.org/licenses/by-sa/3.0)  
-
+License: [cc-by-sa](https://creativecommons.org/licenses/by-sa/3.0)
