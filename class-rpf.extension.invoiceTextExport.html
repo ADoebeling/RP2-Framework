@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+
+	<title>Class rpf\extension\invoiceTextExport</title>
+
+	<link rel="stylesheet" href="resources/bootstrap.min.css?973e37a8502921d56bc02bb55321f45b072b6f71">
+	<link rel="stylesheet" href="resources/style.css?49f43d3208c5d7e33fa16d36107a345bf11cc00d">
+
+</head>
+
+<body>
+	<nav id="navigation" class="navbar navbar-default navbar-fixed-top">
+		<div class="container-fluid">
+			<div class="navbar-header">
+				<a href="index.html" class="navbar-brand">Overview</a>
+			</div>
+			<div class="collapse navbar-collapse">
+
+                <form id="search" class="navbar-form navbar-left" role="search">
+                    <input type="hidden" name="cx" value="">
+                    <input type="hidden" name="ie" value="UTF-8">
+                    <div class="form-group">
+                        <input type="text" name="q" class="search-query form-control" placeholder="Search">
+					</div>
+				</form>
+
+				<ul class="nav navbar-nav">
+					<li>
+						<a href="namespace-rpf.extension.html" title="Summary of rpf\extension"><span>Namespace</span></a>
+					</li>
+					<li class="active">
+<span>Class</span>					</li>
+
+
+
+
+
+				</ul>
+			</div>
+		</div>
+	</nav>
+
+	<div id="left">
+	<div id="menu">
+
+		<div id="groups">
+				<h3>Namespaces</h3>
+			<ul>
+					<li class="active">
+						<a href="namespace-rpf.html">
+							rpf<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-rpf.api.html">
+							api<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-rpf.api.module.html">
+							module						</a>
+							</li>
+								</ul></li>
+					<li class="active">
+						<a href="namespace-rpf.extension.html">
+							extension<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-rpf.extension.module.html">
+							module						</a>
+							</li>
+								</ul></li>
+					<li>
+						<a href="namespace-rpf.system.html">
+							system<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-rpf.system.module.html">
+							module						</a>
+							</li>
+								</ul></li></ul></li>
+			</ul>
+		</div>
+
+
+		<div id="elements">
+			<h3>Classes</h3>
+			<ul>
+				<li><a href="class-rpf.extension.extension.html">extension</a></li>
+				<li><a href="class-rpf.extension.extensionModule.html">extensionModule</a></li>
+				<li class="active"><a href="class-rpf.extension.invoiceTextExport.html">invoiceTextExport</a></li>
+				<li><a href="class-rpf.extension.mailExport.html">mailExport</a></li>
+			</ul>
+
+
+
+
+
+		</div>
+	</div>
+</div>
+
+<div id="splitter"></div>
+
+<div id="right">
+	<div id="rightInner">
+<div id="content" class="class">
+	<h1>Class invoiceTextExport</h1>
+
+
+	<div class="description">
+	<p>Class invoiceTextExport</p>
+
+<p>This class provides methods to list all orders, each with customer-name, turnover per month and turnover per year.
+Additionally it's able to show the invoice-address, the tariff and all positions, each with turnover per month.</p>
+
+<p>It is build to provide a copy-and-paste interface for all dispositions to bill the rp2-data in an external
+program.</p>
+	</div>
+
+	<dl class="tree well">
+		<dd style="padding-left:0px">
+			<a href="class-rpf.system.module.html"><span>rpf\system\module</span></a>
+			
+			
+			
+		</dd>
+		<dd style="padding-left:30px">
+			<img src="resources/inherit.png" alt="Extended by">
+			<a href="class-rpf.extension.extensionModule.html"><span>rpf\extension\extensionModule</span></a>
+			
+			
+			
+		</dd>
+		<dd style="padding-left:60px">
+			<img src="resources/inherit.png" alt="Extended by">
+<b><span>rpf\extension\invoiceTextExport</span></b>			
+			
+			
+		</dd>
+	</dl>
+
+
+
+
+
+
+
+
+	<div class="alert alert-info">
+		
+		
+		<b>Namespace:</b> <a href="namespace-rpf.html">rpf</a>\<a href="namespace-rpf.extension.html">extension</a><br>
+		<b>Package:</b> system\extension<br>
+
+				<b>Copyright:</b>
+				1601.production siegler&amp;thuemmler ohg<br>
+				<b>Author:</b>
+				Andreas Doebeling <a href="&#x6d;&#x61;&#x69;&#x6c;&#x74;&#x6f;&#x3a;&#x61;&#x64;&#x40;&#x31;&#x36;&#x30;&#x31;&#x2e;&#x63;&#x6f;&#x6d;">&#x61;&#x64;&#x40;&#x31;&#x36;&#x30;&#x31;&#x2e;&#x63;&#x6f;&#x6d;</a><br>
+				<b>Link:</b>
+				<a href="https://github.com/ADoebeling">https://github.com/ADoebeling</a><br>
+				<b>Link:</b>
+				<a href="http://xing.doebeling.de">http://xing.doebeling.de</a><br>
+				<b>Link:</b>
+				<a href="https://www.1601.com">https://www.1601.com</a><br>
+			<b>Located at</b> <a href="source-class-rpf.extension.invoiceTextExport.html#5-367" title="Go to source code">extension/module/invoiceTextExport.php</a>
+		<br>
+	</div>
+
+
+
+		<div class="panel panel-default">
+			<div class="panel-heading"><h2>Methods summary</h2></div>
+			<table class="summary table table-bordered table-striped methods" id="methods">
+		<tr data-order="__construct" id="___construct">
+
+			<td class="attributes"><code>
+				 public 
+				
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#___construct">#</a>
+			<code><a href="source-class-rpf.extension.invoiceTextExport.html#31-34" title="Go to source code">__construct</a>( <span><code><a href="class-rpf.extension.extension.html">rpf\extension\extension</a></code> <var>&amp; $system</var></span> )</code>
+
+			<div class="description short">
+				
+			</div>
+
+			<div class="description detailed hidden">
+				
+
+
+
+
+
+
+					<h4>Overrides</h4>
+					<div class="list"><code><a href="class-rpf.system.module.html#___construct">rpf\system\module::__construct</a></code></div>
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="setFormat" id="_setFormat">
+
+			<td class="attributes"><code>
+				 public 
+				
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_setFormat">#</a>
+			<code><a href="source-class-rpf.extension.invoiceTextExport.html#36-45" title="Go to source code">setFormat</a>( <span>string <var>$name</var></span>, <span>string <var>$value</var></span> )</code>
+
+			<div class="description short">
+				<p>Set format-pattern</p>
+			</div>
+
+			<div class="description detailed hidden">
+				<p>Set format-pattern</p>
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$name</var></dt>
+						<dd></dd>
+						<dt><var>$value</var></dt>
+						<dd></dd>
+					</dl></div>
+
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="getAllOrders" id="_getAllOrders">
+
+			<td class="attributes"><code>
+				 public 
+				array
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_getAllOrders">#</a>
+			<code><a href="source-class-rpf.extension.invoiceTextExport.html#48-74" title="Go to source code">getAllOrders</a>( )</code>
+
+			<div class="description short">
+				<p>Returns all orders</p>
+			</div>
+
+			<div class="description detailed hidden">
+				<p>Returns all orders</p>
+
+
+
+					<h4>Returns</h4>
+					<div class="list">
+						array<br>[ $ordNr[ customerDisplayName, priceMonth, priceYear)
+					</div>
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="getAddress" id="_getAddress">
+
+			<td class="attributes"><code>
+				 public 
+				array
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_getAddress">#</a>
+			<code><a href="source-class-rpf.extension.invoiceTextExport.html#76-92" title="Go to source code">getAddress</a>( <span>string <var>$ordNr</var></span> )</code>
+
+			<div class="description short">
+				<p>Returns the Invoice-Address as formatted string.</p>
+			</div>
+
+			<div class="description detailed hidden">
+				<p>Returns the Invoice-Address as formatted string.</p>
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$ordNr</var></dt>
+						<dd></dd>
+					</dl></div>
+
+					<h4>Returns</h4>
+					<div class="list">
+						array
+					</div>
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="getTariff" id="_getTariff">
+
+			<td class="attributes"><code>
+				 public 
+				array
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_getTariff">#</a>
+			<code><a href="source-class-rpf.extension.invoiceTextExport.html#94-116" title="Go to source code">getTariff</a>( <span>string <var>$ordNr</var></span> )</code>
+
+			<div class="description short">
+				<p>Returns the ordered tariff
+(Doesn't takes care of validity period)</p>
+			</div>
+
+			<div class="description detailed hidden">
+				<p>Returns the ordered tariff
+(Doesn't takes care of validity period)</p>
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$ordNr</var></dt>
+						<dd></dd>
+					</dl></div>
+
+					<h4>Returns</h4>
+					<div class="list">
+						array<br>[name, desc, priceFormatted]
+					</div>
+
+					<h4>Throws</h4>
+					<div class="list">
+						Exception
+					</div>
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="getDomains" id="_getDomains">
+
+			<td class="attributes"><code>
+				 public 
+				array
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_getDomains">#</a>
+			<code><a href="source-class-rpf.extension.invoiceTextExport.html#118-173" title="Go to source code">getDomains</a>( <span>string <var>$ordNr</var></span> )</code>
+
+			<div class="description short">
+				<p>Returns the ordered domains
+(Doesn't takes care of validity period)</p>
+			</div>
+
+			<div class="description detailed hidden">
+				<p>Returns the ordered domains
+(Doesn't takes care of validity period)</p>
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$ordNr</var></dt>
+						<dd></dd>
+					</dl></div>
+
+					<h4>Returns</h4>
+					<div class="list">
+						array<br>[ title, amount, priceFormatted, item[ name, priceFormatted ] ]
+					</div>
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="getAddOns" id="_getAddOns">
+
+			<td class="attributes"><code>
+				 public 
+				array
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_getAddOns">#</a>
+			<code><a href="source-class-rpf.extension.invoiceTextExport.html#176-211" title="Go to source code">getAddOns</a>( <span>string <var>$ordNr</var></span> )</code>
+
+			<div class="description short">
+				<p>Returns the ordered AddOns
+(Doesn't takes care of validity period)</p>
+			</div>
+
+			<div class="description detailed hidden">
+				<p>Returns the ordered AddOns
+(Doesn't takes care of validity period)</p>
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$ordNr</var></dt>
+						<dd></dd>
+					</dl></div>
+
+					<h4>Returns</h4>
+					<div class="list">
+						array<br>[ $pronr[ title, name, amount, desc, priceFormatted ] ]
+					</div>
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="getCertificates" id="_getCertificates">
+
+			<td class="attributes"><code>
+				 public 
+				array
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_getCertificates">#</a>
+			<code><a href="source-class-rpf.extension.invoiceTextExport.html#213-267" title="Go to source code">getCertificates</a>( <span>string <var>$ordNr</var></span> )</code>
+
+			<div class="description short">
+				<p>Returns the ordered certificates
+(Doesn't takes care of validity period)</p>
+			</div>
+
+			<div class="description detailed hidden">
+				<p>Returns the ordered certificates
+(Doesn't takes care of validity period)</p>
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$ordNr</var></dt>
+						<dd></dd>
+					</dl></div>
+
+					<h4>Returns</h4>
+					<div class="list">
+						array<br>[ $type[ $domain[ title, amount, desc, priceFormatted, item[ name, priceFormatted ] ] ] ]
+					</div>
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="getExchangeAccounts" id="_getExchangeAccounts">
+
+			<td class="attributes"><code>
+				 public 
+				array
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_getExchangeAccounts">#</a>
+			<code><a href="source-class-rpf.extension.invoiceTextExport.html#270-315" title="Go to source code">getExchangeAccounts</a>( <span>string <var>$ordNr</var></span> )</code>
+
+			<div class="description short">
+				<p>Returns the ordered exchange-accounts
+(Doesn't takes care of evaluation/validity period)</p>
+			</div>
+
+			<div class="description detailed hidden">
+				<p>Returns the ordered exchange-accounts
+(Doesn't takes care of evaluation/validity period)</p>
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$ordNr</var></dt>
+						<dd></dd>
+					</dl></div>
+
+					<h4>Returns</h4>
+					<div class="list">
+						array<br>[ type[ name, amount, desc, priceFormatted, item[ name, priceFormatted ] ] ]
+					</div>
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="getEuroFormatted" id="_getEuroFormatted">
+
+			<td class="attributes"><code>
+				 public static
+				string
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_getEuroFormatted">#</a>
+			<code><a href="source-class-rpf.extension.invoiceTextExport.html#318-330" title="Go to source code">getEuroFormatted</a>( <span>float|integer <var>$price</var></span>, <span>string <var>$zeroString</var> = <span class="php-quote">'Inklusive'</span></span> )</code>
+
+			<div class="description short">
+				<p>Formats float into 12.345,67 � and integer into 12.345,- �
+Returns $zeroString if price is NULL</p>
+			</div>
+
+			<div class="description detailed hidden">
+				<p>Formats float into 12.345,67 � and integer into 12.345,- �
+Returns $zeroString if price is NULL</p>
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$price</var></dt>
+						<dd></dd>
+						<dt><var>$zeroString</var></dt>
+						<dd>= Inklusive</dd>
+					</dl></div>
+
+					<h4>Returns</h4>
+					<div class="list">
+						string<br>(12.345,67 �|12.345,- �|Inklusive)
+					</div>
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="getPriceFormatted" id="_getPriceFormatted">
+
+			<td class="attributes"><code>
+				 public static
+				string
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_getPriceFormatted">#</a>
+			<code><a href="source-class-rpf.extension.invoiceTextExport.html#332-365" title="Go to source code">getPriceFormatted</a>( <span>float <var>$price</var></span>, <span>float <var>$priceDefault</var> = <span class="php-keyword1">NULL</span></span>, <span>string <var>$activeAccounting</var> = <span class="php-num">1</span></span>, <span>string <var>$patternDiscount</var>,…</span>, <span>boolean <var>$activeAccounting</var>,…</span> )</code>
+
+			<div class="description short">
+				<p>Formats $price and $priceDefault as invoice-string</p>
+			</div>
+
+			<div class="description detailed hidden">
+				<p>Formats $price and $priceDefault as invoice-string</p>
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$price</var></dt>
+						<dd></dd>
+						<dt><var>$priceDefault</var></dt>
+						<dd></dd>
+						<dt><var>$activeAccounting</var></dt>
+						<dd>$patternZero</dd>
+						<dt><var>$patternDiscount</var>,…</dt>
+						<dd></dd>
+						<dt><var>$activeAccounting</var>,…</dt>
+						<dd></dd>
+					</dl></div>
+
+					<h4>Returns</h4>
+					<div class="list">
+						string<br>(12.345,67 �|12.345,- �|12.345,67 � // Abzgl. 1.345,- � Rabatt)
+					</div>
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+			</table>
+		</div>
+
+		<div class="panel panel-default">
+	        <div class="panel-heading"><h3>Methods inherited from <a href="class-rpf.system.module.html#methods">rpf\system\module</a></h3></div>
+			<p class="elementList">
+				<code><a href="class-rpf.system.module.html#_addModule">addModule()</a></code>, 
+				<code><a href="class-rpf.system.module.html#_getApi">getApi()</a></code>, 
+				<code><a href="class-rpf.system.module.html#_getException">getException()</a></code>, 
+				<code><a href="class-rpf.system.module.html#_getExtension">getExtension()</a></code>, 
+				<code><a href="class-rpf.system.module.html#_getModule">getModule()</a></code>
+			</p>
+		</div>
+
+
+
+
+
+
+
+
+
+
+</div>
+	</div>
+
+	<div id="footer">
+		 API documentation generated by <a href="http://apigen.org">ApiGen</a>
+	</div>
+</div>
+<script src="resources/combined.js"></script>
+<script src="elementlist.js"></script>
+</body>
+</html>

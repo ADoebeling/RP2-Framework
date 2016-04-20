@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+
+	<title>Class rpf\api\module\bbQuota_readEntry</title>
+
+	<link rel="stylesheet" href="resources/bootstrap.min.css?973e37a8502921d56bc02bb55321f45b072b6f71">
+	<link rel="stylesheet" href="resources/style.css?49f43d3208c5d7e33fa16d36107a345bf11cc00d">
+
+</head>
+
+<body>
+	<nav id="navigation" class="navbar navbar-default navbar-fixed-top">
+		<div class="container-fluid">
+			<div class="navbar-header">
+				<a href="index.html" class="navbar-brand">Overview</a>
+			</div>
+			<div class="collapse navbar-collapse">
+
+                <form id="search" class="navbar-form navbar-left" role="search">
+                    <input type="hidden" name="cx" value="">
+                    <input type="hidden" name="ie" value="UTF-8">
+                    <div class="form-group">
+                        <input type="text" name="q" class="search-query form-control" placeholder="Search">
+					</div>
+				</form>
+
+				<ul class="nav navbar-nav">
+					<li>
+						<a href="namespace-rpf.api.module.html" title="Summary of rpf\api\module"><span>Namespace</span></a>
+					</li>
+					<li class="active">
+<span>Class</span>					</li>
+
+
+
+
+
+				</ul>
+			</div>
+		</div>
+	</nav>
+
+	<div id="left">
+	<div id="menu">
+
+		<div id="groups">
+				<h3>Namespaces</h3>
+			<ul>
+					<li class="active">
+						<a href="namespace-rpf.html">
+							rpf<span></span>
+						</a>
+							<ul>
+					<li class="active">
+						<a href="namespace-rpf.api.html">
+							api<span></span>
+						</a>
+							<ul>
+					<li class="active">
+						<a href="namespace-rpf.api.module.html">
+							module						</a>
+							</li>
+								</ul></li>
+					<li>
+						<a href="namespace-rpf.extension.html">
+							extension<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-rpf.extension.module.html">
+							module						</a>
+							</li>
+								</ul></li>
+					<li>
+						<a href="namespace-rpf.system.html">
+							system<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-rpf.system.module.html">
+							module						</a>
+							</li>
+								</ul></li></ul></li>
+			</ul>
+		</div>
+
+
+		<div id="elements">
+			<h3>Classes</h3>
+			<ul>
+				<li><a href="class-rpf.api.module.bbCustomer_getFreeOrdNr.html">bbCustomer_getFreeOrdNr</a></li>
+				<li><a href="class-rpf.api.module.bbCustomer_readAddress.html">bbCustomer_readAddress</a></li>
+				<li><a href="class-rpf.api.module.bbCustomer_readDiscount.html">bbCustomer_readDiscount</a></li>
+				<li><a href="class-rpf.api.module.bbCustomer_readEntry.html">bbCustomer_readEntry</a></li>
+				<li><a href="class-rpf.api.module.bbCustomer_readPayment.html">bbCustomer_readPayment</a></li>
+				<li><a href="class-rpf.api.module.bbCustomer_readTitle.html">bbCustomer_readTitle</a></li>
+				<li><a href="class-rpf.api.module.bbCustomer_saveAdress.html">bbCustomer_saveAdress</a></li>
+				<li><a href="class-rpf.api.module.bbCustomer_validateAddress.html">bbCustomer_validateAddress</a></li>
+				<li><a href="class-rpf.api.module.bbCustomer_validateEntry.html">bbCustomer_validateEntry</a></li>
+				<li><a href="class-rpf.api.module.bbCustomer_validatePayinfo.html">bbCustomer_validatePayinfo</a></li>
+				<li><a href="class-rpf.api.module.bbDomain_readEntry.html">bbDomain_readEntry</a></li>
+				<li><a href="class-rpf.api.module.bbDomain_readFrontpage.html">bbDomain_readFrontpage</a></li>
+				<li><a href="class-rpf.api.module.bbDomain_readHandles.html">bbDomain_readHandles</a></li>
+				<li><a href="class-rpf.api.module.bbDomain_readPhpini.html">bbDomain_readPhpini</a></li>
+				<li><a href="class-rpf.api.module.bbDomain_readSettings.html">bbDomain_readSettings</a></li>
+				<li><a href="class-rpf.api.module.bbDomain_readSubdomain.html">bbDomain_readSubdomain</a></li>
+				<li><a href="class-rpf.api.module.bbDomain_readWebalizerSettings.html">bbDomain_readWebalizerSettings</a></li>
+				<li><a href="class-rpf.api.module.bbDomain_searchEntry.html">bbDomain_searchEntry</a></li>
+				<li><a href="class-rpf.api.module.bbEmail_readAccount.html">bbEmail_readAccount</a></li>
+				<li><a href="class-rpf.api.module.bbMysql_inuseEntry.html">bbMysql_inuseEntry</a></li>
+				<li><a href="class-rpf.api.module.bbMysql_makeBackup.html">bbMysql_makeBackup</a></li>
+				<li><a href="class-rpf.api.module.bbMysql_readEntry.html">bbMysql_readEntry</a></li>
+				<li><a href="class-rpf.api.module.bbOrder_readAccountAddress.html">bbOrder_readAccountAddress</a></li>
+				<li><a href="class-rpf.api.module.bbOrder_readAccountEntry.html">bbOrder_readAccountEntry</a></li>
+				<li><a href="class-rpf.api.module.bbOrder_readDisposition.html">bbOrder_readDisposition</a></li>
+				<li><a href="class-rpf.api.module.bbOrder_readEntry.html">bbOrder_readEntry</a></li>
+				<li class="active"><a href="class-rpf.api.module.bbQuota_readEntry.html">bbQuota_readEntry</a></li>
+				<li><a href="class-rpf.api.module.customer.html">customer</a></li>
+				<li><a href="class-rpf.api.module.email.html">email</a></li>
+				<li><a href="class-rpf.api.module.order.html">order</a></li>
+				<li><a href="class-rpf.api.module.placeholder.html">placeholder</a></li>
+				<li><a href="class-rpf.api.module.user.html">user</a></li>
+			</ul>
+
+
+
+
+
+		</div>
+	</div>
+</div>
+
+<div id="splitter"></div>
+
+<div id="right">
+	<div id="rightInner">
+<div id="content" class="class">
+	<h1>Class bbQuota_readEntry</h1>
+
+
+	<div class="description">
+	<p>Implementation of bbQuota::readEntry</p>
+	</div>
+
+	<dl class="tree well">
+		<dd style="padding-left:0px">
+			<a href="class-rpf.system.module.html"><span>rpf\system\module</span></a>
+			
+			
+			
+		</dd>
+		<dd style="padding-left:30px">
+			<img src="resources/inherit.png" alt="Extended by">
+			<a href="class-rpf.api.apiModule.html"><span>rpf\api\apiModule</span></a>
+			
+			
+			
+		</dd>
+		<dd style="padding-left:60px">
+			<img src="resources/inherit.png" alt="Extended by">
+<b><span>rpf\api\module\bbQuota_readEntry</span></b>			
+			
+			
+		</dd>
+	</dl>
+
+
+
+
+
+
+
+
+	<div class="alert alert-info">
+		
+		
+		<b>Namespace:</b> <a href="namespace-rpf.html">rpf</a>\<a href="namespace-rpf.api.html">api</a>\<a href="namespace-rpf.api.module.html">module</a><br>
+		<b>Package:</b> system\module<br>
+
+			<b>Located at</b> <a href="source-class-rpf.api.module.bbQuota_readEntry.html#6-102" title="Go to source code">api/module/bbQuota_readEntry.php</a>
+		<br>
+	</div>
+
+
+
+		<div class="panel panel-default">
+			<div class="panel-heading"><h2>Methods summary</h2></div>
+			<table class="summary table table-bordered table-striped methods" id="methods">
+		<tr data-order="setPfad" id="_setPfad">
+
+			<td class="attributes"><code>
+				 public 
+				
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_setPfad">#</a>
+			<code><a href="source-class-rpf.api.module.bbQuota_readEntry.html#15-24" title="Go to source code">setPfad</a>( <span> <var>$pfad</var></span> )</code>
+
+			<div class="description short">
+				<p>Set filter on pfad</p>
+			</div>
+
+			<div class="description detailed hidden">
+				<p>Set filter on pfad</p>
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$pfad</var></dt>
+						<dd></dd>
+					</dl></div>
+
+					<h4>Returns</h4>
+					<div class="list">
+						<br>$this
+					</div>
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="setOeid" id="_setOeid">
+
+			<td class="attributes"><code>
+				 public 
+				
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_setOeid">#</a>
+			<code><a href="source-class-rpf.api.module.bbQuota_readEntry.html#26-35" title="Go to source code">setOeid</a>( <span> <var>$oeid</var></span> )</code>
+
+			<div class="description short">
+				<p>Set filter on oeid</p>
+			</div>
+
+			<div class="description detailed hidden">
+				<p>Set filter on oeid</p>
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$oeid</var></dt>
+						<dd></dd>
+					</dl></div>
+
+					<h4>Returns</h4>
+					<div class="list">
+						<br>$this
+					</div>
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="setSeid" id="_setSeid">
+
+			<td class="attributes"><code>
+				 public 
+				
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_setSeid">#</a>
+			<code><a href="source-class-rpf.api.module.bbQuota_readEntry.html#37-46" title="Go to source code">setSeid</a>( <span> <var>$seid</var></span> )</code>
+
+			<div class="description short">
+				<p>Set filter on seid</p>
+			</div>
+
+			<div class="description detailed hidden">
+				<p>Set filter on seid</p>
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$seid</var></dt>
+						<dd></dd>
+					</dl></div>
+
+					<h4>Returns</h4>
+					<div class="list">
+						<br>$this
+					</div>
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="setServiceObjectEntryId" id="_setServiceObjectEntryId">
+
+			<td class="attributes"><code>
+				 public 
+				
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_setServiceObjectEntryId">#</a>
+			<code><a href="source-class-rpf.api.module.bbQuota_readEntry.html#48-57" title="Go to source code">setServiceObjectEntryId</a>( <span> <var>$seid</var></span> )</code>
+
+			<div class="description short">
+				<p>Set filter on ServiceObject Entry Id</p>
+			</div>
+
+			<div class="description detailed hidden">
+				<p>Set filter on ServiceObject Entry Id</p>
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$seid</var></dt>
+						<dd></dd>
+					</dl></div>
+
+					<h4>Returns</h4>
+					<div class="list">
+						<br>$this
+					</div>
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="setOrderId" id="_setOrderId">
+
+			<td class="attributes"><code>
+				 public 
+				
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_setOrderId">#</a>
+			<code><a href="source-class-rpf.api.module.bbQuota_readEntry.html#59-68" title="Go to source code">setOrderId</a>( <span> <var>$oeid</var></span> )</code>
+
+			<div class="description short">
+				<p>Set filter on order-id</p>
+			</div>
+
+			<div class="description detailed hidden">
+				<p>Set filter on order-id</p>
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$oeid</var></dt>
+						<dd></dd>
+					</dl></div>
+
+					<h4>Returns</h4>
+					<div class="list">
+						<br>$this
+					</div>
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="setUid" id="_setUid">
+
+			<td class="attributes"><code>
+				 public 
+				
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_setUid">#</a>
+			<code><a href="source-class-rpf.api.module.bbQuota_readEntry.html#70-79" title="Go to source code">setUid</a>( <span> <var>$uid</var></span> )</code>
+
+			<div class="description short">
+				<p>Set filter on uid</p>
+			</div>
+
+			<div class="description detailed hidden">
+				<p>Set filter on uid</p>
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$uid</var></dt>
+						<dd></dd>
+					</dl></div>
+
+					<h4>Returns</h4>
+					<div class="list">
+						<br>$this
+					</div>
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="addReturnSsh" id="_addReturnSsh">
+
+			<td class="attributes"><code>
+				 public 
+				
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_addReturnSsh">#</a>
+			<code><a href="source-class-rpf.api.module.bbQuota_readEntry.html#81-90" title="Go to source code">addReturnSsh</a>( <span>boolean <var>$bool</var> = <span class="php-keyword1">true</span></span> )</code>
+
+			<div class="description short">
+				<p>Return ssh-account</p>
+			</div>
+
+			<div class="description detailed hidden">
+				<p>Return ssh-account</p>
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$bool</var></dt>
+						<dd></dd>
+					</dl></div>
+
+					<h4>Returns</h4>
+					<div class="list">
+						<br>$this
+					</div>
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="addReturnBase" id="_addReturnBase">
+
+			<td class="attributes"><code>
+				 public 
+				
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_addReturnBase">#</a>
+			<code><a href="source-class-rpf.api.module.bbQuota_readEntry.html#92-101" title="Go to source code">addReturnBase</a>( <span>boolean <var>$bool</var> = <span class="php-keyword1">true</span></span> )</code>
+
+			<div class="description short">
+				<p>Return the base</p>
+			</div>
+
+			<div class="description detailed hidden">
+				<p>Return the base</p>
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$bool</var></dt>
+						<dd></dd>
+					</dl></div>
+
+					<h4>Returns</h4>
+					<div class="list">
+						<br>$this
+					</div>
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+			</table>
+		</div>
+
+		<div class="panel panel-default">
+	        <div class="panel-heading"><h3>Methods inherited from <a href="class-rpf.api.apiModule.html#methods">rpf\api\apiModule</a></h3></div>
+			<p class="elementList">
+				<code><a href="class-rpf.api.apiModule.html#_addParam">addParam()</a></code>, 
+				<code><a href="class-rpf.api.apiModule.html#_fetchRpcLog">fetchRpcLog()</a></code>, 
+				<code><a href="class-rpf.api.apiModule.html#_get">get()</a></code>
+			</p>
+		</div>
+		<div class="panel panel-default">
+	        <div class="panel-heading"><h3>Methods inherited from <a href="class-rpf.system.module.html#methods">rpf\system\module</a></h3></div>
+			<p class="elementList">
+				<code><a href="class-rpf.system.module.html#___construct">__construct()</a></code>, 
+				<code><a href="class-rpf.system.module.html#_addModule">addModule()</a></code>, 
+				<code><a href="class-rpf.system.module.html#_getApi">getApi()</a></code>, 
+				<code><a href="class-rpf.system.module.html#_getException">getException()</a></code>, 
+				<code><a href="class-rpf.system.module.html#_getExtension">getExtension()</a></code>, 
+				<code><a href="class-rpf.system.module.html#_getModule">getModule()</a></code>
+			</p>
+		</div>
+
+
+
+
+
+
+
+
+
+
+		<div class="panel panel-default">
+            <div class="panel-heading"><h2>Properties summary</h2></div>
+			<table class="summary table table-bordered table-striped properties" id="properties">
+		<tr data-order="rpcMethod" id="$rpcMethod">
+			<td class="attributes"><code>
+				protected  
+				string
+			</code></td>
+
+			<td class="name">
+					<a href="source-class-rpf.api.module.bbQuota_readEntry.html#13" title="Go to source code"><var>$rpcMethod</var></a>
+
+				<div class="description short">
+					<p>Name of the RPC-Methode</p>
+				</div>
+
+				<div class="description detailed hidden">
+					<p>Name of the RPC-Methode</p>
+
+				</div>
+			</td>
+			<td class="value">
+				<div>
+					<a href="#$rpcMethod" class="anchor">#</a>
+					<code><span class="php-quote">'bbQuota::readEntry'</span></code>
+				</div>
+			</td>
+		</tr>
+			</table>
+		</div>
+
+
+
+
+
+
+</div>
+	</div>
+
+	<div id="footer">
+		 API documentation generated by <a href="http://apigen.org">ApiGen</a>
+	</div>
+</div>
+<script src="resources/combined.js"></script>
+<script src="elementlist.js"></script>
+</body>
+</html>
