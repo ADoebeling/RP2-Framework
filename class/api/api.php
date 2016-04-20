@@ -22,6 +22,8 @@ use rpf\api\module\bbCustomer_getFreeOrdNr;
 use rpf\api\module\bbQuota_readEntry;
 use rpf\api\module\bbOrder_readDisposition;
 use rpf\api\module\bbOrder_readEntry;
+use rpf\api\module\bbOrder_readAccountAddress;
+use rpf\api\module\bbOrder_readAccountEntry;
 use rpf\api\module\customer;
 use rpf\api\module\email;
 use rpf\api\module\order;
@@ -206,6 +208,22 @@ class api extends apiModule
     public function getOrderReadEntry()
     {
         return $this->getModule(bbOrder_readEntry::class);
+    }
+
+    /**
+     * @return bbOrder_readAccountAddress
+     */
+    public function getOrderReadAccountAddress()
+    {
+        return $this->getModule(bbOrder_readAccountAddress::class);
+    }
+
+    /**
+     * @return bbOrder_readAccountEntry
+     */
+    public function getOrderReadAccountEntry()
+    {
+        return $this->getModule(bbOrder_readAccountEntry::class);
     }
 
     /**
