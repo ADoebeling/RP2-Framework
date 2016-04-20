@@ -82,8 +82,6 @@ The code is 100% ide-compatible, so code-completion works fine. Never again look
 Every action and every call are getting detailed logged an can be monitored with `tail -f logs/syslog_YYMMDD_1SRV.log` on bash.
 
 
-```
-
 ### Using the RPF-API
 
 * Install the rpf-extensions like described above
