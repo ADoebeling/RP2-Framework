@@ -52,7 +52,7 @@ _Status: Implemented, but not published yet_
 
 ## RPF-API
 
-For developers it is quite easy to use the API. You need to export all domains from OrderId XY with nameserver settings.
+For developers it is quite easy to use the API. You need to export all domains from OrderId XY with nameserver settings?
 
 That's easy!
 
