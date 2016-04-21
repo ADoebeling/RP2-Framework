@@ -46,11 +46,37 @@ class apiModule extends module
      * Get result of api-request
      *
      * @param bool|string $cache (false, true = runtime, memcache)
+     * @param string $primaryKey Use different field as primary key
      * @return array|bool
+     * @throws module\exception
      */
-    public function get($cache = true)
+    public function get($cache = true, $primaryKey = 'default')
     {
-        return $this->getRpcResponse($this->rpcMethod, $this->rpcParams, null, $cache);
+        $apiResult = $this->getRpcResponse($this->rpcMethod, $this->rpcParams, null, $cache);
+        if (!is_array($apiResult))
+        {
+            throw new module\exception("Sorry, could not fetch any mysql-database. Do you have permissions to bbMysql::readEntry?");
+        }
+
+        if ($primaryKey == 'default')
+        {
+            return $apiResult;
+        }
+        else
+        {
+            foreach ($apiResult as $row)
+            {
+                if (!isset($row[$primaryKey]))
+                {
+                    throw new module\exception("Sorry, primary-key '$primaryKey' not found in api-result");
+                }
+                else
+                {
+                    $result[$row[$primaryKey]] = $row;
+                }
+            }
+            return $result;
+        }
     }
 
     /**

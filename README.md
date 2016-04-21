@@ -31,7 +31,7 @@ _Status: Not implemented yet_
 
 * **mysqlExport** (WIP)  
 CSV-Export of all mysql-databases.  
-_Status: Not implemented yet_
+_Status: Implemented and published_
  
 * **mgntRatioExport** (WIP)  
 Calculation-sheet with costs and contribution margin for every article  

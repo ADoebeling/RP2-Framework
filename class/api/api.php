@@ -19,6 +19,7 @@ use rpf\api\module\bbCustomer_validateAddress;
 use rpf\api\module\bbCustomer_validateEntry;
 use rpf\api\module\bbCustomer_validatePayinfo;
 use rpf\api\module\bbCustomer_getFreeOrdNr;
+use rpf\api\module\bbMysql_readEntry;
 use rpf\api\module\bbQuota_readEntry;
 use rpf\api\module\bbOrder_readDisposition;
 use rpf\api\module\bbOrder_readEntry;
@@ -192,6 +193,14 @@ class api extends apiModule
     public function getCustomerGetFreeOrdNr()
     {
         return $this->getModule(bbCustomer_getFreeOrdNr::class);
+    }
+
+    /**
+     * @return bbMysql_readEntry
+     */
+    public function getMysqlReadEntry()
+    {
+        return $this->getModule(bbMysql_readEntry::class);
     }
 
     /**

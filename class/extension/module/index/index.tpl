@@ -12,6 +12,10 @@
         <strong><a href="domainExport">DomainExport</a></strong><br>
         The DomainExport sends a CSV with all your domains: OrderNr, Domain, PHP-Version, Target
     </li>
+    <li>
+        <strong><a href="mysqlExport">MysqlExport</a></strong><br>
+        The MysqlExport sends a CSV with all your mysql-dbs: IP, Version, Name, Description, Password
+    </li>
 </ul>
 
 <h3>APIs</h3>

@@ -6,8 +6,6 @@ use rpf\api\apiModule;
 /**
  * Implementation of bbMysql::readEntry
  * (No public api-documentation available)
- *
- * @package system\module
  */
 class bbMysql_readEntry extends apiModule
 {
