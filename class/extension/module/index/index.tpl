@@ -13,7 +13,7 @@
         The DomainExport sends a CSV with all your domains: OrderNr, Domain, PHP-Version, Target
     </li>
     <li>
-        <strong><a href="domainExport">MysqlExport</a></strong><br>
+        <strong><a href="mysqlExport">MysqlExport</a></strong><br>
         The MysqlExport sends a CSV with all your mysql-dbs: IP, Version, Name, Description, Password
     </li>
 </ul>
