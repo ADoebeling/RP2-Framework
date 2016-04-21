@@ -2,6 +2,8 @@
 
 namespace rpf\extension;
 use rpf\extension\module\domainExport;
+use rpf\extension\module\mysqlExport;
+use rpf\extension\module\error;
 use rpf\extension\module\index;
 use rpf\extension\module\mgntRatioExport;
 use rpf\system\module;
@@ -26,6 +28,14 @@ class extension extends module
     }
 
     /**
+     * @return mysqlExport
+     */
+    public function getMysqlExport()
+    {
+        return $this->getModule(mysqlExport::class);
+    }
+
+    /**
      * @return index
      */
     public function getIndex()
@@ -47,6 +57,14 @@ class extension extends module
     public function getMailExport()
     {
         return $this->getModule(mailExport::class);
+    }
+
+    /**
+     * @return error
+     */
+    public function getError()
+    {
+        return $this->getModule(error::class);
     }
 
     /**
