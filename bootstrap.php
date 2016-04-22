@@ -9,6 +9,9 @@ use rpf\system\module\log;
  */
 error_reporting(E_ALL);
 
+setlocale (LC_ALL, 'de_DE@euro', 'de_DE', 'de', 'ge');
+mb_internal_encoding("UTF-8");
+
 /**
  * Location to store the bbRpc-Cookie
  */
@@ -137,8 +140,6 @@ function exceptionHandler(\Exception $e)
     die('-die-');
 }
 set_exception_handler('rpf\exceptionHandler');
-
-//throw new exception('yow!', 200);
 
 
 /**

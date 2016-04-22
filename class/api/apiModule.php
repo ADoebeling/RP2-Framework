@@ -66,9 +66,10 @@ class apiModule extends module
         {
             foreach ($apiResult as $row)
             {
-                if (!isset($row[$primaryKey]))
+                // isset return false if element is NULL
+                if (!isset($row[$primaryKey]) && @$row[$primaryKey] !== NULL)
                 {
-                    throw new module\exception("Sorry, primary-key '$primaryKey' not found in api-result");
+                    throw new module\exception("Sorry, primary-key '$primaryKey' not found in api-result: \n".print_r($row, 1));
                 }
                 else
                 {

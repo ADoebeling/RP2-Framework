@@ -3,6 +3,7 @@
 namespace rpf\extension\module;
 use rpf\extension\extensionModule;
 use rpf\system\module\log;
+use rpf\system\module\utf8German;
 
 
 /**
@@ -12,10 +13,14 @@ use rpf\system\module\log;
 class csvExport extends extensionModule
 {
     /**
-     * @var array
+     * @var array $csv[$i]['title'] = $value
      */
     protected $csv = array();
 
+    /**
+     * @var string
+     */
+    protected $csvString = '';
 
     /**
      * Helper Function: Get customer-name formated
@@ -25,7 +30,7 @@ class csvExport extends extensionModule
      * @param string $company
      * @return string string
      */
-    public function getCustomerNameFormatted($firstNameOrArray, $lastName = '', $company = '')
+    public static function getCustomerNameFormatted($firstNameOrArray, $lastName = '', $company = '')
     {
         if (is_array($firstNameOrArray))
         {
@@ -38,6 +43,8 @@ class csvExport extends extensionModule
     }
 
     /**
+     * Build the csv
+     * This method should be overwritten by subclass
      * @return $this
      */
     protected function buildCsv()
@@ -46,13 +53,17 @@ class csvExport extends extensionModule
     }
 
     /**
-     * @return string
+     * Build csv string
+     *
+     * @param bool $sort
+     * @return $this
      */
-    protected function getCsv($sort = true)
+    protected function buildCsvString($sort = true)
     {
+        if (empty($this->csvFields)) $this->buildCsv();
+
         $title = "";
         $csv = array();
-        if (empty($this->csvFields)) $this->buildCsv();
         foreach($this->csv as $key => $row)
         {
             // Headline
@@ -67,11 +78,22 @@ class csvExport extends extensionModule
         }
         if ($sort)
         {
-            sort ($csv);
+            natcasesort($csv);
         }
         $result = "$title\n";
         $result .= implode("\n", $csv);
-        return $result;
+        $this->csvString = $result;
+        return $this;
+    }
+
+    /**
+     * Return csv as string
+     * @return string
+     */
+    public function getCsv()
+    {
+        if (empty($this->csvString)) $this->buildCsvString();
+        return $this->csvString;
     }
 
 

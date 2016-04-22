@@ -9,18 +9,18 @@
 
 <ul>
     <li>
-        <strong><a href="domainExport">DomainExport</a></strong><br>
-        The DomainExport sends a CSV with all your domains: OrderNr, Domain, PHP-Version, Target
+        <strong><a href="csvExportDomain">CSV Export: Domain</a></strong><br>
+        Export all domains with customer, order and settings
     </li>
     <li>
-        <strong><a href="mysqlExport">MysqlExport</a></strong><br>
-        The MysqlExport sends a CSV with all your mysql-dbs: IP, Version, Name, Description, Password
+        <strong><a href="csvExportMysql">CSV Export: MySQL</a></strong><br>
+        Export all databases with customer, order and settings
     </li>
 </ul>
 
 <h3>APIs</h3>
 
-The documentation of the APIs can be found on <a href="https://github.com/ADoebeling/RP2-Framework">GitHub</a>.
+The documentation of the APIs can be found on <a href="http://adoebeling.github.io/RP2-Framework/">GitHub</a>.
 
 <hr>
 <strong>Development:</strong> Andreas Döbeling (
