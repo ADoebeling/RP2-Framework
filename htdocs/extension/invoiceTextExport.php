@@ -10,10 +10,16 @@
  * @version 0.1.151208_dev_1ad
  */
 
-require_once '../../../class/extension/extension.php';
 
-$e = new \rpf\extension\extension();
-$e -> httpAuth();
+require_once __DIR__ . '/../../bootstrap.php';
+
+$rpf = new \rpf\system\rpf();
+
+$rpf
+    ->getApi()
+    ->getUser()
+    ->httpAuth();
+
 
 $ajax = isset($_REQUEST['ajax']) ? true : false;
 $method = isset($_REQUEST['method']) ? (string) $_REQUEST['method'] : false;

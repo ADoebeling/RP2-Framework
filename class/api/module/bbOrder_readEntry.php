@@ -2,7 +2,6 @@
 
 namespace rpf\api\module;
 use rpf\api\apiModule;
-use rpf\system\module\exception;
 
 /**
  * Implementation of bbOrder::readEntry
@@ -119,7 +118,7 @@ class bbOrder_readEntry extends apiModule
      * @param $bool
      * @return $this
      */
-    public function addReturnAccountEntries($bool = true)
+    public function addAccountEntries($bool = true)
     {
         return $this->addParam('return_account_entrys', (bool) $bool);
     }
@@ -130,9 +129,9 @@ class bbOrder_readEntry extends apiModule
      * @param $bool
      * @return $this
      */
-    public function addReturnSettlements($bool = true)
+    public function addSettlements($bool = true)
     {
-        $this->addReturnAccountEntries();
+        $this->addAccountEntries();
         return $this->addParam('return_settlements', (bool) $bool);
     }
 
@@ -143,7 +142,7 @@ class bbOrder_readEntry extends apiModule
      * @param $bool
      * @return $this
      */
-    public function addReturnDispositions($bool = true)
+    public function addDispositions($bool = true)
     {
         return $this->addParam('return_dispositions', (bool) $bool);
     }
@@ -154,9 +153,9 @@ class bbOrder_readEntry extends apiModule
      * @param $bool
      * @return $this
      */
-    public function addReturnActiveDispositions($bool = true)
+    public function addActiveDispositions($bool = true)
     {
-        $this->addReturnDispositions();
+        $this->addDispositions();
         return $this->addParam('return_active', (bool) $bool);
     }
 
@@ -166,9 +165,9 @@ class bbOrder_readEntry extends apiModule
      * @param $bool
      * @return $this
      */
-    public function addReturnDispositionPrices($bool = true)
+    public function addDispositionPrices($bool = true)
     {
-        $this->addReturnDispositions();
+        $this->addDispositions();
         return $this->addParam('return_disposition_prices', (bool) $bool);
     }
 
@@ -178,9 +177,9 @@ class bbOrder_readEntry extends apiModule
      * @param $bool
      * @return $this
      */
-    public function addReturnDispositionMessages($bool = true)
+    public function addDispositionMessages($bool = true)
     {
-        $this->addReturnDispositions();
+        $this->addDispositions();
         return $this->addParam('return_msg', (bool) $bool);
     }
 
@@ -191,7 +190,7 @@ class bbOrder_readEntry extends apiModule
      * @param $bool
      * @return $this
      */
-    public function addReturnDomain($bool = true)
+    public function addDomain($bool = true)
     {
         return $this->addParam('return_domain', (bool) $bool);
     }
@@ -202,7 +201,7 @@ class bbOrder_readEntry extends apiModule
      * @param $bool
      * @return $this
      */
-    public function addReturnDomainQuotas($bool = true)
+    public function addDomainQuotas($bool = true)
     {
         return $this->addParam('return_domcon', (bool) $bool);
     }
@@ -213,7 +212,7 @@ class bbOrder_readEntry extends apiModule
      * @param $bool
      * @return $this
      */
-    public function addReturnCustomer($bool = true)
+    public function addCustomer($bool = true)
     {
         return $this->addParam('return_customer', (bool) $bool);
     }
@@ -224,9 +223,9 @@ class bbOrder_readEntry extends apiModule
      * @param $bool
      * @return $this
      */
-    public function addReturnCustomerAddress($bool = true)
+    public function addCustomerAddress($bool = true)
     {
-        $this->addReturnCustomer();
+        $this->addCustomer();
         return $this->addParam('return_adress', (bool) $bool);
     }
 
@@ -236,9 +235,9 @@ class bbOrder_readEntry extends apiModule
      * @param $bool
      * @return $this
      */
-    public function addReturnCustomerOverview($bool = true)
+    public function addCustomerOverview($bool = true)
     {
-        $this->addReturnCustomer();
+        $this->addCustomer();
         return $this->addParam('return_customer_overview', (bool) $bool);
     }
 
@@ -248,7 +247,7 @@ class bbOrder_readEntry extends apiModule
      * @param $bool
      * @return $this
      */
-    public function addReturnLimits($bool = true)
+    public function addLimits($bool = true)
     {
         return $this->addParam('return_limits', (bool) $bool);
     }
@@ -259,9 +258,9 @@ class bbOrder_readEntry extends apiModule
      * @param $bool
      * @return $this
      */
-    public function addReturnLimitLimits($bool = true)
+    public function addLimitLimits($bool = true)
     {
-        $this->addReturnLimits();
+        $this->addLimits();
         return $this->addParam('return_max_only', (bool) $bool);
     }
 
@@ -271,7 +270,7 @@ class bbOrder_readEntry extends apiModule
      * @param $bool
      * @return $this
      */
-    public function addReturnLoad($bool = true)
+    public function addLoad($bool = true)
     {
         return $this->addParam('return_load', (bool) $bool);
     }
@@ -282,7 +281,7 @@ class bbOrder_readEntry extends apiModule
      * @param $bool
      * @return $this
      */
-    public function addReturnTerminationStatus($bool = true)
+    public function addTerminationStatus($bool = true)
     {
         return $this->addParam('return_is_canceled', (bool) $bool);
     }
@@ -293,7 +292,7 @@ class bbOrder_readEntry extends apiModule
      * @param $bool
      * @return $this
      */
-    public function addReturnScale($bool = true)
+    public function addScale($bool = true)
     {
         return $this->addParam('return_scale', (bool) $bool);
     }
@@ -304,7 +303,7 @@ class bbOrder_readEntry extends apiModule
      * @param $bool
      * @return $this
      */
-    public function addReturnTariff($bool = true)
+    public function addTariff($bool = true)
     {
         return $this->addParam('return_tariff', (bool) $bool);
     }
