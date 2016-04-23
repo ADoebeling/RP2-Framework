@@ -38,7 +38,7 @@ class module
      */
     public function getApi()
     {
-        return $this->getModule('\rpf\api\api');
+        return $this->getModule(api::class);
     }
 
     /**
@@ -47,15 +47,7 @@ class module
      */
     public function getExtension()
     {
-        return $this->getModule('\rpf\extension\extension');
-    }
-
-    /**
-     * @return exception
-     */
-    public function getException()
-    {
-        return $this->getModule('exception');
+        return $this->getModule(extension::class);
     }
 
 
@@ -75,6 +67,8 @@ class module
     
     protected function addModule($nameOrObject)
     {
+        // Not in use?
+        throw new exception('not in use?');
         return $this->module->add($nameOrObject);
     }
 }

@@ -5,7 +5,7 @@ use rpf\api\apiModule;
 use rpf\system\module\exception;
 use rpf\system\module\log;
 
-require_once __DIR__.'/../bb.rpc.class.php';
+require_once __DIR__ . '/../bb.rpc.php';
 
 /**
  * Implementation of bbRpc
@@ -21,43 +21,59 @@ class bbRpc_call extends apiModule
     /**
      * Implementation of bbRpc::call with caching and logging
      *
-     * @param string $sMethod
+     * @param null $sMethod
      * @param array $hArgs
      * @param bool $cache
-     * @return mixed
+     * @param bool $forceAuth
+     * @return bool|mixed
+     * @throws \Exception
      * @throws exception
+     *
+     * @todo ForceAuth
      */
-    public function call($sMethod,$hArgs=array(),$cache = true)
+    public function call($sMethod = NULL,$hArgs=array(),$cache = true, $forceAuth = true)
     {
-        // Create readable request string for logging & caching
-        $requestString = '';
-        foreach ($hArgs as $name => $value)
-        {
-            $requestString .= empty($requestString) ? $sMethod.'(' : ',';
-            $requestString .= "'$name' => '$value'";
-        }
-        $requestString .= ')';
+
+        $sMethod = $sMethod == NULL ? $this->rpcMethod : $sMethod;
+        $hArgs = empty($hArgs) ? $this->rpcParams : $hArgs;
 
 
-        if ($cache === true && isset($this->cache[$requestString]))
+        if ($this->getApi()->getRpcAuth()->auth()) //        if ($forceAuth && $this->getApi()->getRpcAuth()->auth() || !$forceAuth)
+
         {
-            log::debug('Getting RPC-Response from runtime-cache', __METHOD__ . "($requestString)");
+            // Create readable request string for logging & caching
+            $requestString = "$sMethod(";
+            foreach ($hArgs as $name => $value) {
+                $requestString .= empty($requestString) ? '' : ',';
+                $requestString .= "'$name' => '$value'";
+            }
+            $requestString .= ')';
+
+            if ($cache === true && isset($this->cache[$requestString])) {
+                log::debug('Getting RPC-Response from runtime-cache', __METHOD__ . "($requestString)");
+            } else if ($cache === 'memcache') {
+                throw new exception('Sorry, memcach is not implemented yet');
+            } else {
+                log::setStopwatch();
+                $this->cache[$requestString] = \bbRpc::call($sMethod, $hArgs);
+                $resultCounter = count($this->cache[$requestString]);
+                log::debug("Getting $resultCounter rows", $requestString);
+                $this->getApi()->getRpcMessages()->getMessages();
+            }
+            return $this->cache[$requestString];
         }
-        else if ($cache === 'memcache')
-        {
-            throw new exception('Sorry, memcach is not implemented yet');
-        }
-        else
-        {
-            $duration = microtime(1);
-            global $_BBRPC_Msgs;
-            $this->cache[$requestString] = bbRpc::call($sMethod,$hArgs);
-            $duration = round(microtime(1)-$duration, 3);
-            $resultCounter = count($this->cache[$requestString]);
-            log::debug("Performing RPC-Request within $duration sec.", __METHOD__);
-            log::debug("Getting $resultCounter rows ", $requestString);
-            $this->fetchRpcLog();
-        }
-        return $this->cache[$requestString];
+        return false;
+    }
+
+    /**
+     * @param string $name
+     * @param mixed $value
+     * @return $this
+     */
+    protected function addParam($name, $value)
+    {
+        log::debug('', __METHOD__."($name, $value)");
+        $this->rpcParams[$name] = $value;
+        return $this;
     }
 }

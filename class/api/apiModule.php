@@ -3,6 +3,11 @@
 namespace rpf\api;
 use rpf\system\module;
 
+defined('BBRPC_URL') or define('BBRPC_URL', RPF_API_MODULE_BBRPC_SETURL_URL);
+defined('BBRPC_COOKIE') or define('BBRPC_COOKIE', RPF_API_MODULE_AUTH_COOKIE);
+
+require_once __DIR__.'/bb.rpc.php';
+
 /**
  * RPF API-Module-Class
  *
@@ -15,7 +20,17 @@ use rpf\system\module;
 class apiModule extends module
 {
     /**
-     * Name of the RPC-Methode
+     * @var bool|int
+     */
+    protected $rpcUserId = false;
+
+    /**
+     * @var bool|string
+     */
+    protected $rpcUrl = false;
+
+    /**
+     * Name of the RPC-Method
      * @var string
      */
     protected $rpcMethod = 'UNDEFINED';
@@ -23,22 +38,19 @@ class apiModule extends module
     /**
      * @var array call-params (filter, return, format, ...)
      */
-    private $rpcParams = array();
+    protected $rpcParams = array();
 
     /**
-     * @var array ['requestString' => $result]
-     */
-    private $rpcCache = array();
-
-
-      /**
+     * Add param for bbRpc::call
+     * (Alias for $this->getApi()->getRpcCall()->addParam($name, $value) )
+     *
      * @param string $name
      * @param mixed $value
      * @return $this
      */
     protected function addParam($name, $value)
     {
-        $this->rpcParams[(string) $name] = $value;
+        $this->getApi()->getRpcCall()->addParam($name, $value);
         return $this;
     }
 
@@ -52,10 +64,12 @@ class apiModule extends module
      */
     public function get($cache = true, $primaryKey = 'default')
     {
-        $apiResult = $this->getRpcResponse($this->rpcMethod, $this->rpcParams, null, $cache);
+        $result = array();
+        $apiResult = $this->getApi()->getRpcCall()->call($this->rpcMethod, $this->rpcParams, $cache);
+
         if (!is_array($apiResult))
         {
-            throw new module\exception("Sorry, could not fetch any mysql-database. Do you have permissions to bbMysql::readEntry?");
+            throw new module\exception("Sorry, could not fetch any row");
         }
 
         if ($primaryKey == 'default')
@@ -71,97 +85,16 @@ class apiModule extends module
                 {
                     throw new module\exception("Sorry, primary-key '$primaryKey' not found in api-result: \n".print_r($row, 1));
                 }
+                else if (isset($result[$row[$primaryKey]]))
+                {
+                    throw new module\exception("Sorry, duplicate entry on primary-key '$primaryKey'");
+                }
                 else
                 {
                     $result[$row[$primaryKey]] = $row;
                 }
             }
             return $result;
-        }
-    }
-
-    /**
-     * Wrapper for all api-calls with build-in caching
-     *
-     * @param $sMethod
-     * @param array $hArgs
-     * @param null $hPlaceholders
-     * @param bool|string $cache
-     * @return null
-     * @throws \Exception
-     */
-    private function getRpcResponse($sMethod, $hArgs=array(), $hPlaceholders=null, $cache = true)
-    {
-        $requestString = '';
-        foreach ($this->rpcParams as $name => $value)
-        {
-            /*if (!is_string($value) && !is_bool($value))
-            {
-                throw new module\exception("Sorry, Params can't be ".\gettype($value));
-            }*/
-            $requestString .= empty($requestString) ? $sMethod.'(' : ',';
-            $requestString .= "'$name' => '$value'";
-        }
-        $requestString .= ')';
-
-
-
-        if ($cache === true && isset($this->rpcCache[$requestString]))
-        {
-            module\log::debug('Getting RPC-Response from runtime-cache', __METHOD__ . "($requestString)");
-            return $this->rpcCache[$requestString];
-        }
-        else if ($cache === 'memcache')
-        {
-            throw new module\exception('Sorry, memcach is not implemented yet');
-        }
-        else
-        {
-            $duration = microtime(1);
-            global $_BBRPC_Msgs;
-            $this->rpcCache[$requestString] = bbRpc::call($sMethod,$hArgs,$hPlaceholders);
-            $duration = round(microtime(1)-$duration, 3);
-            $resultCounter = count($this->rpcCache[$requestString]);
-            module\log::debug("Performing RPC-Request within $duration sec.", __METHOD__);
-            module\log::debug("Getting $resultCounter rows ", $requestString);
-            $this->fetchRpcLog();
-        }
-        return $this->rpcCache[$requestString];
-    }
-
-    /**
-     * @todo fix me, seems like I'm broken
-     */
-    protected function fetchRpcLog()
-    {
-        // I realy don't like the way of fetching RPC-Error-Messages...
-        //$hLoglvl = array("error"=>0, "warn"=>1, "notice"=>2, "ok"=>3, "debug"=>4);
-        global $_BBRPC_Msgs;
-
-        if (is_array($_BBRPC_Msgs))
-        {
-            foreach ($_BBRPC_Msgs as $key => &$hMsg)
-            {
-                switch ($hMsg["typ"])
-                {
-                    case 0:
-                        module\log::error("RPC-Msg.: $hMsg", __METHOD__);
-                        break;
-                    case 1:
-                        module\log::warning("RPC-Msg.: $hMsg", __METHOD__);
-                        break;
-                    case 2:
-                        module\log::info("RPC-Msg.: $hMsg", __METHOD__);
-                        break;
-                    case 3:
-                        module\log::debug("RPC-Msg.: OK! $hMsg", __METHOD__);
-                        break;
-                    case 4:
-                        module\log::debug("RPC-Msg.: $hMsg", __METHOD__);
-                        break;
-                }
-                unset($_BBRPC_Msgs[$key]);
-            }
         }
     }
 }

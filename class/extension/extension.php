@@ -5,6 +5,7 @@ use rpf\extension\module\csvExportDomain;
 use rpf\extension\module\csvExportMysql;
 use rpf\extension\module\error;
 use rpf\extension\module\index;
+use rpf\extension\module\invoiceTextExport;
 use rpf\extension\module\mgntRatioExport;
 use rpf\system\module;
 

@@ -3,8 +3,17 @@
 namespace rpf\api\module;
 use rpf\api\apiModule;
 
+
+/**
+ * !! DEPRECATED !!
+ * DO NOT USE ANY MORE
+ *
+ * @package rpf\api\module
+ */
 class order extends apiModule
 {
+
+    protected $orders, $data;
 
     protected $disposition = array();
 
@@ -47,10 +56,10 @@ class order extends apiModule
     public function loadAll($param = array(), $runOnce = true)
     {
 
-        if ($runOnce && !$this->runOnce(__METHOD__)) return $this;
+        //if ($runOnce && !$this->runOnce(__METHOD__)) return $this;
 
         if (empty($param)) {
-            $this->data = $this->system->call('bbOrder::readEntry', ['return_array' => 1]); //, 'return_adress' => 1
+            $this->data = $this->getApi()->call('bbOrder::readEntry', ['return_array' => 1]); //, 'return_adress' => 1
         }
 
         else if (isset($param['accounting']))

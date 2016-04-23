@@ -89,9 +89,4 @@ class moduleManager
         }
         return true;
     }
-
-    public function __destruct()
-    {
-        log::debug("Shutdown moduleManager\n\n\n    <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n\n", __METHOD__);
-    }
 }

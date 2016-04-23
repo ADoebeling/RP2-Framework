@@ -1,26 +1,17 @@
 <?php
 
 namespace rpf;
-use rpf\system\module\exception;
 use rpf\system\module\log;
 
-/**
- * Report all errors
- */
-error_reporting(E_ALL);
+// Include User-Config
+if (file_exists(__DIR__.'/config/config.php'))
+{
+    require_once __DIR__.'/config/config.php';
+}
+// Always (!) include Default-Config
+require_once __DIR__.'/config/config.default.php';
 
-setlocale (LC_ALL, 'de_DE@euro', 'de_DE', 'de', 'ge');
-mb_internal_encoding("UTF-8");
 
-/**
- * Location to store the bbRpc-Cookie
- */
-define('BBRPC_COOKIE', '/tmp/RPF_bbRpc_cookie.txt');
-
-/**
- * Debug-Mode?
- */
-define('RPF_DEBUG', true);
 
 /**
  * Let us use a autoloader for our classes.
@@ -43,7 +34,7 @@ function classLoader ($class)
     if (file_exists($file)) {
         require_once $file;
         $logFileName = str_replace(__DIR__, '', $file);
-        log::debug("Include $logFileName", __FUNCTION__ . "('$class')");
+        //log::debug("Include $logFileName", __FUNCTION__ . "('$class')");
         return true;
     } else {
         log::error("Couldn't  load class from '$file'", __FUNCTION__."($class)");
@@ -52,7 +43,6 @@ function classLoader ($class)
         return false;
     }
 }
-spl_autoload_register('\rpf\classLoader');
 
 /**
  * @param $title
@@ -127,8 +117,6 @@ function showError($title, $text, $code = '')
     <?php
 }
 
-
-
 /**
  * @param \Exception $exception
  * @return bool
@@ -139,8 +127,6 @@ function exceptionHandler(\Exception $e)
     log::error($e->getMessage().' in '.$e->getFile().':'.$e->getLine(), __FUNCTION__,$e->getTrace());
     die('-die-');
 }
-set_exception_handler('rpf\exceptionHandler');
-
 
 /**
  * Lets pass all php-errors to our syslog
@@ -157,5 +143,14 @@ function errorHandler($errorNumber, $errorString, $errorFile, $errorLine)
     log::error("PHP-ERROR\n\n!!!!! $errorString\n!!!!! $errorFile:$errorLine\n", __METHOD__, debug_backtrace());
     die();
 }
-set_error_handler('rpf\errorHandler');
 
+
+function debugConsole( $data ) {
+
+    if ( is_array( $data ) || is_object($data) )
+        $output = "<script>console.log( 'Debug Objects: " . implode( ',', (array) $data) . "' );</script>";
+    else
+        $output = "<script>console.log( 'Debug Objects: " . $data . "' );</script>";
+
+    echo $output;
+}

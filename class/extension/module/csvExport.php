@@ -22,6 +22,15 @@ class csvExport extends extensionModule
      */
     protected $csvString = '';
 
+    public function __construct($sendDownload = false,  $filename = 'export')
+    {
+        parent::__construct();
+        if ($sendDownload)
+        {
+            $this->sendCsvDownload($filename);
+        }
+    }
+
     /**
      * Helper Function: Get customer-name formated
      *

@@ -1,5 +1,4 @@
 <?php
-namespace rpf\api;
 /*
  * bbRpc Class (c) 2015 by domainfactory GmbH - www.df.eu
  *

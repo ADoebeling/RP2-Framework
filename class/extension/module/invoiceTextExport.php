@@ -20,8 +20,6 @@ use rpf\extension\extensionModule;
  * @link https://www.1601.com
  *
  * @TODO Use bbOrder::readDisposition instead of readEntry to get so_type and clean prices #5401975
- *
- * @package system\extension
  */
 class invoiceTextExport extends extensionModule
 {
