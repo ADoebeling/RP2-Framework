@@ -85,7 +85,7 @@ class bbEmail_readAccount extends apiModule
      * @param $bool
      * @return $this
      */
-    public function addReturnRpc($bool)
+    public function addRpc($bool = true)
     {
         return $this->addParam('return_rpc', $bool);
     }
@@ -96,7 +96,7 @@ class bbEmail_readAccount extends apiModule
      * @param $bool
      * @return $this
      */
-    public function addReturnUsed($bool)
+    public function addUsed($bool = true)
     {
         return $this->addParam('return_used', $bool);
     }
@@ -107,7 +107,7 @@ class bbEmail_readAccount extends apiModule
      * @param $bool
      * @return $this
      */
-    public function addReturnSievefilterOverview($bool)
+    public function addSievefilterOverview($bool = true)
     {
         return $this->addParam('return_sievefilter_overview', $bool);
     }
@@ -118,7 +118,7 @@ class bbEmail_readAccount extends apiModule
      * @param $bool
      * @return $this
      */
-    public function addReturnStat($bool)
+    public function addStat($bool = true)
     {
         return $this->addParam('return_stat', $bool);
     }
@@ -129,7 +129,7 @@ class bbEmail_readAccount extends apiModule
      * @param $bool
      * @return $this
      */
-    public function addReturnArTime($bool)
+    public function addArTime($bool = true)
     {
         return $this->addParam('return_ar_time', $bool);
     }

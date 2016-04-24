@@ -22,15 +22,6 @@ class csvExport extends extensionModule
      */
     protected $csvString = '';
 
-    public function __construct($sendDownload = false,  $filename = 'export')
-    {
-        parent::__construct();
-        if ($sendDownload)
-        {
-            $this->sendCsvDownload($filename);
-        }
-    }
-
     /**
      * Helper Function: Get customer-name formated
      *
@@ -122,5 +113,10 @@ class csvExport extends extensionModule
         header("Content-Disposition: attachment; filename=\"$filename\";");
         echo utf8_decode($this->getCsv());
         return $this;
+    }
+
+    public function execute($filename = 'export')
+    {
+        $this->sendCsvDownload($filename);
     }
 }

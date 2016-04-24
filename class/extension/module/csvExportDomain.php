@@ -3,6 +3,7 @@
 namespace rpf\extension\module;
 use rpf\api\module\bbDomain_readEntry;
 use rpf\extension\extensionModule;
+use rpf\system\module\exception;
 use rpf\system\module\log;
 
 /**
@@ -21,7 +22,6 @@ use rpf\system\module\log;
  */
 class csvExportDomain extends csvExport
 {
-
     /**
      * Building a list of all domains, matching set filter
      *
@@ -32,8 +32,6 @@ class csvExportDomain extends csvExport
      */
     public function buildCsv()
     {
-
-
         $domains = $this->getApi()->getDomainReadEntry()->addSettings()->addSubdomain()->get(true, 'name');
         $orders = $this->getApi()->getOrderReadEntry()->get(true, 'ordnr');
 
@@ -60,6 +58,7 @@ class csvExportDomain extends csvExport
                             'Domain' => $domain['name'],
                             'Subdomain' => $subdomainName,
                             'PHP Version' => $phpVersion,
+                            'AuthCode' => isset($domain['authcode']) ? $domain['authcode'] : '',
                             'Target' => $subdomain['target']
                         ];
                 }
@@ -67,5 +66,10 @@ class csvExportDomain extends csvExport
         }
         ksort($this->csv);
         return $this;
+    }
+
+    public function execute($filename = 'Domain')
+    {
+        parent::execute($filename);
     }
 }
