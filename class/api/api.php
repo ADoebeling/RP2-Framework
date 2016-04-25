@@ -334,7 +334,5 @@ class api extends module
         log::debug("Usage of deprecated object 'order'", __METHOD__);
         return $this->getModule(order::class);
     }
-
-
 }
 

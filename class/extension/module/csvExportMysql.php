@@ -4,9 +4,15 @@ namespace rpf\extension\module;
 use rpf\system\module\log;
 
 /**
- * Class mysqlExport
- *
- * This class provides methods to export all mysql-dbs into a CSV-Export
+ * Export all MySQL databases with details as csv:
+ * - Customer name
+ * - Order id
+ * - Database name
+ * - Database description
+ * - IP (local)
+ * - IP (external)
+ * - Version
+ * - Password
  *
  * @author Andreas Doebeling <ad@1601.com>
  * @copyright 1601.production siegler&thuemmler ohg
@@ -16,18 +22,17 @@ use rpf\system\module\log;
  */
 class csvExportMysql extends csvExport
 {
-    /**
-     * Building a list of all domains, matching set filter
-     *
-     * - OrderNr
-     * - (Sub-)Domain
-     * - PHP-Version
-     * - Target
-     */
-    public function buildCsv()
+    public function build($sort = true)
     {
-        $orders = $this->getApi()->getOrderReadEntry()->get(true, 'ordnr');
-        $mysql = $this->getApi()->getMysqlReadEntry()->get();
+        $orders = $this
+            ->getApi()
+            ->getOrderReadEntry()
+            ->get();
+
+        $mysql = $this
+            ->getApi()
+            ->getMysqlReadEntry()
+            ->get();
 
         if (!is_array($mysql))
         {
@@ -37,7 +42,6 @@ class csvExportMysql extends csvExport
         {
             foreach ($mysql as $row)
             {
-                // Get Mysql-Version
                 switch ($row['hostip'])
                 {
                     case '127.0.0.1':
@@ -51,25 +55,28 @@ class csvExportMysql extends csvExport
                     case '127.0.0.3':
                         $version = 'MySQL 5';
                         break;
+
+                    default:
+                        $version = 'UNKNOWN';
                 }
 
-                $customer =  isset($orders[$row['ordnr']]) ? $this->getCustomerNameFormatted($orders[$row['ordnr']]) : '';
                 $this->csv[] = [
-                    'Customer'          => $customer,
-
+                    'Customer'          => isset($orders[$row['ordnr']]) ? $this->getCustomerNameFormatted($orders[$row['ordnr']]) : '',
                     'Order'             => $row['ordnr'],
                     'Database'          => $row['name'],
                     'Description'       => $row['notice'],
-
                     'IP (local)'        => $row['hostip'],
                     'IP (external)'     => $row['extip'],
                     'Version'           => $version,
-
                     'Password'          => $row['password']
                 ];
             }
         }
-        ksort($this->csv);
-        return $this;
+        return parent::build($sort);
+    }
+
+    public function execute($filename = 'Mysql')
+    {
+        return parent::execute($filename);
     }
 }

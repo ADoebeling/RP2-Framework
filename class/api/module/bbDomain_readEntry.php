@@ -184,4 +184,15 @@ class bbDomain_readEntry extends apiModule
     {
         return $this->addParam('return_limits', (bool) $bool);
     }
+
+    /**
+     * @param bool $cache
+     * @param string $primaryKey
+     * @return array|bool
+     * @throws \rpf\system\module\exception
+     */
+    public function get($cache = true, $primaryKey = 'name')
+    {
+        return parent::get($cache, $primaryKey);
+    }
 }

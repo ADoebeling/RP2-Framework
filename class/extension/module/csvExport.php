@@ -23,65 +23,33 @@ class csvExport extends extensionModule
     protected $csvString = '';
 
     /**
-     * Helper Function: Get customer-name formated
-     *
-     * @param string|array $firstNameOrArray
-     * @param string $lastName
-     * @param string $company
-     * @return string string
-     */
-    public static function getCustomerNameFormatted($firstNameOrArray, $lastName = '', $company = '')
-    {
-        if (is_array($firstNameOrArray))
-        {
-            $company = $firstNameOrArray['cus_company'];
-            $lastName = $firstNameOrArray['cus_last_name'];
-            $firstNameOrArray = $firstNameOrArray['cus_first_name'];
-        }
-        $result = !empty($company) ? "$company ($firstNameOrArray $lastName)" : "$lastName, $firstNameOrArray";
-        return $result != ', ' ? $result : '';
-    }
-
-    /**
-     * Build the csv
-     * This method should be overwritten by subclass
-     * @return $this
-     */
-    protected function buildCsv()
-    {
-        return $this;
-    }
-
-    /**
      * Build csv string
      *
      * @param bool $sort
      * @return $this
      */
-    protected function buildCsvString($sort = true)
+    protected function build($sort = true)
     {
-        if (empty($this->csvFields)) $this->buildCsv();
-
         $title = "";
-        $csv = array();
+        $data = array();
         foreach($this->csv as $key => $row)
         {
             // Headline
-            if (empty($csv))
+            if (empty($data))
                 foreach ($row as $rowTitle => $tmp)
                     $title .= "$rowTitle;";
 
             // Content
-            if (!isset($csv[$key])) $csv[$key] = '';
+            if (!isset($data[$key])) $data[$key] = '';
             foreach ($row as $value)
-                $csv[$key] .= "$value;";
+                $data[$key] .= "$value;";
         }
         if ($sort)
         {
-            natcasesort($csv);
+            natcasesort($data);
         }
         $result = "$title\n";
-        $result .= implode("\n", $csv);
+        $result .= implode("\n", $data);
         $this->csvString = $result;
         return $this;
     }
@@ -92,7 +60,7 @@ class csvExport extends extensionModule
      */
     public function getCsv()
     {
-        if (empty($this->csvString)) $this->buildCsvString();
+        if (empty($this->csvString)) $this->build();
         return $this->csvString;
     }
 
@@ -117,6 +85,28 @@ class csvExport extends extensionModule
 
     public function execute($filename = 'export')
     {
-        $this->sendCsvDownload($filename);
+        return $this
+            ->build()
+            ->sendCsvDownload($filename);
+    }
+
+    /**
+     * Helper Function: Get customer-name formated
+     *
+     * @param string|array $firstNameOrArray
+     * @param string $lastName
+     * @param string $company
+     * @return string string
+     */
+    public static function getCustomerNameFormatted($firstNameOrArray, $lastName = '', $company = '')
+    {
+        if (is_array($firstNameOrArray))
+        {
+            $company = $firstNameOrArray['cus_company'];
+            $lastName = $firstNameOrArray['cus_last_name'];
+            $firstNameOrArray = $firstNameOrArray['cus_first_name'];
+        }
+        $result = !empty($company) ? "$company ($firstNameOrArray $lastName)" : "$lastName, $firstNameOrArray";
+        return $result != ', ' ? $result : '';
     }
 }

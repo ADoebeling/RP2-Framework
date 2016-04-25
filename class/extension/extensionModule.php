@@ -5,8 +5,6 @@ use rpf\system\module;
 
 /**
  * Model for all RP2-Extension-Modules
- *
- * @package system\extension
  */
 class extensionModule extends module
 {
@@ -23,12 +21,24 @@ class extensionModule extends module
     }
 
     /**
-     * Default-Method, should be overwritten by child
+     * Default-Method for data building, should be overwritten by child
      *
-     * @param $param
-     * @throws module\exception
+     * The default build-function
+     * @return $this
      */
-    public function execute($param)
+    protected function build($param = NULL)
     {
+        return $this;
+    }
+
+    /**
+     * Default-Method for executing, should be overwritten by child
+     *
+     * @param mixed $param
+     * @return $this
+     */
+    public function execute($param = NULL)
+    {
+        return $this->build($param);
     }
 }

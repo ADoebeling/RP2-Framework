@@ -307,4 +307,9 @@ class bbOrder_readEntry extends apiModule
     {
         return $this->addParam('return_tariff', (bool) $bool);
     }
+
+    public function get($cache = true, $primaryKey = 'ordnr')
+    {
+        return parent::get($cache, $primaryKey);
+    }
 }
