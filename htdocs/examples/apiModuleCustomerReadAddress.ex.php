@@ -27,6 +27,6 @@ $result = $rpf
 
     ->addReturnPhoneEncodet()                   // Set phone number encodet
 
-    ->get();
+    ->getArray();
 
 var_dump($result);

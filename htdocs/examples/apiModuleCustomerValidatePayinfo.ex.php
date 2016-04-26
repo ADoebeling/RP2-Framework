@@ -21,6 +21,6 @@ $result = $rpf
     ->getApi()                                  // Load the API
     ->getCustomerValidatePayinfo()              // Load the API-module customerValidatePayinfo (bbCustomer::validatePayinfo)
 
-    ->get();
+    ->getArray();
 
 var_dump($result);

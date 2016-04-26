@@ -28,7 +28,7 @@ class contractExport extends extensionModule
     {
         foreach ($this->oeids as $oeid)
         {
-            $results = $this->getApi()->getDomainReadEntry()->setOeid($oeid)->get();
+            $results = $this->getApi()->getDomainReadEntry()->setOeid($oeid)->getArray();
             foreach ($results as $row)
             {
                 $this->data['domains'][$row['name']] =
@@ -64,7 +64,7 @@ class contractExport extends extensionModule
                 ->getEmailReadAccount()
                 ->setOeid($oeid)
                 ->addUsed()
-                ->get(true, 'email');
+                ->getArray(true, 'email');
 
             foreach ($results as $pk => $row)
             {

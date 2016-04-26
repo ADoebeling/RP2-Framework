@@ -23,6 +23,6 @@ $result = $rpf
 
     ->setCustomerDiscount()
 
-    ->get();
+    ->getArray();
 
 var_dump($result);

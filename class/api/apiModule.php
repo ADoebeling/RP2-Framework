@@ -1,6 +1,7 @@
 <?php
 
 namespace rpf\api;
+use rpf\apiResponse\apiResponse;
 use rpf\system\module;
 
 defined('BBRPC_URL') or define('BBRPC_URL', RPF_API_MODULE_BBRPC_SETURL_URL);
@@ -41,6 +42,12 @@ class apiModule extends module
     protected $rpcParams = array();
 
     /**
+     * @var array rpc response
+     */
+    protected $rpcResponse = [];
+
+
+    /**
      * Add param for bbRpc::call
      * (Alias for $this->getApi()->getRpcCall()->addParam($name, $value) )
      *
@@ -55,30 +62,30 @@ class apiModule extends module
     }
 
     /**
-     * Get result of api-request
+     * Get result of api-request as array
      *
      * @param bool|string $cache (false, true = runtime, memcache)
      * @param string $primaryKey Use different field as primary key
      * @return array|bool
      * @throws module\exception
      */
-    public function get($cache = true, $primaryKey = 'default')
+    public function getArray($cache = true, $primaryKey = 'default')
     {
         $result = array();
-        $apiResult = $this->getApi()->getRpcCall()->call($this->rpcMethod, $this->rpcParams, $cache);
+        $this->rpcResponse = $this->getApi()->getRpcCall()->call($this->rpcMethod, $this->rpcParams, $cache);
 
-        if (!is_array($apiResult))
+        if (!is_array($this->rpcResponse))
         {
             throw new module\exception("Sorry, could not fetch any row");
         }
 
         if ($primaryKey == 'default')
         {
-            return $apiResult;
+            return $this->rpcResponse;
         }
         else
         {
-            foreach ($apiResult as $row)
+            foreach ($this->rpcResponse as $row)
             {
                 // isset return false if element is NULL
                 if (!isset($row[$primaryKey]) && @$row[$primaryKey] !== NULL)
@@ -96,5 +103,20 @@ class apiModule extends module
             }
             return $result;
         }
+    }
+
+
+    public function getObject($primaryKey, $primaryKeyField = 'default', $cache = true)
+    {
+        $class = '\rpf\apiResponse\module\\'.str_replace('::', '_', $this->rpcMethod);
+        $response = $this->getArray($cache, $primaryKeyField);
+        return $this->getApiResponse()->initialize($class, $response)->get($primaryKey);
+    }
+
+    public function getResource($primaryKeyField = 'default', $cache = true)
+    {
+        $class = '\rpf\apiResponse\module\\'.str_replace('::', '_', $this->rpcMethod);
+        $response = empty($this->rpcResponse) ? $this->getArray($cache, $primaryKeyField) : $this->rpcResponse;
+        return $this->getApiResponse()->initialize($class, $response)->getResource();
     }
 }

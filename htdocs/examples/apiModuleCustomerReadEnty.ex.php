@@ -43,6 +43,6 @@ $result = $rpf
 
     ->addReturnPhoneEncodet()
 
-    ->get();
+    ->getArray();
 
 var_dump($result);

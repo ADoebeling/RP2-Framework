@@ -25,6 +25,6 @@ $result = $rpf
     //->setPreset()
     //->setTyp()
 
-    ->get();
+    ->getArray();
 
 var_dump($result);

@@ -27,12 +27,12 @@ class csvExportMysql extends csvExport
         $orders = $this
             ->getApi()
             ->getOrderReadEntry()
-            ->get();
+            ->getArray();
 
         $mysql = $this
             ->getApi()
             ->getMysqlReadEntry()
-            ->get();
+            ->getArray();
 
         if (!is_array($mysql))
         {

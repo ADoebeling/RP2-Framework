@@ -35,7 +35,7 @@ class moduleManager
         }
     }
 
-    public function get($name)
+    public function get($name, $param = NULL)
     {
         if (!is_string($name))
         {
@@ -44,7 +44,7 @@ class moduleManager
         }
         if (!isset($this->module[$name]))
         {
-            $this->add($name);
+            $this->add($name, $param);
         }
         return $this->module[$name];
     }
@@ -56,14 +56,14 @@ class moduleManager
      * @throws \Exception
      * @return bool true
      */
-    public function add($nameOrObject)
+    public function add($nameOrObject, $param = NULL)
     {
         if (is_string($nameOrObject))
         {
             if (!isset($this->module[$nameOrObject]))
             {
-                log::debug("Instantiating $nameOrObject()", __METHOD__."($nameOrObject)");
-                $this->module[$nameOrObject] = new $nameOrObject();
+                //log::debug("Instantiating $nameOrObject()", __METHOD__."($nameOrObject)");
+                $this->module[$nameOrObject] = new $nameOrObject($param);
             }
             else
             {

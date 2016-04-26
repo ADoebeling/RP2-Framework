@@ -191,8 +191,41 @@ class bbDomain_readEntry extends apiModule
      * @return array|bool
      * @throws \rpf\system\module\exception
      */
-    public function get($cache = true, $primaryKey = 'name')
+    public function getArray($cache = true, $primaryKey = 'name')
     {
-        return parent::get($cache, $primaryKey);
+        return parent::getArray($cache, $primaryKey);
+    }
+
+    /**
+     * @param bool $cache
+     * @param string $primaryKey
+     * @return \rpf\apiResponse\apiResponse
+     */
+    public function getAll($cache = true, $primaryKey = 'name')
+    {
+        return parent::getAll($cache, $primaryKey);
+    }
+
+
+    /**
+     * @param $primaryKey
+     * @param string $primaryKeyField
+     * @param bool $cache
+     * @return bbDomainReadEntry
+     */
+    public function getObject($primaryKey, $primaryKeyField = 'name', $cache = true)
+    {
+        return parent::getObject($primaryKey, $primaryKeyField, $cache);
+    }
+
+
+    /**
+     * @param string $primaryKeyField
+     * @param bool $cache
+     * @return \rpf\apiResponse\module\bbDomain_readEntry
+     */
+    public function getResource($primaryKeyField = 'name', $cache = true)
+    {
+        return parent::getResource($primaryKeyField, $cache);
     }
 }

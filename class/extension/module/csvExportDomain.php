@@ -28,12 +28,12 @@ class csvExportDomain extends csvExport
             ->getDomainReadEntry()
             ->addSettings()
             ->addSubdomain()
-            ->get();
+            ->getArray();
 
         $orders = $this
             ->getApi()
             ->getOrderReadEntry()
-            ->get();
+            ->getArray();
 
         if (!is_array($domains))
         {

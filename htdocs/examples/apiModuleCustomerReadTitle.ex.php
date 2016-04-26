@@ -24,6 +24,6 @@ $result = $rpf
     ->setCustomerTitle()
     ->setValue()
 
-    ->get();
+    ->getArray();
 
 var_dump($result);

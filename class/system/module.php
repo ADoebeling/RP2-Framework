@@ -2,6 +2,7 @@
 
 namespace rpf\system;
 use rpf\api\api;
+use rpf\apiResponse\apiResponse;
 use rpf\extension\extension;
 use rpf\system\module\exception;
 use rpf\system\module\log;
@@ -30,6 +31,7 @@ class module
             $GLOBALS['rpfModule'] = new moduleManager();
         }
         $this->module =& $GLOBALS['rpfModule'];
+        log::debug("Instantiating ".get_called_class(), get_called_class());
     }
 
     /**
@@ -39,6 +41,15 @@ class module
     public function getApi()
     {
         return $this->getModule(api::class);
+    }
+
+    /**
+     * Get the global api-object
+     * @return apiResponse
+     */
+    public function getApiResponse()
+    {
+        return $this->getModule(apiResponse::class);
     }
 
     /**
@@ -57,18 +68,13 @@ class module
      * $this->module[$name]
      *
      * @param $name
+     * @param mixed $param
      * @return object
+     * @throws exception
      */
-    protected function getModule($name)
+    protected function getModule($name, $param = NULL)
     {
-        return $this->module->get($name);
+        return $this->module->get($name, $param);
     }
 
-    
-    protected function addModule($nameOrObject)
-    {
-        // Not in use?
-        throw new exception('not in use?');
-        return $this->module->add($nameOrObject);
-    }
 }

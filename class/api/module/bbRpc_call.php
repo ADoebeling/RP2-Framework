@@ -50,7 +50,7 @@ class bbRpc_call extends apiModule
             $requestString .= ')';
 
             if ($cache === true && isset($this->cache[$requestString])) {
-                log::debug('Getting RPC-Response from runtime-cache', __METHOD__ . "($requestString)");
+                //log::debug('Getting RPC-Response from runtime-cache', __METHOD__ . "($requestString)");
             } else if ($cache === 'memcache') {
                 throw new exception('Sorry, memcach is not implemented yet');
             } else {

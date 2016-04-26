@@ -40,6 +40,6 @@ $result = $rpf                                  // Store result (of get() ) to t
 ->addWebalizerSettings()                    // Optional: Add webalizier-settings
 ->addStaid()                                // Optional: Add ???
 
-->get();                                    // Return result as array, primary-key set to domain
+->getArray();                                    // Return result as array, primary-key set to domain
 
 print_r($result);                               // Print-out the api-response

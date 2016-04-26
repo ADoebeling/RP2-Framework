@@ -21,6 +21,6 @@ $result = $rpf
     ->getApi()                                  // Load the API
     ->getCustomerValidateEntry()              // Load the API-module customerValidateEntry (bbCustomer::validateEntry)
 
-    ->get();
+    ->getArray();
 
 var_dump($result);
