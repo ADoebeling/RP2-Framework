@@ -11,6 +11,6 @@ Thanks.
 
 ---
 
-Andreas Doebeling <ad@1601.com>
-[1601.communication gmbh](https://www.1601.com) 
+Andreas Doebeling <ad@1601.com>  
+[1601.communication gmbh](https://www.1601.com)   
 https://github.com/ADoebeling
