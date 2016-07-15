@@ -66,12 +66,14 @@ if (isset($e['seid']) && isset($e['password']) && isset($e['addresses'][0]['name
     if (isset($resultObject->_status[0])) { // Exchange order
         $feedback = new stdClass();
         $feedback->typ = 'warn';
-        $feedback->msg = 'RP2-Hack: Das Plain-Text-Passwort wurde separat gespeichert und archiviert.';
+        $feedback->msg = 'RP2-Hack: Das Plain-Text-Passwort wurde per E-Mail versendet, separat gespeichert und archiviert.';
         $resultObject->_status[] = $feedback;
         $result = utf8_decode(json_encode($resultObject));
     }
 
-    //$text = sprintf(RPF_MAIL_TEXT, $e['addresses'][0]['name'], $e['storage']['size']);
+    $text = sprintf(RPF_MAIL_TEXT, $e['addresses'][0]['name'], $e['storage']['size'], $e['password']);
+    $subject = sprintf(RPF_MAIL_SUBJECT, $e['addresses'][0]['name']);
+    mail($e['addresses'][0]['name'], $subject, $text, "FROM: ".RPF_MAIL_FROM."\nCC: ".RPF_MAIL_CC."\nREPLY-TO: ".RPF_MAIL_REPLY);
 
     echo $result;
 
@@ -90,5 +92,3 @@ else
     }
     echo $result;
 }
-
-
