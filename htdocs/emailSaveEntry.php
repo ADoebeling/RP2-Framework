@@ -1,15 +1,13 @@
 <?php
-
 /**
- * RP² Password-Sniffer for mail-module
+ * RP2 Password-Sniffer for mail-module
  *
  * @Author Andreas Doebeling
  * @Link https://github.com/ADoebeling
  * @Link http://www.doebeling.me
  */
-
-mail("dev@1601.com", "[RP-PWD-Sniffer] Aenderungen gespeichert", print_r($_POST, 1).print_r($_SERVER, 1));
-
+header('Content-type: text/html; charset=ISO-8859-1'); // Important!
+require_once '../emailSaveEntry.config.php';
 
 /**
  * Redirect with POST data.
@@ -21,7 +19,7 @@ mail("dev@1601.com", "[RP-PWD-Sniffer] Aenderungen gespeichert", print_r($_POST,
  * @internal param array $post_data POST data. Example: array('foo' => 'var', 'id' => 123)
  * @link http://stackoverflow.com/a/15161640
  */
-function redirect_post($url, array $data, array $headers = null) {
+function returnRequest($url, array $data, array $headers = null) {
     $params = array(
         'http' => array(
             'method' => 'POST',
@@ -34,22 +32,63 @@ function redirect_post($url, array $data, array $headers = null) {
             $params['http']['header'] .= "$k: $v\n";
         }
     }
-    //print_r($params);
     $ctx = stream_context_create($params);
     $fp = fopen($url, 'rb', false, $ctx);
     if ($fp) {
-        echo stream_get_contents($fp);
-        die();
+        return stream_get_contents($fp);
     } else {
-        // Error
-        //throw new Exception("Error loading '$url', $php_errormsg");
+        return false;
     }
 }
 
-$url = 'https://1601com.premium-admin.eu'.$_SERVER['SCRIPT_URL'];
-$data = $_POST;
-$cookie['Cookie'] = 'bid='.$_COOKIE['bid'].';';
+function getDb($dbHost = DB_HOST, $dbName = DB_NAME, $dbUser = DB_USER, $dbPwd = DB_PWD)
+{
+    return new mysqli($dbHost, $dbUser, $dbPwd, $dbName);
+}
 
-redirect_post($url, $data, $cookie);
+function storeAccount(mysqli $mysql, $seid, $mail, $password, $comment = '')
+{
+    $sql = "INSERT INTO mail SET seid='$seid', mail='$mail', password='$password', date=NOW(), comment='$comment'";
+    return $mysql->query($sql);
+}
+
+$result = returnRequest(RPF_URL.$_SERVER['SCRIPT_URL'], $_POST, ['Cookie' => 'bid='.$_COOKIE['bid'].';']);
+$resultObject = json_decode(utf8_encode($result));
+
+$e = !isset($_POST['entry']) ?: $_POST['entry'];
+
+if (isset($e['seid']) && isset($e['password']) && isset($e['addresses'][0]['name']) &&
+    ($resultObject->_status[0]->typ == 'ok' || $resultObject->action == 'df_prices'))
+{
+    $db = getDb();
+    storeAccount($db, $e['seid'], $e['addresses'][0]['name'], $e['password'], 'TESTING by AD');
+
+    if (isset($resultObject->_status[0])) { // Exchange order
+        $feedback = new stdClass();
+        $feedback->typ = 'warn';
+        $feedback->msg = 'RP2-Hack: Das Plain-Text-Passwort wurde separat gespeichert und archiviert.';
+        $resultObject->_status[] = $feedback;
+        $result = utf8_decode(json_encode($resultObject));
+    }
+
+    //$text = sprintf(RPF_MAIL_TEXT, $e['addresses'][0]['name'], $e['storage']['size']);
+
+    echo $result;
+
+
+
+}
+else
+{
+    mail(RPF_MAIL_DEBUG, "[RPF/emailSaveEntry] ERROR", print_r($_POST, 1).print_r($resultObject, 1));
+    if (isset($resultObject->_status[0])) { // Exchange order
+        $feedback = new stdClass();
+        $feedback->typ = 'err';
+        $feedback->msg = 'RP2-Hack: Something went wrong. Ask @ADoebeling';
+        $resultObject->_status[] = $feedback;
+        $result = utf8_decode(json_encode($resultObject));
+    }
+    echo $result;
+}
 
 
