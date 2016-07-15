@@ -7,5 +7,5 @@ RewriteRule ^\w{32}/email/saveEntry/$ emailSaveEntry.php
 
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteCond %{REQUEST_FILENAME} !-f
-RewriteRule ^(.*)$ https://1601com.premium-admin.eu/$1 [L,P]
+RewriteRule ^(.*)$ https://xxx.premium-admin.eu/$1 [L,P]
 
