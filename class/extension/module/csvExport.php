@@ -2,9 +2,8 @@
 
 namespace rpf\extension\module;
 use rpf\extension\extensionModule;
+use rpf\system\module\exception;
 use rpf\system\module\log;
-use rpf\system\module\utf8German;
-
 
 /**
  * Class csvExport
@@ -27,31 +26,56 @@ class csvExport extends extensionModule
      *
      * @param bool $sort
      * @return $this
+     * @throws exception
      */
     protected function build($sort = true)
     {
-        $title = "";
         $data = array();
         foreach($this->csv as $key => $row)
         {
             // Headline
             if (empty($data))
+            {
                 foreach ($row as $rowTitle => $tmp)
-                    $title .= "$rowTitle;";
+                {
+                    if (!isset($titleText))
+                    {
+                        $titleText = $rowTitle;
+                    }
+                    else
+                    {
+                        $titleText .= "; $rowTitle";
+                    }
+                }
+            }
 
             // Content
-            if (!isset($data[$key])) $data[$key] = '';
             foreach ($row as $value)
-                $data[$key] .= "$value;";
+            {
+                if (!isset($data[$key]))
+                {
+                    $data[$key] = $value; //Strict
+                }
+                else
+                {
+                    $data[$key] .= "; $value";
+                }
+            }
         }
-        if ($sort)
+        if (empty($titleText) || empty($data))
         {
-            natcasesort($data);
+            throw new exception("No data for csv-export available");
         }
-        $result = "$title\n";
-        $result .= implode("\n", $data);
-        $this->csvString = $result;
-        return $this;
+        else
+        {
+            if ($sort) {
+                natcasesort($data);
+            }
+            $result = "$titleText\n";
+            $result .= implode("\n", $data);
+            $this->csvString = $result;
+            return $this;
+        }
     }
 
     /**
