@@ -19,6 +19,7 @@ use rpf\api\module\bbCustomer_validateAddress;
 use rpf\api\module\bbCustomer_validateEntry;
 use rpf\api\module\bbCustomer_validatePayinfo;
 use rpf\api\module\bbCustomer_getFreeOrdNr;
+use rpf\api\module\bbFtp_readEntry;
 use rpf\api\module\bbMysql_readEntry;
 use rpf\api\module\bbQuota_readEntry;
 use rpf\api\module\bbOrder_readDisposition;
@@ -175,6 +176,14 @@ class api extends module
     public function getEmailReadAccount()
     {
         return $this->getModule(bbEmail_readAccount::class);
+    }
+
+    /**
+     * @return bbFtp_readEntry
+     */
+    public function getFtpReadEntry()
+    {
+        return $this->getModule(bbFtp_readEntry::class);
     }
 
     /**
