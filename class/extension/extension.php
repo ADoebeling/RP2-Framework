@@ -4,6 +4,7 @@ namespace rpf\extension;
 use rpf\extension\module\csvExportDomain;
 use rpf\extension\module\csvExportMail4MailSaveEntry;
 use rpf\extension\module\csvExportMysql;
+use rpf\extension\module\csvExportQuota;
 use rpf\extension\module\error;
 use rpf\extension\module\index;
 use rpf\extension\module\invoiceTextExport;
@@ -35,6 +36,14 @@ class extension extends module
     public function getMysqlExport()
     {
         return $this->getModule(csvExportMysql::class);
+    }
+
+    /**
+     * @return csvExportQuota
+     */
+    public function getQuotaExport()
+    {
+        return $this->getModule(csvExportQuota::class);
     }
 
     /**
