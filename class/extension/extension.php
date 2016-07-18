@@ -2,6 +2,7 @@
 
 namespace rpf\extension;
 use rpf\extension\module\csvExportDomain;
+use rpf\extension\module\csvExportMail4MailSaveEntry;
 use rpf\extension\module\csvExportMysql;
 use rpf\extension\module\error;
 use rpf\extension\module\index;
@@ -58,6 +59,14 @@ class extension extends module
     public function getMailExport()
     {
         return $this->getModule(mailExport::class);
+    }
+
+    /**
+     * @return csvExportMail4MailSaveEntry
+     */
+    public function getMailExport4MailSaveEntry()
+    { 
+        return $this->getModule(csvExportMail4MailSaveEntry::class);
     }
 
     /**
