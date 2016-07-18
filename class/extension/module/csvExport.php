@@ -44,7 +44,7 @@ class csvExport extends extensionModule
                     }
                     else
                     {
-                        $titleText .= "; $rowTitle";
+                        $titleText .= ";$rowTitle";
                     }
                 }
             }
@@ -58,7 +58,7 @@ class csvExport extends extensionModule
                 }
                 else
                 {
-                    $data[$key] .= "; $value";
+                    $data[$key] .= ";$value";
                 }
             }
         }
