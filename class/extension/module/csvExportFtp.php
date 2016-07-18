@@ -4,7 +4,7 @@ namespace rpf\extension\module;
 use rpf\system\module\log;
 
 /**
- * Export all quotas + ssh accounts
+ * Export all ftp accounts
  *
  * @author Andreas Doebeling <ad@1601.com>
  * @copyright 1601.production siegler&thuemmler ohg
