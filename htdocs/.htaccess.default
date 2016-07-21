@@ -1,0 +1,30 @@
+Header set Connection keep-alive
+
+RewriteEngine on
+RewriteBase /
+
+# Force https
+RewriteCond %{SERVER_PORT} !^443$ [nc]
+RewriteRule (.*) https://%{HTTP_HOST}/$1 [R=permanent,nc,L]
+
+# Support for http-auth at fast-cgi
+RewriteCond %{HTTP:Authorization} ^(.*)
+RewriteRule ^(.*) - [E=HTTP_AUTHORIZATION:%1]
+
+# Default-Redirect to RPF?
+RedirectMatch 301 ^/?$ /index
+
+# Rewirte RPF-Extensions
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(\w*)$ extension/$1.php [L]
+
+# RP²-Proxy
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^(.*)$ https://1601com.premium-admin.eu/$1 [L,P]
+
+#RewriteRule ^\w{32}/email/saveEntry/$ ajaxProxy/emailSaveEntry.php
+#RewriteRule ^\w{32}/mysql/saveEntry/$ ajaxProxy/mysqlSaveEntry.php
+
+
