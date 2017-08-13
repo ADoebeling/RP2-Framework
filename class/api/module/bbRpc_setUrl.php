@@ -27,6 +27,7 @@ class bbRpc_setUrl extends apiModule
             {
                 $this->setUrl(sprintf(RPF_API_MODULE_BBRPC_SETURL_PATTERN, $matches[1]));
                 log::debug("Fetching rpcUrl from filesystem: {$this->rpcUrl}", __METHOD__);
+                return true;
             } else {
                 throw new exception("You're running a this script not at your df-server OR you have a realy old server-setup. Please set your RP2-Auftragsnummer in config. See: https://github.com/ADoebeling/RP2-Framework/issues/15");
             }
