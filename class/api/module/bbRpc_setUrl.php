@@ -20,7 +20,7 @@ class bbRpc_setUrl extends apiModule
         }
         else {
             // Get the correct path on http AND ssh/bash
-            $path = isset($_SERVER['DOCUMENT_ROOT']) ? $_SERVER['DOCUMENT_ROOT'] : $_SERVER['PWD'];
+            $path = isset($_SERVER['DOCUMENT_ROOT']) && !empty($_SERVER['DOCUMENT_ROOT']) ? $_SERVER['DOCUMENT_ROOT'] : $_SERVER['PWD'];
             preg_match("/\\/.*\\/(\\d*)_\\d*\\/.*/", $path, $matches);
 
             if (isset($matches[1]) && intval($matches[1]) > 1)
